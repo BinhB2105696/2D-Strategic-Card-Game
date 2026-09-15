@@ -6,7 +6,7 @@
 
 - **Project title:** Xây dựng trò chơi thẻ bài chiến thuật 2D với hệ thống bot và chế độ chơi PvE, PvP
 - **English title:** Development of a 2D Strategic Card Game with Bot System and PvE/PvP Modes
-- **Platform:** PC
+- **Target Platforms:** Windows / Android
 - **Engine:** Unity
 - **Programming language:** C#
 - **Student:** Nguyễn Thanh Bình
