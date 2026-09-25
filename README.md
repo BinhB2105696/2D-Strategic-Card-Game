@@ -89,6 +89,8 @@ CardView
 ```
 
 - **CardData:** static information such as name, type, stats, artwork reference, and effects.
+
+```text
   CardData
   │
   ├── Card Name
@@ -132,6 +134,8 @@ CardView
   │ └── Speed
   │
   └── Effect Text
+```
+
 - **CardInstance:** runtime state of a card during a match.
 - **CardView:** Unity UI/presentation layer.
 
