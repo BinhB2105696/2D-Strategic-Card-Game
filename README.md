@@ -12,7 +12,7 @@
 - **Student:** Nguyễn Thanh Bình
 - **Student ID:** B2105696
 - **Institution:** Can Tho University (CTU)
-- **Project status:** Initial setup
+- **Project status:** Core card system development
 
 ## Overview
 
@@ -89,6 +89,49 @@ CardView
 ```
 
 - **CardData:** static information such as name, type, stats, artwork reference, and effects.
+  CardData
+  │
+  ├── Card Name
+  │
+  ├── Category
+  │ ├── Monster
+  │ ├── Spell
+  │ └── Trap
+  │
+  ├── Attribute
+  │ ├── Metal
+  │ ├── Wood
+  │ ├── Fire
+  │ ├── Water
+  │ ├── Earth
+  │ └── Wind
+  │
+  ├── Card Type
+  │ ├── Monster
+  │ │ ├── Basic
+  │ │ ├── Advanced
+  │ │ ├── Supreme
+  │ │ └── Ultimate
+  │ │
+  │ ├── Spell
+  │ │ ├── Normal
+  │ │ ├── Equip
+  │ │ └── Field
+  │ │
+  │ └── Trap
+  │ ├── Normal
+  │ └── Counter
+  │
+  ├── Monster Stats
+  │ ├── HP
+  │ ├── ATK
+  │ └── DEF
+  │
+  ├── Spell/Trap
+  │ ├── Energy Cost
+  │ └── Speed
+  │
+  └── Effect Text
 - **CardInstance:** runtime state of a card during a match.
 - **CardView:** Unity UI/presentation layer.
 
@@ -119,7 +162,7 @@ Examples include:
 
 Triggers and conditions are intended to be separated from effects so that different cards can reuse the same gameplay components.
 
-## Game Architecture
+## Tentative Architecture
 
 The planned architecture separates game logic from Unity presentation:
 
@@ -234,8 +277,9 @@ This structure may change as implementation progresses.
 
 ## Development Roadmap
 
-- [ ] Repository and project setup
-- [ ] Unity project initialization
+- [x] Repository and project setup
+- [x] Unity project initialization
+- [x] Initial card UI prototype
 - [ ] Basic project architecture
 - [ ] Card data system
 - [ ] Card UI/presentation
@@ -266,6 +310,10 @@ This document is intended to be updated whenever important gameplay, architectur
 
 ## Current Status
 
-The project is currently in the **planning and initial setup phase**.
+The repository and Unity project have been initialized using Unity 2022.3 LTS.
 
-The immediate goal is to establish the GitHub repository, Unity project, project structure, and core architecture before implementing gameplay systems.
+The current development focus is the core card system. An initial UI prototype for cards has been created using Unity UI, TextMeshPro, Prefabs, and Prefab Variants. The project is now beginning the implementation of the CardData system and other core gameplay foundations.
+
+Detailed gameplay rules, current design decisions, implementation progress, and development constraints are maintained in:
+
+`Docs/PROJECT_CONTEXT.md`
