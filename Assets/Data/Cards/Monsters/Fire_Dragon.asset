@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16dd375991f5bc849a6fa38eb27a9288, type: 3}
   m_Name: Fire_Dragon
   m_EditorClassIdentifier: 
-  cardId: 
+  cardId: fire_dragon
   cardName: Fire Dragon
   category: 0
   artwork: {fileID: 21300000, guid: 1c41066ef5662d74e82c5c8090c2b1d1, type: 3}

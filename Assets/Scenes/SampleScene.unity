@@ -136,12 +136,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 928970027651101871, guid: 5f0e22ca0eb02174b878bee9e357f83c, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1457027230254823276, guid: 5f0e22ca0eb02174b878bee9e357f83c, type: 3}
       propertyPath: cardData
       value: 
-      objectReference: {fileID: 11400000, guid: c3a03a47af6998941af072a4a1081ab8, type: 2}
+      objectReference: {fileID: 11400000, guid: b50309f0d74fc354d8b4e9f5e26e1e06, type: 2}
     - target: {fileID: 6894768442814728718, guid: 5f0e22ca0eb02174b878bee9e357f83c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -204,7 +204,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6894768442814728718, guid: 5f0e22ca0eb02174b878bee9e357f83c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -285.5
+      value: -157
       objectReference: {fileID: 0}
     - target: {fileID: 6894768442814728718, guid: 5f0e22ca0eb02174b878bee9e357f83c, type: 3}
       propertyPath: m_AnchoredPosition.y
