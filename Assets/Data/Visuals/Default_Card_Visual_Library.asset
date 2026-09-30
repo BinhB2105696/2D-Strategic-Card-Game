@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84d0bd72fcd856241a5bcb18976b113d, type: 3}
+  m_Name: Default_Card_Visual_Library
+  m_EditorClassIdentifier: 
+  monsterFrame: {fileID: 21300000, guid: dc08c8562be5a6b48b5e47ec73940a24, type: 3}
+  spellFrame: {fileID: 21300000, guid: 9815d7339aca58a4ca896fbbdbaf77ac, type: 3}
+  trapFrame: {fileID: 21300000, guid: 1e4e320c0d6c6cf4595bae26baf7e7ce, type: 3}
+  cardBack: {fileID: 21300000, guid: f4687b51a231d504abc659c7fe15e5f8, type: 3}
+  metalIcon: {fileID: 21300000, guid: 99824800e796dc44fbb0c2ab088ca465, type: 3}
+  woodIcon: {fileID: 21300000, guid: adda55c37afc26745b304c7697a7a725, type: 3}
+  fireIcon: {fileID: 21300000, guid: 10ce2b63583b024488bf8cc639941ce2, type: 3}
+  waterIcon: {fileID: 21300000, guid: ba9f6eb14890bbf439866fce926549a4, type: 3}
+  earthIcon: {fileID: 21300000, guid: c7a4e00eac59eb2418469c60693b9f20, type: 3}
+  windIcon: {fileID: 21300000, guid: 4fa525451d97b5446b18b45c54715ee3, type: 3}

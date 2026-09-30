@@ -6,7 +6,7 @@
 
 - **Project title:** Xây dựng trò chơi thẻ bài chiến thuật 2D với hệ thống bot và chế độ chơi PvE, PvP
 - **English title:** Development of a 2D Strategic Card Game with Bot System and PvE/PvP Modes
-- **Target Platforms:** Windows / Android
+- **Target Platforms:** Android first / Windows second
 - **Engine:** Unity
 - **Programming language:** C#
 - **Student:** Nguyễn Thanh Bình
@@ -22,8 +22,8 @@ Players use cards with different attributes, statistics, effects, and strategic 
 
 The project is planned to include:
 
-- **PvE mode** against bots with different levels of decision-making.
-- **PvP mode** for two players.
+- **PvE mode** against multi-tiered bots with different decision-making approaches.
+- **Online PvP mode** for two players.
 - A modular card system that can be extended with additional cards and effects.
 - A turn-based combat system with strategic resource management.
 - Multiple strategic deck/archetype styles.
@@ -223,16 +223,20 @@ New GameState
 
 - **Easy Bot:** simple rule-based decisions.
 - **Normal Bot:** heuristic-based decisions using the current game state.
-- **Advanced Bot:** deeper decision-making using search/heuristics where feasible.
+- **Advanced Bot:** optional deeper decision-making using search techniques such as Minimax/Alpha-Beta after the core scope is stable.
 - **Optional ML extension:** machine-learning/self-play experiments may be investigated after the core game and non-ML bots are stable.
 
-The optional ML component must not block completion of the core game.
+The Advanced Bot and optional ML component must not block completion of the stable core game, Easy/Normal bots, or PvP.
+
+### Bot Evaluation
+
+The game core is planned to run independently from the visual UI so bots can play automated matches for thesis evaluation. Planned metrics include win rate, average turn count, Energy usage, and decision time per move.
 
 ## PvP
 
-The project is planned to support a two-player PvP mode.
+The project is planned to support online 1v1 PvP with player identity/account support.
 
-The exact implementation approach will be determined after the core single-player game is stable.
+The current tentative direction is to evaluate Unity Gaming Services Authentication and Multiplayer Sessions/Relay after the deterministic local game core is stable. No networking package is selected or installed yet.
 
 ## Planned Strategic Archetypes
 
@@ -297,8 +301,11 @@ This structure may change as implementation progresses.
 - [ ] Initial cards and decks
 - [ ] Easy Bot
 - [ ] Normal Bot
+- [ ] Headless bot-vs-bot simulation and evaluation metrics
 - [ ] Gameplay balancing and testing
-- [ ] PvP
+- [ ] Online PvP and player identity/accounts
+- [ ] Android build
+- [ ] Windows build
 - [ ] Advanced Bot
 - [ ] Optional ML experiments
 - [ ] UI/UX and visual polish

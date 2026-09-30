@@ -1,553 +1,365 @@
 # PROJECT CONTEXT
 
+> Last updated: 29 September 2026
+>
+> Status tags:
+> - **[CONFIRMED]**: implement as written unless the user changes it.
+> - **[TENTATIVE]**: current working value; keep it configurable.
+> - **[OPEN]**: not decided; use the documented default, mark it `TODO(OPEN)`, and continue.
+
 ## 1. Purpose
 
-This document is the current working context for the 2D Strategic Card Game graduation thesis project.
+This is the current working context for the 2D Strategic Card Game graduation thesis project.
 
-It records the current project scope, gameplay decisions, technical direction, development progress, and constraints.
+- `README.md` is the public overview.
+- This file contains detailed gameplay, scope, architecture, progress, and AI-development rules.
+- Newer confirmed decisions in this file take priority over older discussions and README text.
 
-The design is iterative. Values and rules marked as tentative may change after implementation and playtesting.
+## 2. Official Thesis Scope
 
-README.md is used for the public project overview.
-This file is used for detailed development context and AI-assisted development.
+Registered title:
 
----
+**Development of a 2D Strategic Card Game with an AI Bot System and PvE/PvP Modes**
 
-## 2. AI Assistant Rules
+The registered description promises:
 
-When assisting with this project:
+- A 2D strategic card game made with Unity.
+- Multiple card types, attributes, effects, and tactical strategies.
+- PvE with multi-tiered bots using rule-based and decision-making algorithms.
+- PvP between two human players.
+- A scalable core that can be extended with more cards, mechanics, and strategies.
 
-1. Read the existing project structure and relevant files before proposing significant architectural changes.
+The registration does **not** require exactly three bot difficulties. Current priorities are:
 
-2. Do not modify, create, rename, move, or delete project files unless the user explicitly authorizes the change.
+1. Stable complete game and rules.
+2. Easy Bot and Normal Bot.
+3. Online PvP and Android/Windows builds.
+4. Headless bot-vs-bot simulation and thesis metrics.
+5. Hard Bot using advanced search if time permits.
+6. Machine learning/self-play only if the core product is already stable.
 
-3. Reading and analyzing project files is allowed when access is available.
+Deck Building is postponed until the project has enough cards to justify it.
 
-4. Before making a proposed code change, explain:
-   - what should change,
-   - why it should change,
-   - which files would be affected.
+## 3. AI Assistant Rules
 
-5. If the user asks for code but does not explicitly authorize direct file editing, provide the code and instructions instead of modifying the project.
+### Allowed without asking
 
-6. Never delete or overwrite existing working code merely because another architecture appears cleaner.
+1. Read the project and relevant files before changing code.
+2. Create and edit C# scripts under `Assets/Scripts/` when required by the agreed current step.
+3. Refactor scripts when justified, while preserving working behavior and summarizing the change.
+4. Create or update files under `Docs/` and make small progress/roadmap edits to `README.md`.
+5. Create Editor scripts that generate Unity assets through Unity APIs instead of hand-writing YAML.
 
-7. Do not perform large refactors without explicit approval.
+### Ask or warn first
 
-8. Do not change established gameplay rules silently. If a rule appears problematic, inconsistent, difficult to implement, or difficult to balance, explain the issue and discuss it with the user first.
+1. Installing packages, plugins, SDKs, networking frameworks, or external dependencies.
+2. Changing Unity version, render pipeline, package versions, build settings, or project-wide settings.
+3. Deleting, renaming, or moving files. Never delete `.meta` files or create them by hand.
+4. Hand-editing `.unity`, `.prefab`, or `.asset` YAML. Prefer exact Unity Editor instructions or an Editor tool.
+5. Rewriting Git history, force-pushing, destructive resets, or deleting branches.
+6. Changing any **[CONFIRMED]** gameplay rule.
 
-9. Distinguish clearly between:
-   - confirmed design decisions,
-   - tentative values/rules,
-   - proposed ideas.
+### Never
 
-10. Do not treat README.md or an old discussion as more authoritative than newer decisions recorded in this document.
+1. Treat files in `Library/`, `Temp/`, `Logs/`, `obj/`, or build-output folders as source files.
+2. Put API keys, passwords, tokens, or secrets in source code.
+3. Silently choose between conflicting gameplay rules.
 
-11. Prefer simple and understandable solutions appropriate for a graduation thesis. Avoid unnecessary design patterns, abstraction layers, frameworks, or premature optimization.
+### Teaching and Unity UI instructions
 
-12. When introducing a new C# or Unity concept, explain its purpose because the project is also being used to learn Unity and C#.
+The user is learning C# and Unity. When introducing a new concept, explain its purpose in simple Vietnamese.
 
-13. Do not add packages, plugins, SDKs, external dependencies, or Unity packages without explaining why they are necessary and receiving approval.
+Every manual Unity or Visual Studio instruction must state:
 
-14. Do not change Unity version, render pipeline, build target configuration, package versions, or project-wide settings without approval.
+1. **Application and window/panel**: for example `Unity Editor > Project window` or `Visual Studio 2022 > Solution Explorer`.
+2. **Current editing context**: Scene Mode, Prefab Mode, Play Mode, or Edit Mode.
+3. **Object/file to select** before looking for a control.
+4. **Exact location and visual description** of the control, such as "the triangle Play icon in the center of Unity's top toolbar".
+5. **Exact menu path and useful shortcut** when available, such as `Edit > Play` or `Ctrl+P`.
+6. **Expected visible result** so the user can verify the action.
+7. A warning when the action must not be performed in Play Mode because changes could be lost.
 
-15. Do not modify generated/cache folders such as Library, Temp, Logs, obj, or build artifacts as part of source-code development.
+Do not write vague instructions such as "press Play" or "assign the object" without identifying where and how.
 
-16. Never expose, commit, or place API keys, passwords, tokens, credentials, or other secrets in source files.
+After each development step, report:
 
-17. Before operations that could affect many files, Git history, project settings, scenes, prefabs, or serialized Unity assets, stop and request explicit approval.
+- Files created or changed.
+- Exact Unity test steps.
+- Expected results.
+- Common problems and how to recognize them.
+- A suggested Git commit checkpoint.
 
-18. Preserve Git history. Do not force-push, rewrite history, reset destructive changes, or delete branches unless explicitly requested.
+## 4. Constraints
 
-19. Prefer small, reviewable changes that can be tested and committed independently.
+- Unity 2022.3.62f3 LTS and Visual Studio 2022.
+- C# is the primary language.
+- Development machine: Ryzen 5 5500U, 8 GB RAM, integrated Radeon Graphics, Windows 10 LTSC.
+- Target platforms in priority order: **Android first, Windows second**.
+- Mobile-first UI: landscape, large touch targets, no gameplay interaction that requires hover or right-click.
+- Thesis defense is expected in early December 2026.
 
-20. When unsure about an important design decision, ask rather than assume.
+## 5. Scope Priority
 
----
+### Tier 1: must be stable
 
-## 3. Project Goal
-
-Build a 2D strategic card game using Unity and C# for a graduation thesis.
-
-Target platforms:
-- Android
-- Windows
-
-Main planned modes:
-- PvE Easy Bot
-- PvE Normal Bot
-- PvP 1v1
-
-Advanced bot techniques and machine-learning/self-play experiments are optional extensions and must not block completion of the core game.
-
-The priority is to produce a stable and demonstrable game before attempting advanced bot features.
-
----
-
-## 4. Development Constraints
-
-Unity version:
-- Unity 2022.3.62f3 LTS
-
-Primary programming language:
-- C#
-
-Development machine:
-- AMD Ryzen 5 5500U
-- 8 GB RAM
-- Integrated Radeon Graphics
-- Windows 10 Enterprise LTSC
-
-The project must remain practical for this hardware.
-
-Avoid unnecessarily heavy tools, packages, rendering systems, and workflows.
-
-Expected thesis defense:
-- Early December 2026
-
-Current target:
-- Have the main required product substantially completed within approximately two months from 25 September 2026.
-
----
-
-## 5. Minimum Thesis Scope
-
-The minimum target is:
-
-- Complete playable card game.
-- Stable implementation of the main rules.
-- Functional user interface.
+- Complete playable card game with correct core rules and functional UI.
 - Easy rule-based bot.
-- Normal heuristic-based bot.
-- 1v1 PvP between players/accounts.
-- Android build.
-- Windows build.
+- Normal heuristic bot.
+- Online 1v1 PvP with player identity/account support.
+- Android build, then Windows build.
+- Headless bot-vs-bot simulation and metrics for thesis evaluation.
 
-Optional after the minimum scope is stable:
+### Tier 2: build if Tier 1 is stable
 
-- Advanced/harder bot.
-- Deeper search algorithms.
-- Machine-learning/self-play experiments.
-- Additional cards/decks.
-- Additional visual and gameplay polish.
+- Hard Bot using Minimax/Alpha-Beta or another suitable advanced algorithm.
+- More cards and decks, balancing, visual polish, and audio.
 
----
+### Tier 3: only if time remains
+
+- Deck Building.
+- Machine learning/self-play experiments.
+
+Higher-tier work must not destabilize a lower tier.
 
 ## 6. Match Fundamentals
 
-The game is designed for two players.
-
-Current tentative values:
-
-- Player starting HP: 4000.
-- Deck size: approximately 30–40 cards.
-- Starting hand: 4 cards.
-- Normal draw: 1 card per turn.
-- Monster Zones: 3.
-- Spell/Trap Zones: 3.
-- Target match duration: approximately 10–15 minutes.
-
-Primary win condition:
-- Reduce the opponent's HP to 0.
-
-Deck-out is currently not an automatic loss condition.
-
-These numerical values are subject to balancing and playtesting.
-
----
-
-## 7. Turn Structure
-
-A turn currently consists of four phases.
-
-### 7.1 Draw & Energy Phase
-
-- Draw 1 card.
-- Restore/reset the player's available base Energy to 5.
-- Resolve effects that occur during this phase.
-
-Unused normal Energy is not carried over from the previous turn.
-
-Card effects may modify, restore, or increase available Energy.
-
-The exact Energy values remain subject to balancing.
-
-### 7.2 Main Phase
-
-Possible actions include:
-
-- Summoning monsters.
-- Allocating Energy to monsters.
-- Changing eligible monster battle positions.
-- Tribute/advanced summoning when applicable.
-- Equipping cards.
-- Activating normal effects.
-- Activating Spell cards where allowed.
-
-The current Normal Summon limit is NOT permanently finalized.
-
-Earlier design used one normal Basic Monster summon per turn.
-A less restrictive summon rule may be tested if gameplay becomes too slow.
-
-Do not permanently choose either rule without playtesting/discussion.
-
-A monster summoned during the current turn cannot normally change its battle position unless an effect allows it.
-
-A monster already on the field before the turn may normally change its battle position once during the Main Phase.
-
-### 7.3 Battle Phase
-
-Only monsters in Attack Position may normally attack.
-
-A monster normally attacks once unless a card effect changes this.
-
-Against an Attack Position monster:
-- Attack damage is applied directly to the target monster's HP according to the combat rules.
-
-Against a Defense Position monster:
-- DEF reduces incoming damage.
-- If attacker ATK does not exceed the defender's applicable DEF, the defender normally receives no battle damage unless an effect states otherwise.
-
-When a monster's HP reaches 0, it is sent to the Graveyard.
-
-If the opponent controls no monsters, direct attacks against player HP are possible.
-
-Some battle-related effects, Spells, or Traps may activate when their activation conditions are satisfied.
-
-### 7.4 End Phase
-
-- Resolve effects that expire or activate at the end of the turn.
-- Finish the current turn.
-- Pass control to the opponent.
-
----
-
-## 8. Monster System
-
-Monsters currently have:
-
-- Name
-- Attribute
-- Rank
-- Artwork
-- HP
-- ATK
-- DEF
-- Effect text
-- Energy-related attack requirements where applicable
-
-Current Monster Attributes:
-
-- Metal
-- Wood
-- Fire
-- Water
-- Earth
-- Wind
-
-Possible future additions include:
-
-- Dark
-- Light
-- Thunder
-- Sound
-
-Do not add them until needed.
-
-Current Monster Ranks:
-
-- Basic
-- Advanced
-- Supreme
-- Ultimate
-
-A monster may be placed in:
-
-- Attack Position
-- Defense Position
-
-Energy may be assigned to monsters.
-
-Monster attacks or effects may require particular Energy levels.
-
-Whether an effect consumes Energy depends on the individual card/effect and is not a universal rule.
-
----
-
-## 9. Spell and Trap System
-
-Current card categories:
-
-- Monster
-- Spell
-- Trap
-
-Initial Spell types:
-
-- Normal Spell
-- Equip Spell
-- Field Spell
-
-Initial Trap types:
-
-- Normal Trap
-- Counter Trap
-
-More types may be added later only when gameplay requires them.
-
-Spell and Trap cards use common Spell/Trap attribute icons in the card UI.
-
-Their specific type is displayed in the Card Type area.
-
-### Speed / Chain
-
-Current intended system:
-
-- Spells are Speed 1.
-- Speed 1 effects cannot chain to another activation; they can start a chain when otherwise legal.
-- Normal Traps are Speed 2.
-- Counter Traps are Speed 3.
-- Speed 3 is the highest current speed.
-- Only another Counter Trap/Speed 3 response may chain to a Counter Trap.
-
-The detailed chain-resolution implementation has not yet been built and may require refinement.
-
-Do not introduce a complex chain architecture until the basic Spell/Trap system is functional.
-
----
+- Player starting HP: 4000 **[TENTATIVE]**.
+- Deck size: 30-40 cards **[TENTATIVE]**.
+- Starting hand: 4 cards **[TENTATIVE]**.
+- Normal draw: 1 card each turn **[TENTATIVE]**.
+- Monster Zones: 3 **[CONFIRMED]**.
+- Spell/Trap Zones: 3 **[CONFIRMED]**.
+- Primary win condition: reduce the opponent's HP to 0 **[CONFIRMED]**.
+- Drawing from an empty deck draws nothing; deck-out is not an automatic loss **[CONFIRMED]**.
+- Target match duration: 10-15 minutes **[TENTATIVE]**.
+- First player: random; the first player draws normally **[OPEN, default]**.
+
+All configurable numbers must live in one `GameConfig`, not as scattered magic numbers.
+
+## 7. Energy and Summoning
+
+- Base maximum Energy: 5 **[CONFIRMED]**.
+- After drawing, Available Energy resets to the player's current Max Energy **[CONFIRMED]**.
+- Unused Available Energy does not carry to the next turn.
+- Effects may increase Max Energy or add/restore Available Energy.
+- Normal Summon is unlimited per turn, costs 1 Energy, and is limited by zones and available Energy **[CONFIRMED]**.
+- Tribute Summon costs 1 Energy plus tributes **[CONFIRMED, balance may change]**:
+  - Basic: 0.
+  - Advanced: 1.
+  - Supreme: 2.
+  - Ultimate: 3.
+- Energy and damage on tribute monsters are not inherited.
+- Energy may be allocated to a monster during Main Phase.
+- Allocated Energy stays after attacking and is not refunded to the player **[CONFIRMED]**.
+- Card effects may remove allocated Energy.
+- Allocated Energy does not increase ATK/DEF **[OPEN, default]**.
+- Energy per monster has no cap **[OPEN, default]**.
+- When a monster is destroyed, its owner loses 100 HP per allocated Energy **[OPEN, default]**.
+
+`PlayerState` must distinguish `MaxEnergy` from `AvailableEnergy`.
+
+## 8. Turn and Combat Rules
+
+### Draw & Energy Phase
+
+Draw one card, reset Available Energy, then resolve start-of-turn effects.
+
+### Main Phase
+
+- Normal Summon and Tribute Summon.
+- Allocate Energy to monsters.
+- Activate or set allowed cards.
+- A monster already on the field at the start of the turn may change position once.
+- A monster summoned this turn cannot normally change position.
+
+### Battle Phase
+
+- Only Attack Position monsters can attack.
+- A monster normally attacks once per turn.
+- Its allocated Energy must meet its attack requirement.
+- A newly summoned monster may attack if eligible **[CONFIRMED]**.
+- No monster can attack during the first turn of the match **[CONFIRMED]**.
+- Default interpretation: only the first player's first turn is the first turn **[OPEN]**.
+- Against Attack Position: defender loses HP equal to attacker ATK; attacker takes no counter-damage **[OPEN, default]**.
+- Against Defense Position: damage to monster HP is `max(0, ATK - DEF)`.
+- Overflow damage never reaches player HP **[CONFIRMED]**.
+- Monster damage persists across turns **[OPEN, default]**.
+- A monster at 0 HP goes to the Graveyard and triggers the destruction penalty.
+- Direct attack is allowed only when the opponent has no monsters; damage equals attacker ATK **[OPEN, default]**.
+
+### End Phase
+
+Resolve end-of-turn effects and pass control to the opponent.
+
+## 9. Cards and Decks
+
+- Categories: Monster, Spell, Trap.
+- Monster attributes: Metal, Wood, Fire, Water, Earth, Wind.
+- Monster ranks: Basic, Advanced, Supreme, Ultimate.
+- Monster types: Dragon, Warrior, Spellcaster, Fairy, Machine, Fiend,
+  Animal, Insect, Plant, Spirit, Elf, Undead.
+- Spell types: Normal, Equip, Field.
+- Trap types: Normal, Counter.
+- Spell is Speed 1; Normal Trap is Speed 2; Counter Trap is Speed 3.
+- Activation Speed must be derived from card category/type, not entered inconsistently by hand.
+- Start with a simple last-in-first-out chain and avoid premature generalization.
+- Activation Energy cost is defined per card.
+
+Initial deck direction:
+
+- Shared common cards usable by multiple decks.
+- Three sample archetypes: Aggro, Sustain/Defense, and Control.
+- Heavy overlap is allowed; 30-card decks do not require 30 unique designs each.
+- Combo is optional after the first three archetypes work.
 
 ## 10. Card UI
 
-Cards are implemented using Unity UI under a Canvas.
+- Canvas UI with `Image` and TextMeshPro, not SpriteRenderer.
+- Layout: Name, Attribute icon, Card Type, Artwork, HP/ATK/DEF for monsters, and Effect text.
+- Monster Rank has its own display area. Monster Card Type displays the
+  Monster Type in brackets, for example `[Dragon]`.
+- Spell/Trap Card Type text uses brackets and text only, for example
+  `[Normal Spell]`, `[Field Spell]`, and `[Counter Trap]`.
+- Monster Rank is displayed in angle brackets, for example `<Advanced>`.
+- Face-down cards show only the shared Card Back. All front-face text, icons,
+  artwork, rank, and stats must be disabled while face-down.
+- Spell and Trap use shared category icons.
+- `Card_Base` contains common UI.
+- `Card_Monster` is a variant adding HP/ATK/DEF.
+- `Card_SpellTrap` is a variant without monster stats.
+- Current visuals are functional prototypes, not final art.
+- Mobile gameplay will include a card detail panel opened by tapping/selecting
+  a card so players can read its full attributes and effect text clearly.
+- Default orientation: landscape, Canvas Scaler reference 1920x1080, Match 0.5 **[OPEN, default]**.
 
-Primary components:
+## 11. Architecture Boundaries
 
-- Image
-- TextMeshPro
+```text
+Unity authoring data        CardData (ScriptableObject, Sprite references)
+        ↓ conversion/catalog lookup
+Pure game definitions      CardDefinition (IDs, enums, numbers, effect definitions)
+Pure runtime core          GameConfig, CardInstance, PlayerState, GameState,
+                           GameRules, TurnManager, CombatSystem, GameAction
+Consumers                  Human input, Bots, Simulator, Replay, Network
+Unity presentation         CardView, BoardView, HandView, HUD, animation
+```
 
-Cards are not currently implemented as SpriteRenderer-based world objects.
+Rules:
 
-The general card layout contains:
+1. Core gameplay must not depend on Canvas, UI objects, `MonoBehaviour`, animation, or input APIs.
+2. `CardData` is Unity authoring data. The core receives a pure `CardDefinition` without `Sprite` or UI references.
+3. Each card definition has a stable unique `cardId` for deck/save/network references.
+4. Each physical copy in a match has a separate `instanceId` so duplicate cards can be targeted unambiguously.
+5. `CardInstance` stores current stats, allocated Energy, buffs/debuffs, position, attack/position flags, and zone state.
+6. Every player move is a serializable `GameAction` containing IDs and primitive values, never GameObjects or Sprites.
+7. The core exposes legal actions and applies validated actions. Humans, bots, replay, and network all use the same path.
+8. Randomness comes from one seeded game RNG. Avoid `UnityEngine.Random` inside core rules.
+9. Given the same initial state, seed, and ordered actions, the result must be deterministic.
+10. Save/replay formats must include a schema version. Do not use asset paths as permanent IDs.
+11. Start effects with a small set of concrete types and generalize only after repeated patterns appear.
 
-1. Card Name
-2. Attribute icon
-3. Card Type
-4. Artwork
-5. HP
-6. ATK
-7. DEF
-8. Effect/description area
+This preparation supports headless simulation, Android/Windows, replay, save/load, and PvP without implementing all of them immediately.
 
-Monster cards display HP, ATK, and DEF.
+## 12. Bots and Evaluation
 
-Spell/Trap cards do not require the Monster combat-stat area and may later use that space differently if Cost, Speed, or other information needs to be displayed.
+- `IBot` receives a safe game-state view and chooses a legal `GameAction`.
+- Easy Bot: fixed rules.
+- Normal Bot: heuristic scoring and short-term action evaluation.
+- Hard Bot: limited-depth search such as Minimax/Alpha-Beta **[OPTIONAL AFTER TIER 1]**.
+- ML/self-play: optional experiment only.
 
-The current UI is a prototype and is not the final visual design.
+The headless simulator must run matches without UI and record at least:
 
----
+- Winner and matchup.
+- Random seed and who went first.
+- Turn count.
+- Energy spent, allocated, and unused.
+- Decision time per move.
+- Invalid-action or timeout count.
 
-## 11. Card Prefab Direction
+CSV output will support thesis tables and charts.
 
-Current intended structure:
+## 13. PvP and Networking
 
-Card_Base
-- Name
-- Attribute
-- Card Type
-- Artwork
-- Effect/description
+"Networking solution" means the technology and service used to identify players, create/join matches, carry messages between devices, validate actions, handle disconnects, and optionally save player data.
 
-Card_Monster
-- Prefab Variant of Card_Base
-- Adds HP
-- Adds ATK
-- Adds DEF
+Current recommendation **[TENTATIVE; requires a feasibility spike and approval before packages are installed]**:
 
-Card_SpellTrap
-- Prefab Variant of Card_Base
-- Does not use Monster HP/ATK/DEF
-- May later display Cost/Speed if required
+- Unity Authentication for player identity. Start with anonymous accounts for testing; add Username & Password or Unity Player Accounts if cross-device recovery is required.
+- Unity Multiplayer Services SDK Sessions for Lobby/Relay room creation and join codes.
+- Unity Relay to connect Android and Windows players without exposing their IP addresses or operating a dedicated server.
+- Netcode for GameObjects as the first transport adapter, sending compact `GameAction` messages rather than synchronizing the entire UI/core as NetworkObjects.
+- Unity Cloud Save only if persistent profiles/decks are needed; it is not required for the first online match.
 
-Do not create separate duplicated card frameworks unless a concrete implementation problem requires it.
+Initial model:
 
----
+- Host-authoritative: the host owns the canonical `GameState`, validates actions with the shared core, and broadcasts accepted actions/state checks.
+- Relay is a message intermediary, not a dedicated authoritative game server.
+- If the host disconnects, the first version may end the match. Host migration is optional.
+- Dedicated server authority is an advanced upgrade only if schedule and service limits permit.
 
-## 12. Card Data Direction
+Do not install networking packages until local core actions are deterministic and a short spike confirms Unity 2022.3 compatibility, Android/Windows connection, account flow, free-tier limits, and acceptable complexity.
 
-Current conceptual separation:
+## 14. Open Decisions and Defaults
 
-CardData
-    ↓
-CardInstance
-    ↓
-CardView
+| Question | Default |
+|---|---|
+| HP penalty per Energy on destroyed monster | 100 |
+| Allocated Energy boosts ATK/DEF | No |
+| Max allocated Energy per monster | No cap |
+| Monster damage persists | Yes |
+| Counter-damage against Attack Position | None |
+| Direct attack condition | Opponent has no monsters |
+| First-turn attack restriction | First player's first turn only |
+| First player and draw | Random; first player draws |
+| Mobile layout | Landscape, 1920x1080 reference, Match 0.5 |
+| Networking stack | Tentative UGS stack in section 13; decide after spike |
 
-### CardData
-
-Represents the definition/static data of a card.
-
-Examples:
-
-- Name
-- Category
-- Attribute
-- Rank/type
-- Base HP
-- Base ATK
-- Base DEF
-- Artwork reference
-- Effect-related definition/data
-
-CardData is currently intended to use Unity ScriptableObject.
-
-### CardInstance
-
-Represents the runtime state of one card during a match.
-
-Examples:
-
-- Current HP
-- Current ATK
-- Current DEF
-- Energy currently assigned
-- Buffs/debuffs
-- Current battle position
-- Temporary states
-
-Do not modify shared CardData assets to represent runtime damage or temporary state.
-
-### CardView
-
-Represents the visual/UI presentation of a card.
-
-It displays information supplied by card data/runtime state.
-
-Game rules should not depend directly on UI text or visual components.
-
----
-
-## 13. Effect System Direction
-
-The long-term goal is to reuse common gameplay operations where practical.
-
-Examples:
-
-- Damage
-- Heal
-- Draw
-- Buff
-- Debuff
-- Change battle position
-- Gain Energy
-- Remove Energy
-- Summon
-- Recover/revive
-- Send card to Graveyard
-
-However, the effect architecture is NOT finalized.
-
-Do not create a large generic effect framework prematurely.
-
-Implement simple effects first and refactor into reusable components when repeated patterns become clear.
-
----
-
-## 14. Bot Direction
-
-Easy Bot:
-- Rule-based.
-- Uses predefined decision rules.
-
-Normal Bot:
-- Heuristic-based.
-- Evaluates available actions/game state.
-- May consider limited future actions where feasible.
-
-Advanced Bot:
-- Optional.
-- May use deeper search or more complex heuristics.
-
-Machine learning/self-play:
-- Optional experimental extension only.
-- Must not delay the core game.
-
-The game rules should ideally expose legal actions in a way that can later be used by both human players and bots.
-
----
-
-## 15. PvP Direction
-
-PvP is planned as 1v1 multiplayer.
-
-The networking/backend solution is not finalized.
-
-Do not choose or install a networking framework until the core local gameplay and game-state rules are sufficiently stable.
-
----
-
-## 16. Current Progress
+## 15. Current Progress
 
 Completed or explored:
 
-- GitHub repository created.
-- Unity project initialized.
-- Unity 2022.3.62f3 configured.
-- Visual Studio 2022 configured for Unity.
-- Android build support/tooling installed.
-- Initial Unity concepts studied:
-  - Scene
-  - Hierarchy
-  - Inspector
-  - GameObject
-  - Component
-  - Transform
-  - RectTransform
-  - Canvas
-  - Image
-  - TextMeshPro
-  - Anchor/Pivot
-  - Canvas Scaler
-  - EventSystem
-  - Prefab
-  - Prefab Variant
-- Initial card UI prototype created.
-- Card Base / Monster Variant direction explored.
-- Assets/Scripts/CardData.cs created as the first C# data-system experiment.
+- GitHub repository and Unity 2022.3.62f3 project.
+- Visual Studio 2022 and Android build tooling.
+- Basic Unity concepts, Canvas UI, Image, TextMeshPro, Prefabs, and Variants.
+- Card UI prototype and `Card_Base` / `Card_Monster` / `Card_SpellTrap` direction.
+- `CardData.cs` ScriptableObject with initial enums and static fields.
+- `CardData.cs` category-specific Inspector, stable ID field, Monster Type,
+  derived Speed/tribute values, and bounded base stats.
+- `CardView.cs` displaying category-specific text, artwork, effects, rank,
+  attribute icon, monster base stats, category frame, and face-down Card Back.
+- Shared `CardVisualLibrary` for frames, attribute icons, and Card Back.
+- Fire Dragon and Field Spell test CardData assets display in Play Mode.
+- Initial card frames, six Monster attribute icons, Card Back, and serif TMP
+  font assets have been integrated.
 
-Current CardData.cs is NOT considered final.
+Known next gaps:
 
----
+1. Validate unique `cardId` values and introduce runtime `instanceId` later.
+2. Expand the representative test set to 5-8 cards.
+3. Pure `CardDefinition`, `CardInstance`, GameState, actions, turns, combat,
+   bots, simulation, and networking.
 
-## 17. Immediate Development Priority
+## 16. Roadmap
 
-The next major objective is the core card system.
+| Step | Target | Content | Verification |
+|---|---|---|---|
+| 1 | ~6 Oct | CardData/CardView gaps, IDs, icon, derived values, 5-8 test cards, functional card prefabs | Multiple card categories display correctly in Play Mode |
+| 2 | ~13 Oct | Pure CardDefinition/core boundary, GameConfig, CardInstance, PlayerState, GameState, DeckData, shuffle/draw/hand | Two players initialize without UI and state prints correctly |
+| 3 | ~20 Oct | Turn phases, Energy, serializable GameActions, legal-action/apply path, summon/allocation/position | Scripted turn sequence produces correct deterministic state |
+| 4 | ~27 Oct | Combat, Graveyard, destruction penalty, win check, board UI, hot-seat | Full local match reaches a winner |
+| 5 | ~3 Nov | Spell/Trap/effects/simple chain, initial decks, short networking feasibility spike | Complete local match with all categories; networking choice confirmed |
+| 6 | ~10 Nov | Easy/Normal bots, headless simulator, CSV metrics | Human-vs-bot and bot-vs-bot batches work |
+| 7 | ~17 Nov | Online host-authoritative PvP and account flow using approved solution | Android/Windows devices complete an online match |
+| 8 | ~24 Nov | Android build first, Windows build, bug fixing/balancing; Hard Bot if Tier 1 is stable | Stable builds and thesis experiment data |
+| 9 | 25 Nov-early Dec | Feature freeze, final experiments, report, defense preparation | Final build and thesis materials |
 
-Proceed incrementally:
+If schedule slips, reduce extra cards, polish, Hard Bot, and ML before compromising Tier 1 stability.
 
-1. Inspect the existing CardData.cs.
-2. Finalize only the minimum CardData fields needed for the first playable cards.
-3. Learn the relevant C# concepts while implementing them.
-4. Create test CardData assets.
-5. Connect CardData to CardView.
-6. Verify that a card prefab can display data correctly.
-7. Introduce CardInstance when runtime state is actually needed.
-8. Build core turn/gameplay systems incrementally.
+## 17. Change Management
 
-Do not generate the entire game architecture at once.
-
----
-
-## 18. Change Management
-
-Whenever an important decision changes:
-
-1. Discuss the change.
-2. Determine whether it is:
-   - experimental,
-   - tentative,
-   - confirmed.
-3. Update this document if the change affects project-wide understanding.
-4. Update README.md only when the public/high-level project description changes.
-5. Keep implementation and documentation consistent.
-
-When code and documentation disagree, do not silently assume which is correct. Report the inconsistency and ask for clarification if it affects implementation.
+1. Discuss changes to **[CONFIRMED]** rules before implementation.
+2. When a rule or default changes, update the relevant section and section 14.
+3. Update README only for high-level changes.
+4. If code and this document disagree, report the inconsistency instead of silently choosing one.
+5. Update progress after each verified step, not merely after code is written.
