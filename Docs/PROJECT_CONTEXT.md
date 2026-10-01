@@ -1,6 +1,6 @@
 # PROJECT CONTEXT
 
-> Last updated: 29 September 2026
+> Last updated: 1 October 2026
 >
 > Status tags:
 > - **[CONFIRMED]**: implement as written unless the user changes it.
@@ -332,15 +332,45 @@ Completed or explored:
 - Fire Dragon and Field Spell test CardData assets display in Play Mode.
 - Initial card frames, six Monster attribute icons, Card Back, and serif TMP
   font assets have been integrated.
+- Category-specific sample generation and CardData validation tools create and
+  verify a representative set of Monster, Spell, and Trap assets.
+- `CardDefinition` provides a pure runtime definition without Sprite, UI, or
+  GameObject references; `CardDataConverter` creates it from Unity CardData.
+- `CardInstance` assigns a deterministic per-match instance ID and stores
+  mutable HP/ATK/DEF, allocated Energy, zone, face state, battle position, and
+  per-turn flags independently from the shared card definition.
+- `GameConfig` centralizes current configurable match values. `PlayerState` and
+  `GameState` initialize two 30-40 card decks, deterministic instances, seeded
+  shuffling, a random first player, four-card starting hands, HP, Energy, and
+  3+3 board zones without requiring UI.
+- `SeededGameRandom` version 1 supplies deterministic, bias-resistant random
+  values for shuffling and future gameplay randomness.
+- The basic turn flow now supports Draw & Energy, Main, Battle, and End phases.
+  `GameSession` routes actions through `GameRules`, rejects out-of-turn or
+  phase-invalid actions, applies valid state changes, emits presentation-ready
+  `GameEvent` values, and records accepted actions in an in-memory `MatchLog`.
+- Editor smoke tests verify card instances, deterministic match initialization,
+  equal-seed opening hands, the first complete phase cycle, and rejection of an
+  out-of-turn action. All tests passed in Unity on 1 October 2026.
 
 Known next gaps:
 
-1. Validate unique `cardId` values and introduce runtime `instanceId` later.
-2. Expand the representative test set to 5-8 cards.
-3. Pure `CardDefinition`, `CardInstance`, GameState, actions, turns, combat,
-   bots, simulation, and networking.
+1. Add Main Phase actions for summoning, tribute selection, Energy allocation,
+   and battle-position changes through the shared validation/apply path.
+2. Add Battle Phase attack validation, damage, destruction penalty, Graveyard,
+   direct attacks, and win checking.
+3. Add serializable action payloads, replay loading/state hashes, reusable card
+   effects and triggers, board presentation, bots, simulation, and networking.
 
 ## 16. Roadmap
+
+Verified checkpoints:
+
+- Step 1 card authoring/presentation foundation: **complete**.
+- Step 2 pure definitions, runtime instances, configuration, seeded match
+  initialization, players, deck shuffle/draw/hand, and basic state: **complete**.
+- Step 3 turn/action foundation: **in progress**; phase flow and action logging
+  are complete, while summon/allocation/position actions remain next.
 
 | Step | Target | Content | Verification |
 |---|---|---|---|

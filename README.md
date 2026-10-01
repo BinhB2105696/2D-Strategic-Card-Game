@@ -288,11 +288,11 @@ This structure may change as implementation progresses.
 - [x] Repository and project setup
 - [x] Unity project initialization
 - [x] Initial card UI prototype
-- [ ] Basic project architecture
-- [ ] Card data system
-- [ ] Card UI/presentation
-- [ ] Game state and player state
-- [ ] Turn and phase system
+- [x] Basic project architecture
+- [x] Card data system
+- [x] Card UI/presentation
+- [x] Game state and player state
+- [x] Basic turn and phase flow
 - [ ] Energy/resource system
 - [ ] Monster summon system
 - [ ] Combat system
