@@ -12,7 +12,10 @@ public sealed class GameState
     public int CurrentPlayerIndex { get; private set; }
     public int TurnNumber { get; private set; }
     public TurnPhase CurrentPhase { get; private set; }
+    public RecoveryStep CurrentRecoveryStep { get; private set; }
     public long NextInstanceId { get; private set; }
+    public bool IsFinished { get; private set; }
+    public int WinnerPlayerIndex { get; private set; }
 
     private GameState(GameConfig config, uint seed)
     {
@@ -20,8 +23,10 @@ public sealed class GameState
         Random = new SeededGameRandom(seed);
         players = new PlayerState[2];
         TurnNumber = 1;
-        CurrentPhase = TurnPhase.DrawAndEnergy;
+        CurrentPhase = TurnPhase.Recovery;
+        CurrentRecoveryStep = RecoveryStep.Draw;
         NextInstanceId = 1;
+        WinnerPlayerIndex = -1;
     }
 
     public static GameState CreateNewMatch(
@@ -56,12 +61,24 @@ public sealed class GameState
         CurrentPhase = phase;
     }
 
+    internal void SetRecoveryStep(RecoveryStep step)
+    {
+        CurrentRecoveryStep = step;
+    }
+
     internal void StartNextTurn()
     {
         CurrentPlayerIndex = 1 - CurrentPlayerIndex;
         TurnNumber++;
-        CurrentPhase = TurnPhase.DrawAndEnergy;
+        CurrentPhase = TurnPhase.Recovery;
+        CurrentRecoveryStep = RecoveryStep.Draw;
         players[CurrentPlayerIndex].ResetTurnCardFlags();
+    }
+
+    internal void EndMatch(int winnerPlayerIndex)
+    {
+        IsFinished = true;
+        WinnerPlayerIndex = winnerPlayerIndex;
     }
 
     private PlayerState CreatePlayer(

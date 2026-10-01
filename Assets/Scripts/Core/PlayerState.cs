@@ -14,6 +14,10 @@ public sealed class PlayerState
     public int Health { get; private set; }
     public int MaxEnergy { get; private set; }
     public int AvailableEnergy { get; private set; }
+    public int PendingDrawStepSkips { get; private set; }
+    public int PendingEnergyRefreshStepSkips { get; private set; }
+    public int PendingStandbyPhaseSkips { get; private set; }
+    public int PendingBattlePhaseSkips { get; private set; }
 
     public IReadOnlyList<CardInstance> Deck => deck;
     public IReadOnlyList<CardInstance> Hand => hand;
@@ -136,6 +140,140 @@ public sealed class PlayerState
         }
 
         Health += amount;
+    }
+
+    public void AddDrawStepSkips(int amount)
+    {
+        PendingDrawStepSkips = AddSkipCount(PendingDrawStepSkips, amount);
+    }
+
+    public void AddEnergyRefreshStepSkips(int amount)
+    {
+        PendingEnergyRefreshStepSkips =
+            AddSkipCount(PendingEnergyRefreshStepSkips, amount);
+    }
+
+    public void AddStandbyPhaseSkips(int amount)
+    {
+        PendingStandbyPhaseSkips =
+            AddSkipCount(PendingStandbyPhaseSkips, amount);
+    }
+
+    public void AddBattlePhaseSkips(int amount)
+    {
+        PendingBattlePhaseSkips =
+            AddSkipCount(PendingBattlePhaseSkips, amount);
+    }
+
+    internal bool ConsumeDrawStepSkip()
+    {
+        if (PendingDrawStepSkips <= 0)
+        {
+            return false;
+        }
+
+        PendingDrawStepSkips--;
+        return true;
+    }
+
+    internal bool ConsumeEnergyRefreshStepSkip()
+    {
+        if (PendingEnergyRefreshStepSkips <= 0)
+        {
+            return false;
+        }
+
+        PendingEnergyRefreshStepSkips--;
+        return true;
+    }
+
+    internal bool ConsumeStandbyPhaseSkip()
+    {
+        if (PendingStandbyPhaseSkips <= 0)
+        {
+            return false;
+        }
+
+        PendingStandbyPhaseSkips--;
+        return true;
+    }
+
+    internal bool ConsumeBattlePhaseSkip()
+    {
+        if (PendingBattlePhaseSkips <= 0)
+        {
+            return false;
+        }
+
+        PendingBattlePhaseSkips--;
+        return true;
+    }
+
+    private static int AddSkipCount(int currentCount, int amount)
+    {
+        if (amount < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(amount));
+        }
+
+        return checked(currentCount + amount);
+    }
+
+    internal CardInstance FindCardInHand(long instanceId)
+    {
+        return hand.Find(card => card.InstanceId == instanceId);
+    }
+
+    internal int FindMonsterZoneIndex(long instanceId)
+    {
+        for (int index = 0; index < monsterZones.Length; index++)
+        {
+            if (monsterZones[index] != null &&
+                monsterZones[index].InstanceId == instanceId)
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
+    internal bool HasAnyMonster()
+    {
+        for (int index = 0; index < monsterZones.Length; index++)
+        {
+            if (monsterZones[index] != null)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    internal void PlaceMonsterFromHand(
+        CardInstance monster,
+        int zoneIndex,
+        BattlePosition position)
+    {
+        hand.Remove(monster);
+        monsterZones[zoneIndex] = monster;
+        monster.Summon(position);
+    }
+
+    internal CardInstance TributeMonsterAt(int zoneIndex)
+    {
+        return MoveMonsterToGraveyard(zoneIndex);
+    }
+
+    internal CardInstance MoveMonsterToGraveyard(int zoneIndex)
+    {
+        CardInstance monster = monsterZones[zoneIndex];
+        monsterZones[zoneIndex] = null;
+        monster.MoveToZone(CardZone.Graveyard, false);
+        monster.ClearAllocatedEnergy();
+        graveyard.Add(monster);
+        return monster;
     }
 
     internal void ResetTurnCardFlags()

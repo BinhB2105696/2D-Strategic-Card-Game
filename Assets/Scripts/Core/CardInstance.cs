@@ -19,6 +19,8 @@ public enum BattlePosition
 [Serializable]
 public sealed class CardInstance
 {
+    public const int DefaultMaxAttacksPerTurn = 1;
+
     public long InstanceId { get; }
     public int OwnerPlayerIndex { get; }
     public CardDefinition Definition { get; }
@@ -32,7 +34,8 @@ public sealed class CardInstance
     public BattlePosition BattlePosition { get; private set; }
     public bool IsFaceDown { get; private set; }
     public bool WasSummonedThisTurn { get; private set; }
-    public bool HasAttackedThisTurn { get; private set; }
+    public int AttacksUsedThisTurn { get; private set; }
+    public int MaxAttacksThisTurn { get; private set; }
     public bool HasChangedPositionThisTurn { get; private set; }
 
     public bool IsDestroyed =>
@@ -68,6 +71,9 @@ public sealed class CardInstance
         Zone = CardZone.Deck;
         BattlePosition = BattlePosition.None;
         IsFaceDown = true;
+        MaxAttacksThisTurn = definition.IsMonster
+            ? DefaultMaxAttacksPerTurn
+            : 0;
     }
 
     public void MoveToZone(CardZone destination, bool faceDown)
@@ -124,6 +130,11 @@ public sealed class CardInstance
         return removedAmount;
     }
 
+    public void ClearAllocatedEnergy()
+    {
+        AllocatedEnergy = 0;
+    }
+
     public void ReceiveDamage(int amount)
     {
         if (!Definition.IsMonster)
@@ -171,13 +182,21 @@ public sealed class CardInstance
 
     public void MarkAttacked()
     {
-        HasAttackedThisTurn = true;
+        AttacksUsedThisTurn++;
+    }
+
+    public void ModifyMaxAttacksThisTurn(int amount)
+    {
+        MaxAttacksThisTurn = Math.Max(0, MaxAttacksThisTurn + amount);
     }
 
     public void ResetTurnFlags()
     {
         WasSummonedThisTurn = false;
-        HasAttackedThisTurn = false;
+        AttacksUsedThisTurn = 0;
+        MaxAttacksThisTurn = Definition.IsMonster
+            ? DefaultMaxAttacksPerTurn
+            : 0;
         HasChangedPositionThisTurn = false;
     }
 }

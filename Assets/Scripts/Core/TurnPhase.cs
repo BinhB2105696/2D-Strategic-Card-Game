@@ -1,7 +1,14 @@
 public enum TurnPhase
 {
-    DrawAndEnergy,
+    Recovery,
+    Standby,
     Main,
     Battle,
     End
+}
+
+public enum RecoveryStep
+{
+    Draw,
+    EnergyRefresh
 }

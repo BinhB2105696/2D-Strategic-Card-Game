@@ -160,9 +160,20 @@ All configurable numbers must live in one `GameConfig`, not as scattered magic n
 
 ## 8. Turn and Combat Rules
 
-### Draw & Energy Phase
+### Recovery Phase
 
-Draw one card, reset Available Energy, then resolve start-of-turn effects.
+Recovery Phase contains two independently resolved steps:
+
+1. Draw Step: normally draw one card.
+2. Energy Refresh Step: normally reset Available Energy to Max Energy.
+
+Effects may skip the next Draw Step or Energy Refresh Step independently, but
+ordinary card effects must not skip the entire Recovery Phase.
+
+### Standby Phase
+
+Resolve Standby triggers and maintenance costs. It currently passes without
+choices when no effect is pending. Effects may skip a future Standby Phase.
 
 ### Main Phase
 
@@ -178,7 +189,10 @@ Draw one card, reset Available Energy, then resolve start-of-turn effects.
 - A monster normally attacks once per turn.
 - Its allocated Energy must meet its attack requirement.
 - A newly summoned monster may attack if eligible **[CONFIRMED]**.
-- No monster can attack during the first turn of the match **[CONFIRMED]**.
+- The first turn of the match has no Battle Phase; it proceeds from Main Phase
+  directly to End Phase **[CONFIRMED]**.
+- Main Phase and End Phase cannot be skipped. Effects may skip a future Battle
+  Phase without altering the rest of the turn structure **[CONFIRMED]**.
 - Default interpretation: only the first player's first turn is the first turn **[OPEN]**.
 - Against Attack Position: defender loses HP equal to attacker ATK; attacker takes no counter-damage **[OPEN, default]**.
 - Against Defense Position: damage to monster HP is `max(0, ATK - DEF)`.
@@ -345,7 +359,8 @@ Completed or explored:
   3+3 board zones without requiring UI.
 - `SeededGameRandom` version 1 supplies deterministic, bias-resistant random
   values for shuffling and future gameplay randomness.
-- The basic turn flow now supports Draw & Energy, Main, Battle, and End phases.
+- The basic turn flow now supports Recovery (Draw and Energy Refresh steps),
+  Standby, Main, Battle, and End phases.
   `GameSession` routes actions through `GameRules`, rejects out-of-turn or
   phase-invalid actions, applies valid state changes, emits presentation-ready
   `GameEvent` values, and records accepted actions in an in-memory `MatchLog`.

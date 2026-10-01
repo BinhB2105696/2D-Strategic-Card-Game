@@ -50,25 +50,27 @@ The initial board design is planned around:
 
 ### Turn Structure
 
-A turn is currently divided into four phases:
+A turn is currently divided into five phases:
 
-1. **Draw & Energy**
-   - Draw cards.
-   - Restore/reset the player's energy according to the current rules.
-   - Resolve start-of-turn effects.
+1. **Recovery Phase**
+   - Resolve the Draw Step.
+   - Resolve the Energy Refresh Step independently.
 
-2. **Main Phase**
+2. **Standby Phase**
+   - Resolve start-of-turn, maintenance, and Standby effects.
+
+3. **Main Phase**
    - Summon monsters.
    - Change monster position when allowed.
    - Activate spells and effects.
    - Allocate resources when applicable.
 
-3. **Battle Phase**
+4. **Battle Phase**
    - Attack with eligible monsters.
    - Resolve combat against Attack or Defense position.
    - Resolve battle-related effects.
 
-4. **End Phase**
+5. **End Phase**
    - Resolve end-of-turn effects.
    - Finish the current turn.
 

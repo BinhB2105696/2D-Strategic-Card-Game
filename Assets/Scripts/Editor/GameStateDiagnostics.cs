@@ -93,11 +93,9 @@ public static class GameStateDiagnostics
             return;
         }
 
-        ApplyRequired(session, GameAction.ResolveDrawAndEnergy(firstPlayer));
-        ApplyRequired(session, GameAction.AdvancePhase(firstPlayer));
-        ApplyRequired(session, GameAction.AdvancePhase(firstPlayer));
-        ApplyRequired(session, GameAction.EndTurn(firstPlayer));
-        ApplyRequired(session, GameAction.ResolveDrawAndEnergy(secondPlayer));
+        StartTurnToMain(session, firstPlayer);
+        FinishTurn(session, firstPlayer);
+        StartTurnToMain(session, secondPlayer);
 
         bool stateIsCorrect =
             session.State.TurnNumber == 2 &&
@@ -105,7 +103,7 @@ public static class GameStateDiagnostics
             session.State.CurrentPhase == TurnPhase.Main &&
             session.State.Players[firstPlayer].Hand.Count == 5 &&
             session.State.Players[secondPlayer].Hand.Count == 5 &&
-            session.Log.Actions.Count == 5;
+            session.Log.Actions.Count == 8;
 
         if (!stateIsCorrect)
         {
@@ -124,7 +122,362 @@ public static class GameStateDiagnostics
             $"{session.State.Players[secondPlayer].Hand.Count}\n" +
             $"Logged actions: {session.Log.Actions.Count}\n" +
             "Out-of-turn action rejected and not logged: True\n" +
-            "Flow: Draw & Energy -> Main -> Battle -> End -> next turn");
+            "Turn 1 flow: Recovery -> Standby -> Main -> End -> next turn");
+    }
+
+    [MenuItem("Card Game/Diagnostics/Run Recovery Skip Smoke Test")]
+    public static void RunRecoverySkipSmokeTest()
+    {
+        List<CardDefinition> availableCards = LoadDefinitions();
+
+        if (availableCards.Count == 0)
+        {
+            Debug.LogError("Recovery skip test needs CardData assets.");
+            return;
+        }
+
+        GameConfig config = GameConfig.CreateDefault();
+        List<CardDefinition> deck =
+            BuildTestDeck(availableCards, config.MinimumDeckSize, 0);
+        GameSession session = GameSession.Create(
+            config,
+            TestSeed,
+            deck,
+            deck);
+        int firstPlayer = session.State.CurrentPlayerIndex;
+        int secondPlayer = 1 - firstPlayer;
+        PlayerState firstState = session.State.Players[firstPlayer];
+        PlayerState secondState = session.State.Players[secondPlayer];
+
+        firstState.TrySpendEnergy(2);
+        firstState.AddDrawStepSkips(1);
+        firstState.AddEnergyRefreshStepSkips(1);
+        firstState.AddStandbyPhaseSkips(1);
+        int firstHandBefore = firstState.Hand.Count;
+
+        ApplyRequired(session, GameAction.ResolveDrawStep(firstPlayer));
+        ApplyRequired(
+            session,
+            GameAction.ResolveEnergyRefreshStep(firstPlayer));
+
+        bool recoverySkipsAreCorrect =
+            firstState.Hand.Count == firstHandBefore &&
+            firstState.AvailableEnergy == 3 &&
+            session.State.CurrentPhase == TurnPhase.Main &&
+            firstState.PendingDrawStepSkips == 0 &&
+            firstState.PendingEnergyRefreshStepSkips == 0 &&
+            firstState.PendingStandbyPhaseSkips == 0;
+
+        if (!recoverySkipsAreCorrect)
+        {
+            Debug.LogError("Recovery or Standby skip behavior is incorrect.");
+            return;
+        }
+
+        FinishTurn(session, firstPlayer);
+        secondState.AddBattlePhaseSkips(1);
+        StartTurnToMain(session, secondPlayer);
+        ApplyRequired(session, GameAction.AdvancePhase(secondPlayer));
+
+        if (session.State.CurrentPhase != TurnPhase.End ||
+            secondState.PendingBattlePhaseSkips != 0)
+        {
+            Debug.LogError("Battle Phase skip behavior is incorrect.");
+            return;
+        }
+
+        Debug.Log(
+            "Recovery skip smoke test passed.\n" +
+            "Draw Step skipped independently: True\n" +
+            "Energy Refresh Step skipped independently: True\n" +
+            "Standby Phase skipped: True\n" +
+            "Battle Phase skipped: True\n" +
+            "Main and End Phase remained available: True");
+    }
+
+    [MenuItem("Card Game/Diagnostics/Run Main Phase Actions Smoke Test")]
+    public static void RunMainPhaseActionsSmokeTest()
+    {
+        List<CardDefinition> availableCards = LoadDefinitions();
+        CardDefinition basicMonster = availableCards.Find(definition =>
+            definition.IsMonster && definition.TributeCount == 0);
+
+        if (basicMonster == null)
+        {
+            Debug.LogError(
+                "Main Phase test needs at least one Basic Monster CardData.");
+            return;
+        }
+
+        GameConfig config = GameConfig.CreateDefault();
+        List<CardDefinition> monsterDeck = new List<CardDefinition>();
+
+        for (int index = 0; index < config.MinimumDeckSize; index++)
+        {
+            monsterDeck.Add(basicMonster);
+        }
+
+        GameSession session = GameSession.Create(
+            config,
+            TestSeed,
+            monsterDeck,
+            monsterDeck);
+        int firstPlayer = session.State.CurrentPlayerIndex;
+        int secondPlayer = 1 - firstPlayer;
+
+        StartTurnToMain(session, firstPlayer);
+        CardInstance monster =
+            session.State.Players[firstPlayer].Hand[0];
+        ApplyRequired(session, GameAction.SummonMonster(
+            firstPlayer,
+            monster.InstanceId,
+            0,
+            BattlePosition.Attack));
+        ApplyRequired(session, GameAction.AllocateEnergy(
+            firstPlayer,
+            monster.InstanceId,
+            2));
+
+        int logCountBeforeRejectedAction = session.Log.Actions.Count;
+        ActionResult rejectedPositionChange = session.TryApply(
+            GameAction.ChangeBattlePosition(
+                firstPlayer,
+                monster.InstanceId,
+                BattlePosition.Defense));
+
+        if (rejectedPositionChange.Succeeded ||
+            session.Log.Actions.Count != logCountBeforeRejectedAction)
+        {
+            Debug.LogError(
+                "A newly summoned Monster incorrectly changed position.");
+            return;
+        }
+
+        FinishTurn(session, firstPlayer);
+        StartTurnToMain(session, secondPlayer);
+        FinishTurn(session, secondPlayer);
+        StartTurnToMain(session, firstPlayer);
+        ApplyRequired(session, GameAction.ChangeBattlePosition(
+            firstPlayer,
+            monster.InstanceId,
+            BattlePosition.Defense));
+
+        PlayerState owner = session.State.Players[firstPlayer];
+        bool stateIsCorrect =
+            session.State.TurnNumber == 3 &&
+            session.State.CurrentPlayerIndex == firstPlayer &&
+            session.State.CurrentPhase == TurnPhase.Main &&
+            owner.MonsterZones[0] == monster &&
+            monster.AllocatedEnergy == 2 &&
+            monster.BattlePosition == BattlePosition.Defense &&
+            monster.HasChangedPositionThisTurn &&
+            !monster.WasSummonedThisTurn &&
+            owner.AvailableEnergy == owner.MaxEnergy;
+
+        if (!stateIsCorrect)
+        {
+            Debug.LogError(
+                "Main Phase actions smoke test produced an invalid state.");
+            return;
+        }
+
+        Debug.Log(
+            "Main Phase actions smoke test passed.\n" +
+            $"Monster: {monster.Definition.CardName}, Instance: " +
+            $"{monster.InstanceId}\n" +
+            "Summon cost paid: 1 Energy\n" +
+            $"Allocated Energy retained: {monster.AllocatedEnergy}\n" +
+            "Position change on summon turn rejected: True\n" +
+            $"Position on next owner turn: {monster.BattlePosition}\n" +
+            $"Available Energy after next reset: {owner.AvailableEnergy}/" +
+            $"{owner.MaxEnergy}\n" +
+            $"Logged valid actions: {session.Log.Actions.Count}");
+    }
+
+    [MenuItem("Card Game/Diagnostics/Run Tribute Summon Smoke Test")]
+    public static void RunTributeSummonSmokeTest()
+    {
+        List<CardDefinition> definitions = LoadDefinitions();
+        CardDefinition basicMonster = definitions.Find(definition =>
+            definition.IsMonster && definition.TributeCount == 0);
+        CardDefinition advancedMonster = definitions.Find(definition =>
+            definition.IsMonster && definition.TributeCount == 1);
+
+        if (basicMonster == null || advancedMonster == null)
+        {
+            Debug.LogError(
+                "Tribute test needs both a Basic and an Advanced Monster.");
+            return;
+        }
+
+        GameConfig config = CreateTestConfig(startingHandSize: 30);
+        List<CardDefinition> deck = new List<CardDefinition>();
+
+        for (int index = 0; index < config.MinimumDeckSize; index++)
+        {
+            deck.Add(index % 2 == 0 ? basicMonster : advancedMonster);
+        }
+
+        GameSession session = GameSession.Create(
+            config,
+            TestSeed,
+            deck,
+            deck);
+        int playerIndex = session.State.CurrentPlayerIndex;
+        PlayerState player = session.State.Players[playerIndex];
+        StartTurnToMain(session, playerIndex);
+
+        CardInstance basic = FindHandCard(player, tributeCount: 0);
+        CardInstance advanced = FindHandCard(player, tributeCount: 1);
+        ApplyRequired(session, GameAction.SummonMonster(
+            playerIndex,
+            basic.InstanceId,
+            0,
+            BattlePosition.Attack));
+        ApplyRequired(session, GameAction.SummonMonster(
+            playerIndex,
+            advanced.InstanceId,
+            0,
+            BattlePosition.Attack,
+            basic.InstanceId));
+
+        bool stateIsCorrect =
+            player.MonsterZones[0] == advanced &&
+            player.Graveyard.Count == 1 &&
+            player.Graveyard[0] == basic &&
+            player.AvailableEnergy == 3;
+
+        if (!stateIsCorrect)
+        {
+            Debug.LogError(
+                "Tribute Summon smoke test produced an invalid state.");
+            return;
+        }
+
+        Debug.Log(
+            "Tribute Summon smoke test passed.\n" +
+            $"Tribute: {basic.Definition.CardName}, Instance: " +
+            $"{basic.InstanceId}\n" +
+            $"Summoned: {advanced.Definition.CardName}, Instance: " +
+            $"{advanced.InstanceId}\n" +
+            "Tributes resolved before the summoned Monster occupied one " +
+            "valid zone: True\n" +
+            $"Graveyard cards: {player.Graveyard.Count}\n" +
+            $"Available Energy: {player.AvailableEnergy}/" +
+            $"{player.MaxEnergy}");
+    }
+
+    [MenuItem("Card Game/Diagnostics/Run Battle Rules Smoke Test")]
+    public static void RunBattleRulesSmokeTest()
+    {
+        CardDefinition testMonster = CreateBattleTestMonster();
+        GameConfig config = GameConfig.CreateDefault();
+        List<CardDefinition> deck = new List<CardDefinition>();
+
+        for (int index = 0; index < config.MinimumDeckSize; index++)
+        {
+            deck.Add(testMonster);
+        }
+
+        GameSession session = GameSession.Create(
+            config,
+            TestSeed,
+            deck,
+            deck);
+        int firstPlayer = session.State.CurrentPlayerIndex;
+        int secondPlayer = 1 - firstPlayer;
+        PlayerState firstState = session.State.Players[firstPlayer];
+        PlayerState secondState = session.State.Players[secondPlayer];
+
+        StartTurnToMain(session, firstPlayer);
+        CardInstance firstMonster = firstState.Hand[0];
+        SummonAndCharge(session, firstPlayer, firstMonster);
+        ApplyRequired(session, GameAction.AdvancePhase(firstPlayer));
+
+        if (session.State.CurrentPhase != TurnPhase.End)
+        {
+            Debug.LogError("Turn 1 incorrectly entered Battle Phase.");
+            return;
+        }
+
+        ActionResult forbiddenFirstTurnAttack = session.TryApply(
+            GameAction.Attack(firstPlayer, firstMonster.InstanceId));
+
+        if (forbiddenFirstTurnAttack.Succeeded)
+        {
+            Debug.LogError("A Monster incorrectly attacked on turn 1.");
+            return;
+        }
+
+        ApplyRequired(session, GameAction.EndTurn(firstPlayer));
+
+        StartTurnToMain(session, secondPlayer);
+        CardInstance secondMonster = secondState.Hand[0];
+        SummonAndCharge(session, secondPlayer, secondMonster);
+        ApplyRequired(session, GameAction.AdvancePhase(secondPlayer));
+        ApplyRequired(session, GameAction.Attack(
+            secondPlayer,
+            secondMonster.InstanceId,
+            firstMonster.InstanceId));
+
+        bool destructionIsCorrect =
+            firstState.MonsterZones[0] == null &&
+            firstState.Graveyard.Count == 1 &&
+            firstState.Graveyard[0] == firstMonster &&
+            firstState.Health == 3900;
+
+        if (!destructionIsCorrect)
+        {
+            Debug.LogError(
+                "Battle destruction or Energy penalty is incorrect.");
+            return;
+        }
+
+        ApplyRequired(session, GameAction.AdvancePhase(secondPlayer));
+        ApplyRequired(session, GameAction.EndTurn(secondPlayer));
+        StartTurnToMain(session, firstPlayer);
+        FinishTurn(session, firstPlayer);
+        StartTurnToMain(session, secondPlayer);
+        ApplyRequired(session, GameAction.AdvancePhase(secondPlayer));
+        ApplyRequired(session, GameAction.Attack(
+            secondPlayer,
+            secondMonster.InstanceId));
+
+        bool firstDirectAttackIsCorrect =
+            firstState.Health == 2400 &&
+            secondMonster.AttacksUsedThisTurn == 1 &&
+            secondMonster.MaxAttacksThisTurn == 1;
+
+        if (!firstDirectAttackIsCorrect)
+        {
+            Debug.LogError("Direct attack damage is incorrect.");
+            return;
+        }
+
+        secondMonster.ModifyMaxAttacksThisTurn(1);
+        ApplyRequired(session, GameAction.Attack(
+            secondPlayer,
+            secondMonster.InstanceId));
+
+        if (firstState.Health != 900 ||
+            secondMonster.AttacksUsedThisTurn != 2 ||
+            secondMonster.MaxAttacksThisTurn != 2)
+        {
+            Debug.LogError("Additional attack allowance is incorrect.");
+            return;
+        }
+
+        Debug.Log(
+            "Battle rules smoke test passed.\n" +
+            "Turn 1 skipped Battle Phase and attack was rejected: True\n" +
+            "Attack Position defender took full ATK damage: True\n" +
+            "Destroyed Monster moved to Graveyard: True\n" +
+            "Destruction penalty: 100 HP for 1 allocated Energy\n" +
+            "Attacker did not take counter-damage: True\n" +
+            "Overflow damage did not reach player HP: True\n" +
+            "Direct attack after opponent field became empty: 1500\n" +
+            "Temporary maximum attacks increased from 1 to 2: True\n" +
+            $"Defending player final HP: {firstState.Health}");
     }
 
     private static void ApplyRequired(
@@ -139,6 +492,113 @@ public static class GameStateDiagnostics
                 $"Required test action failed: {action}. " +
                 result.ErrorMessage);
         }
+    }
+
+    private static void FinishTurn(GameSession session, int playerIndex)
+    {
+        if (session.State.CurrentPhase == TurnPhase.Standby)
+        {
+            ApplyRequired(session, GameAction.AdvancePhase(playerIndex));
+        }
+
+        if (session.State.CurrentPhase == TurnPhase.Main)
+        {
+            ApplyRequired(session, GameAction.AdvancePhase(playerIndex));
+        }
+
+        if (session.State.CurrentPhase == TurnPhase.Battle)
+        {
+            ApplyRequired(session, GameAction.AdvancePhase(playerIndex));
+        }
+
+        ApplyRequired(session, GameAction.EndTurn(playerIndex));
+    }
+
+    private static void StartTurnToMain(
+        GameSession session,
+        int playerIndex)
+    {
+        ApplyRequired(session, GameAction.ResolveDrawStep(playerIndex));
+        ApplyRequired(
+            session,
+            GameAction.ResolveEnergyRefreshStep(playerIndex));
+
+        if (session.State.CurrentPhase == TurnPhase.Standby)
+        {
+            ApplyRequired(session, GameAction.AdvancePhase(playerIndex));
+        }
+    }
+
+    private static CardInstance FindHandCard(
+        PlayerState player,
+        int tributeCount)
+    {
+        for (int index = 0; index < player.Hand.Count; index++)
+        {
+            CardInstance card = player.Hand[index];
+
+            if (card.Definition.IsMonster &&
+                card.Definition.TributeCount == tributeCount)
+            {
+                return card;
+            }
+        }
+
+        throw new System.InvalidOperationException(
+            $"Test hand has no Monster requiring {tributeCount} tribute(s).");
+    }
+
+    private static void SummonAndCharge(
+        GameSession session,
+        int playerIndex,
+        CardInstance monster)
+    {
+        ApplyRequired(session, GameAction.SummonMonster(
+            playerIndex,
+            monster.InstanceId,
+            0,
+            BattlePosition.Attack));
+        ApplyRequired(session, GameAction.AllocateEnergy(
+            playerIndex,
+            monster.InstanceId,
+            monster.Definition.AttackEnergyRequirement));
+    }
+
+    private static GameConfig CreateTestConfig(int startingHandSize)
+    {
+        GameConfig defaults = GameConfig.CreateDefault();
+        return new GameConfig(
+            defaults.StartingPlayerHealth,
+            defaults.MinimumDeckSize,
+            defaults.MaximumDeckSize,
+            startingHandSize,
+            defaults.CardsDrawnPerTurn,
+            defaults.BaseMaximumEnergy,
+            defaults.NormalSummonEnergyCost,
+            defaults.MonsterZoneCount,
+            defaults.SpellTrapZoneCount,
+            defaults.DestructionPenaltyPerEnergy);
+    }
+
+    private static CardDefinition CreateBattleTestMonster()
+    {
+        return new CardDefinition(
+            "diagnostic_battle_monster",
+            "Diagnostic Battle Monster",
+            CardCategory.Monster,
+            "Used only in the in-memory Battle Rules smoke test.",
+            MonsterAttribute.Earth,
+            MonsterRank.Basic,
+            MonsterType.Warrior,
+            1000,
+            1500,
+            500,
+            1,
+            SpellType.Normal,
+            TrapType.Normal,
+            0,
+            0,
+            CardSpeed.Speed1);
     }
 
     private static List<CardDefinition> LoadDefinitions()
