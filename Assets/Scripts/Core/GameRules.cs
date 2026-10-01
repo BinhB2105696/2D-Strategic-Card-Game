@@ -39,6 +39,9 @@ public static class GameRules
             case GameActionType.Attack:
                 return Attack(state, action);
 
+            case GameActionType.ActivateNormalSpell:
+                return ActivateNormalSpell(state, action);
+
             default:
                 return ActionResult.Failure("Unknown game action type.");
         }
@@ -105,6 +108,9 @@ public static class GameRules
 
             case GameActionType.Attack:
                 return ValidateAttack(state, action);
+
+            case GameActionType.ActivateNormalSpell:
+                return ValidateNormalSpell(state, action);
 
             default:
                 return "Unknown game action type.";
@@ -482,6 +488,164 @@ public static class GameRules
         return defenderOwner.FindMonsterZoneIndex(action.TargetInstanceId) >= 0
             ? string.Empty
             : "The attack target is not an opponent field Monster.";
+    }
+
+    private static string ValidateNormalSpell(
+        GameState state,
+        GameAction action)
+    {
+        if (state.CurrentPhase != TurnPhase.Main)
+        {
+            return "A Normal Spell can only be activated during Main Phase.";
+        }
+
+        PlayerState player = state.Players[action.PlayerIndex];
+        CardInstance spell = player.FindCardInHand(action.SourceInstanceId);
+
+        if (spell == null ||
+            spell.Definition.Category != CardCategory.Spell ||
+            spell.Definition.SpellType != SpellType.Normal)
+        {
+            return "The selected Normal Spell must be in the current player's hand.";
+        }
+
+        if (spell.Definition.Effects.Count == 0)
+        {
+            return "This Spell has no structured effect to resolve.";
+        }
+
+        if (action.ZoneIndex < 0 ||
+            action.ZoneIndex >= player.SpellTrapZones.Count)
+        {
+            return "The selected Spell/Trap Zone does not exist.";
+        }
+
+        if (!player.IsSpellTrapZoneOpen(action.ZoneIndex))
+        {
+            return "A Normal Spell requires an empty Spell/Trap Zone to activate.";
+        }
+
+        if (spell.Definition.Effects.Count != 1)
+        {
+            return "The first Normal Spell slice requires exactly one EffectData.";
+        }
+
+        EffectDefinition effect = spell.Definition.Effects[0];
+
+        if (effect.Trigger != EffectTriggerType.ManualActivation ||
+            effect.ActivationPhase != TurnPhase.Main)
+        {
+            return "This EffectData is not a manual Main Phase effect.";
+        }
+
+        if (effect.MaxUsesPerTurn != 0)
+        {
+            return "Per-turn effect limits are not implemented yet.";
+        }
+
+        for (int index = 0; index < effect.Conditions.Count; index++)
+        {
+            if (effect.Conditions[index].Type != EffectConditionType.None)
+            {
+                return "This Spell contains an unsupported condition.";
+            }
+        }
+
+        int energyCost = 0;
+
+        for (int index = 0; index < effect.Costs.Count; index++)
+        {
+            EffectCostDefinition cost = effect.Costs[index];
+
+            if (cost.Type != EffectCostType.AvailableEnergy)
+            {
+                return "This Spell contains an unsupported cost.";
+            }
+
+            energyCost += cost.Amount;
+        }
+
+        if (player.AvailableEnergy < energyCost)
+        {
+            return "Not enough Available Energy to activate this card.";
+        }
+
+        if (effect.TargetType != EffectTargetType.None ||
+            action.TargetInstanceId != 0)
+        {
+            return "Targeted Spell effects are not implemented yet.";
+        }
+
+        if (effect.Operations.Count == 0)
+        {
+            return "This Spell has no operation to resolve.";
+        }
+
+        for (int index = 0; index < effect.Operations.Count; index++)
+        {
+            EffectOperationDefinition operation = effect.Operations[index];
+
+            if (operation.Type != EffectOperationType.DrawCards ||
+                operation.Amount <= 0)
+            {
+                return "This Spell contains an unsupported or empty operation.";
+            }
+        }
+
+        return string.Empty;
+    }
+
+    private static ActionResult ActivateNormalSpell(
+        GameState state,
+        GameAction action)
+    {
+        PlayerState player = state.Players[action.PlayerIndex];
+        CardInstance spell = player.FindCardInHand(action.SourceInstanceId);
+        EffectDefinition effect = spell.Definition.Effects[0];
+        IReadOnlyList<long> targets = action.TargetInstanceId == 0
+            ? new long[0]
+            : new[] { action.TargetInstanceId };
+        EffectContext context = new EffectContext(
+            state,
+            action.PlayerIndex,
+            spell.InstanceId,
+            targets);
+
+        player.PlaceSpellTrapFromHand(
+            spell,
+            action.ZoneIndex,
+            false);
+        ActionResult effectResult = EffectResolver.TryResolve(
+            context,
+            new DefinitionEffectCondition(effect),
+            new DefinitionEffectCost(effect),
+            new EffectDefinitionTargetRule(effect),
+            new DefinitionCardEffect(effect));
+
+        if (!effectResult.Succeeded)
+        {
+            return effectResult;
+        }
+
+        List<GameEvent> events = new List<GameEvent>
+        {
+            GameEvent.CardPlacedInSpellTrapZone(
+                player.PlayerIndex,
+                spell.InstanceId,
+                action.ZoneIndex,
+                state.CurrentPhase),
+            GameEvent.SpellActivated(
+                player.PlayerIndex,
+                spell.InstanceId,
+                state.CurrentPhase)
+        };
+        events.AddRange(effectResult.Events);
+        player.MoveSpellTrapToGraveyard(action.ZoneIndex, true);
+        events.Add(GameEvent.CardSentToGraveyard(
+            player.PlayerIndex,
+            spell.InstanceId,
+            state.CurrentPhase));
+        return ActionResult.Success(events);
     }
 
     private static ActionResult Attack(

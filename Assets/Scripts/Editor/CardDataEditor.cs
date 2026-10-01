@@ -18,7 +18,7 @@ public class CardDataEditor : Editor
     private SerializedProperty attackEnergyRequirement;
     private SerializedProperty spellType;
     private SerializedProperty trapType;
-    private SerializedProperty energyCost;
+    private SerializedProperty effects;
 
     private void OnEnable()
     {
@@ -37,7 +37,7 @@ public class CardDataEditor : Editor
             serializedObject.FindProperty("attackEnergyRequirement");
         spellType = serializedObject.FindProperty("spellType");
         trapType = serializedObject.FindProperty("trapType");
-        energyCost = serializedObject.FindProperty("energyCost");
+        effects = serializedObject.FindProperty("effects");
     }
 
     public override void OnInspectorGUI()
@@ -63,8 +63,9 @@ public class CardDataEditor : Editor
         EditorGUILayout.PropertyField(artwork);
         EditorGUILayout.PropertyField(effectText);
         EditorGUILayout.PropertyField(
-            energyCost,
-            new GUIContent("Activation Energy Cost"));
+            effects,
+            new GUIContent("Effect Data Assets"),
+            true);
 
         EditorGUILayout.Space();
         DrawCategoryFields((CardCategory)category.enumValueIndex);

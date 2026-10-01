@@ -10,7 +10,8 @@ public enum GameActionType
     SummonMonster,
     AllocateEnergy,
     ChangeBattlePosition,
-    Attack
+    Attack,
+    ActivateNormalSpell
 }
 
 [Serializable]
@@ -123,6 +124,20 @@ public sealed class GameAction
             playerIndex,
             attackerInstanceId,
             targetInstanceId);
+    }
+
+    public static GameAction ActivateNormalSpell(
+        int playerIndex,
+        long spellInstanceId,
+        int zoneIndex,
+        long targetInstanceId = 0)
+    {
+        return new GameAction(
+            GameActionType.ActivateNormalSpell,
+            playerIndex,
+            spellInstanceId,
+            targetInstanceId,
+            zoneIndex);
     }
 
     public override string ToString()

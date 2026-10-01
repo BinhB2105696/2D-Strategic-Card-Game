@@ -20,6 +20,10 @@ public enum GameEventType
     MonsterDamaged,
     MonsterDestroyed,
     PlayerDamaged,
+    CardPlacedInSpellTrapZone,
+    SpellActivated,
+    EffectResolved,
+    CardSentToGraveyard,
     MatchEnded
 }
 
@@ -49,7 +53,10 @@ public sealed class GameEvent
         Phase = phase;
     }
 
-    public static GameEvent CardDrawn(int playerIndex, long instanceId)
+    public static GameEvent CardDrawn(
+        int playerIndex,
+        long instanceId,
+        TurnPhase phase = TurnPhase.Recovery)
     {
         return new GameEvent(
             GameEventType.CardDrawn,
@@ -57,7 +64,7 @@ public sealed class GameEvent
             instanceId,
             0,
             1,
-            TurnPhase.Recovery);
+            phase);
     }
 
     public static GameEvent DrawStepSkipped(int playerIndex)
@@ -177,7 +184,10 @@ public sealed class GameEvent
             TurnPhase.Main);
     }
 
-    public static GameEvent EnergySpent(int playerIndex, int amount)
+    public static GameEvent EnergySpent(
+        int playerIndex,
+        int amount,
+        TurnPhase phase = TurnPhase.Main)
     {
         return new GameEvent(
             GameEventType.EnergySpent,
@@ -185,7 +195,7 @@ public sealed class GameEvent
             0,
             0,
             amount,
-            TurnPhase.Main);
+            phase);
     }
 
     public static GameEvent EnergyAllocated(
@@ -266,6 +276,63 @@ public sealed class GameEvent
             0,
             damage,
             TurnPhase.Battle);
+    }
+
+    public static GameEvent EffectResolved(
+        int playerIndex,
+        long sourceInstanceId,
+        TurnPhase phase)
+    {
+        return new GameEvent(
+            GameEventType.EffectResolved,
+            playerIndex,
+            sourceInstanceId,
+            0,
+            0,
+            phase);
+    }
+
+    public static GameEvent SpellActivated(
+        int playerIndex,
+        long instanceId,
+        TurnPhase phase)
+    {
+        return new GameEvent(
+            GameEventType.SpellActivated,
+            playerIndex,
+            instanceId,
+            0,
+            0,
+            phase);
+    }
+
+    public static GameEvent CardPlacedInSpellTrapZone(
+        int playerIndex,
+        long instanceId,
+        int zoneIndex,
+        TurnPhase phase)
+    {
+        return new GameEvent(
+            GameEventType.CardPlacedInSpellTrapZone,
+            playerIndex,
+            instanceId,
+            0,
+            zoneIndex,
+            phase);
+    }
+
+    public static GameEvent CardSentToGraveyard(
+        int playerIndex,
+        long instanceId,
+        TurnPhase phase)
+    {
+        return new GameEvent(
+            GameEventType.CardSentToGraveyard,
+            playerIndex,
+            instanceId,
+            0,
+            0,
+            phase);
     }
 
     public static GameEvent MatchEnded(int winnerPlayerIndex)

@@ -9,6 +9,10 @@ public static class CardSampleTool
     private const string MonstersFolder = CardsRoot + "/Monsters";
     private const string SpellsFolder = CardsRoot + "/Spells";
     private const string TrapsFolder = CardsRoot + "/Traps";
+    private const string EffectsRoot = "Assets/Data/Effects";
+    private const string SpellEffectsFolder = EffectsRoot + "/Spells";
+    private const string ArcaneInsightEffectPath =
+        SpellEffectsFolder + "/Arcane_Insight_Draw.asset";
 
     [MenuItem("Card Game/Sample Cards/Create Missing Sample Cards")]
     public static void CreateMissingSampleCards()
@@ -17,6 +21,11 @@ public static class CardSampleTool
         EnsureFolder(MonstersFolder);
         EnsureFolder(SpellsFolder);
         EnsureFolder(TrapsFolder);
+        EnsureFolder(EffectsRoot);
+        EnsureFolder(SpellEffectsFolder);
+
+        EffectData arcaneInsightEffect =
+            CreateOrUpdateArcaneInsightEffect();
 
         int createdCount = 0;
         int skippedCount = 0;
@@ -31,8 +40,7 @@ public static class CardSampleTool
                     "sample_stone_guardian",
                     "Stone Guardian",
                     CardCategory.Monster,
-                    "A reliable Basic Monster used to test card data.",
-                    1);
+                    "A reliable Basic Monster used to test card data.");
                 SetEnum(card, "monsterAttribute", MonsterAttribute.Earth);
                 SetEnum(card, "monsterRank", MonsterRank.Basic);
                 SetEnum(card, "monsterType", MonsterType.Spirit);
@@ -54,8 +62,7 @@ public static class CardSampleTool
                     "sample_sky_sage",
                     "Sky Sage",
                     CardCategory.Monster,
-                    "A Supreme Monster used to test Rank and tribute data.",
-                    2);
+                    "A Supreme Monster used to test Rank and tribute data.");
                 SetEnum(card, "monsterAttribute", MonsterAttribute.Wind);
                 SetEnum(card, "monsterRank", MonsterRank.Supreme);
                 SetEnum(card, "monsterType", MonsterType.Spellcaster);
@@ -63,6 +70,22 @@ public static class CardSampleTool
                 SetInt(card, "baseAttack", 2200);
                 SetInt(card, "baseDefense", 1800);
                 SetInt(card, "attackEnergyRequirement", 3);
+            },
+            ref createdCount,
+            ref skippedCount);
+
+        CreateCardIfMissing(
+            SpellsFolder + "/Sample_Arcane_Insight.asset",
+            "sample_arcane_insight",
+            card =>
+            {
+                SetCommonData(
+                    card,
+                    "sample_arcane_insight",
+                    "Arcane Insight",
+                    CardCategory.Spell,
+                    "Pay 1 Energy; draw 1 card.");
+                SetEnum(card, "spellType", SpellType.Normal);
             },
             ref createdCount,
             ref skippedCount);
@@ -77,8 +100,7 @@ public static class CardSampleTool
                     "sample_quick_strike",
                     "Quick Strike",
                     CardCategory.Spell,
-                    "A Normal Spell used to test Spell card presentation.",
-                    1);
+                    "A Normal Spell used to test Spell card presentation.");
                 SetEnum(card, "spellType", SpellType.Normal);
             },
             ref createdCount,
@@ -94,8 +116,7 @@ public static class CardSampleTool
                     "sample_iron_blade",
                     "Iron Blade",
                     CardCategory.Spell,
-                    "An Equip Spell used to test Spell subtype presentation.",
-                    2);
+                    "An Equip Spell used to test Spell subtype presentation.");
                 SetEnum(card, "spellType", SpellType.Equip);
             },
             ref createdCount,
@@ -111,8 +132,7 @@ public static class CardSampleTool
                     "sample_ambush",
                     "Ambush",
                     CardCategory.Trap,
-                    "A Normal Trap used to verify Speed 2 presentation.",
-                    1);
+                    "A Normal Trap used to verify Speed 2 presentation.");
                 SetEnum(card, "trapType", TrapType.Normal);
             },
             ref createdCount,
@@ -128,12 +148,13 @@ public static class CardSampleTool
                     "sample_divine_reversal",
                     "Divine Reversal",
                     CardCategory.Trap,
-                    "A Counter Trap used to verify Speed 3 presentation.",
-                    3);
+                    "A Counter Trap used to verify Speed 3 presentation.");
                 SetEnum(card, "trapType", TrapType.Counter);
             },
             ref createdCount,
             ref skippedCount);
+
+        ConfigureArcaneInsightCard(arcaneInsightEffect);
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -203,7 +224,25 @@ public static class CardSampleTool
                     card);
                 errorCount++;
             }
+
+            for (int effectIndex = 0;
+                 effectIndex < card.Effects.Count;
+                 effectIndex++)
+            {
+                EffectData effect = card.Effects[effectIndex];
+
+                if (effect == null)
+                {
+                    Debug.LogError(
+                        $"CardData has a missing EffectData reference at index " +
+                        $"{effectIndex}: {path}",
+                        card);
+                    errorCount++;
+                }
+            }
         }
+
+        ValidateAllEffectData(ref errorCount);
 
         Debug.Log(
             $"CardData validation finished. Cards: {cardGuids.Length}, " +
@@ -262,14 +301,143 @@ public static class CardSampleTool
         string cardId,
         string cardName,
         CardCategory category,
-        string effectText,
-        int energyCost)
+        string effectText)
     {
         SetString(card, "cardId", cardId);
         SetString(card, "cardName", cardName);
         SetEnum(card, "category", category);
         SetString(card, "effectText", effectText);
-        SetInt(card, "energyCost", energyCost);
+    }
+
+    private static EffectData CreateOrUpdateArcaneInsightEffect()
+    {
+        EffectData effect = AssetDatabase.LoadAssetAtPath<EffectData>(
+            ArcaneInsightEffectPath);
+        bool isNew = effect == null;
+
+        if (isNew)
+        {
+            effect = ScriptableObject.CreateInstance<EffectData>();
+        }
+
+        SerializedObject serializedEffect = new SerializedObject(effect);
+        SetString(
+            serializedEffect,
+            "effectId",
+            "effect_arcane_insight_draw");
+        SetEnum(
+            serializedEffect,
+            "trigger",
+            EffectTriggerType.ManualActivation);
+        SetEnum(serializedEffect, "activationPhase", TurnPhase.Main);
+        SetInt(serializedEffect, "maxUsesPerTurn", 0);
+        serializedEffect.FindProperty("conditions").arraySize = 0;
+
+        SerializedProperty costs = serializedEffect.FindProperty("costs");
+        costs.arraySize = 1;
+        SerializedProperty cost = costs.GetArrayElementAtIndex(0);
+        cost.FindPropertyRelative("type").enumValueIndex =
+            (int)EffectCostType.AvailableEnergy;
+        cost.FindPropertyRelative("amount").intValue = 1;
+
+        SetEnum(serializedEffect, "targetType", EffectTargetType.None);
+        SerializedProperty operations =
+            serializedEffect.FindProperty("operations");
+        operations.arraySize = 1;
+        SerializedProperty operation = operations.GetArrayElementAtIndex(0);
+        operation.FindPropertyRelative("type").enumValueIndex =
+            (int)EffectOperationType.DrawCards;
+        operation.FindPropertyRelative("amount").intValue = 1;
+        serializedEffect.ApplyModifiedPropertiesWithoutUndo();
+
+        if (isNew)
+        {
+            AssetDatabase.CreateAsset(effect, ArcaneInsightEffectPath);
+        }
+
+        EditorUtility.SetDirty(effect);
+        return effect;
+    }
+
+    private static void ConfigureArcaneInsightCard(EffectData effect)
+    {
+        CardData card = FindCardById("sample_arcane_insight");
+
+        if (card == null)
+        {
+            return;
+        }
+
+        SerializedObject serializedCard = new SerializedObject(card);
+        SetString(
+            serializedCard,
+            "effectText",
+            "Pay 1 Energy; draw 1 card.");
+        SerializedProperty effects = serializedCard.FindProperty("effects");
+        effects.arraySize = 1;
+        effects.GetArrayElementAtIndex(0).objectReferenceValue = effect;
+        serializedCard.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(card);
+    }
+
+    private static void ValidateAllEffectData(ref int errorCount)
+    {
+        string[] guids = AssetDatabase.FindAssets(
+            "t:EffectData",
+            new[] { EffectsRoot });
+        Dictionary<string, string> pathsById =
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            EffectData effect = AssetDatabase.LoadAssetAtPath<EffectData>(path);
+
+            if (effect == null)
+            {
+                continue;
+            }
+
+            if (string.IsNullOrWhiteSpace(effect.EffectId))
+            {
+                Debug.LogError($"EffectData has an empty Effect ID: {path}", effect);
+                errorCount++;
+            }
+            else if (pathsById.TryGetValue(effect.EffectId, out string firstPath))
+            {
+                Debug.LogError(
+                    $"Duplicate Effect ID '{effect.EffectId}' found in:\n" +
+                    $"- {firstPath}\n- {path}",
+                    effect);
+                errorCount++;
+            }
+            else
+            {
+                pathsById.Add(effect.EffectId, path);
+            }
+
+            if (effect.Operations.Count == 0)
+            {
+                Debug.LogError($"EffectData has no operations: {path}", effect);
+                errorCount++;
+            }
+
+            for (int index = 0; index < effect.Operations.Count; index++)
+            {
+                EffectOperationData operation = effect.Operations[index];
+
+                if (operation == null ||
+                    operation.Type == EffectOperationType.None ||
+                    operation.Amount <= 0)
+                {
+                    Debug.LogError(
+                        $"EffectData has an invalid operation at index " +
+                        $"{index}: {path}",
+                        effect);
+                    errorCount++;
+                }
+            }
+        }
     }
 
     private static void SetString(

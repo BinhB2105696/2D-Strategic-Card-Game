@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
 
 [Serializable]
 public sealed class CardDefinition
 {
+    private static readonly EffectDefinition[] NoEffects =
+        new EffectDefinition[0];
+
     public string CardId { get; }
     public string CardName { get; }
     public CardCategory Category { get; }
@@ -18,9 +22,9 @@ public sealed class CardDefinition
 
     public SpellType SpellType { get; }
     public TrapType TrapType { get; }
-    public int EnergyCost { get; }
     public int TributeCount { get; }
     public CardSpeed Speed { get; }
+    public IReadOnlyList<EffectDefinition> Effects { get; }
 
     public bool IsMonster => Category == CardCategory.Monster;
 
@@ -38,9 +42,9 @@ public sealed class CardDefinition
         int attackEnergyRequirement,
         SpellType spellType,
         TrapType trapType,
-        int energyCost,
         int tributeCount,
-        CardSpeed speed)
+        CardSpeed speed,
+        IReadOnlyList<EffectDefinition> effects = null)
     {
         if (string.IsNullOrWhiteSpace(cardId))
         {
@@ -69,8 +73,28 @@ public sealed class CardDefinition
         AttackEnergyRequirement = Math.Max(0, attackEnergyRequirement);
         SpellType = spellType;
         TrapType = trapType;
-        EnergyCost = Math.Max(0, energyCost);
         TributeCount = Math.Max(0, tributeCount);
         Speed = speed;
+        Effects = CopyEffects(effects);
+    }
+
+    private static IReadOnlyList<EffectDefinition> CopyEffects(
+        IReadOnlyList<EffectDefinition> effects)
+    {
+        if (effects == null || effects.Count == 0)
+        {
+            return NoEffects;
+        }
+
+        EffectDefinition[] copy = new EffectDefinition[effects.Count];
+
+        for (int index = 0; index < effects.Count; index++)
+        {
+            copy[index] = effects[index] ?? throw new ArgumentException(
+                $"Effect definition at index {index} is null.",
+                nameof(effects));
+        }
+
+        return copy;
     }
 }

@@ -238,6 +238,13 @@ public sealed class PlayerState
         return -1;
     }
 
+    internal bool IsSpellTrapZoneOpen(int zoneIndex)
+    {
+        return zoneIndex >= 0 &&
+            zoneIndex < spellTrapZones.Length &&
+            spellTrapZones[zoneIndex] == null;
+    }
+
     internal bool HasAnyMonster()
     {
         for (int index = 0; index < monsterZones.Length; index++)
@@ -259,6 +266,62 @@ public sealed class PlayerState
         hand.Remove(monster);
         monsterZones[zoneIndex] = monster;
         monster.Summon(position);
+    }
+
+    internal void MoveHandCardToGraveyard(CardInstance card)
+    {
+        if (card == null || !hand.Remove(card))
+        {
+            throw new InvalidOperationException(
+                "The card must be in this player's hand.");
+        }
+
+        card.MoveToZone(CardZone.Graveyard, false);
+        graveyard.Add(card);
+    }
+
+    internal void PlaceSpellTrapFromHand(
+        CardInstance card,
+        int zoneIndex,
+        bool faceDown)
+    {
+        if (card == null || !hand.Remove(card))
+        {
+            throw new InvalidOperationException(
+                "The card must be in this player's hand.");
+        }
+
+        if (!IsSpellTrapZoneOpen(zoneIndex))
+        {
+            throw new InvalidOperationException(
+                "The selected Spell/Trap Zone must be empty.");
+        }
+
+        spellTrapZones[zoneIndex] = card;
+        card.MoveToZone(CardZone.SpellTrapZone, faceDown);
+    }
+
+    internal CardInstance MoveSpellTrapToGraveyard(
+        int zoneIndex,
+        bool faceDown)
+    {
+        if (zoneIndex < 0 || zoneIndex >= spellTrapZones.Length)
+        {
+            throw new ArgumentOutOfRangeException(nameof(zoneIndex));
+        }
+
+        CardInstance card = spellTrapZones[zoneIndex];
+
+        if (card == null)
+        {
+            throw new InvalidOperationException(
+                "The selected Spell/Trap Zone is empty.");
+        }
+
+        spellTrapZones[zoneIndex] = null;
+        card.MoveToZone(CardZone.Graveyard, faceDown);
+        graveyard.Add(card);
+        return card;
     }
 
     internal CardInstance TributeMonsterAt(int zoneIndex)

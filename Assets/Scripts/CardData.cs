@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum CardCategory
@@ -90,8 +91,9 @@ public class CardData : ScriptableObject
     [Header("Trap Information")]
     [SerializeField] private TrapType trapType;
 
-    [Header("Activation Information")]
-    [Min(0)] [SerializeField] private int energyCost;
+    [Header("Effect References")]
+    [SerializeField] private List<EffectData> effects =
+        new List<EffectData>();
 
     public string CardId => cardId;
     public string CardName => cardName;
@@ -110,7 +112,7 @@ public class CardData : ScriptableObject
     public SpellType SpellType => spellType;
     public TrapType TrapType => trapType;
 
-    public int EnergyCost => energyCost;
+    public IReadOnlyList<EffectData> Effects => effects;
 
     public int TributeCount
     {
@@ -151,6 +153,9 @@ public class CardData : ScriptableObject
         baseAttack = Mathf.Clamp(baseAttack, 0, MaxBaseStat);
         baseDefense = Mathf.Clamp(baseDefense, 0, MaxBaseStat);
         attackEnergyRequirement = Mathf.Max(0, attackEnergyRequirement);
-        energyCost = Mathf.Max(0, energyCost);
+        if (effects == null)
+        {
+            effects = new List<EffectData>();
+        }
     }
 }

@@ -217,7 +217,15 @@ Resolve end-of-turn effects and pass control to the opponent.
 - Spell is Speed 1; Normal Trap is Speed 2; Counter Trap is Speed 3.
 - Activation Speed must be derived from card category/type, not entered inconsistently by hand.
 - Start with a simple last-in-first-out chain and avoid premature generalization.
-- Activation Energy cost is defined per card.
+- Activation costs are structured inside each EffectData referenced by a card.
+- A standard Spell/Trap activated from Hand requires an appropriate empty zone
+  and first moves onto the field. Cost and effect then resolve from the field.
+- A resolved Normal Spell moves from its shared Spell/Trap Zone to Graveyard
+  face-down, releasing that zone **[CONFIRMED]**.
+- Equip Spells will target a Monster and remain in a shared Spell/Trap Zone
+  while equipped. Field Spells will remain in a dedicated Field Zone.
+- Future hand-activated Spell/Trap effects may explicitly bypass field
+  placement; this is an alternate effect rule, not the default flow.
 
 Initial deck direction:
 
@@ -245,6 +253,24 @@ Initial deck direction:
 - Mobile gameplay will include a card detail panel opened by tapping/selecting
   a card so players can read its full attributes and effect text clearly.
 - Default orientation: landscape, Canvas Scaler reference 1920x1080, Match 0.5 **[OPEN, default]**.
+
+### Board UI direction
+
+- Use one background image; gameplay zones remain separate Unity UI objects.
+- Each player has 3 Monster Zones, 3 Spell/Trap Zones, a Deck area, a
+  Graveyard area, and a Hand area.
+- Empty zones should use a white translucent outline. Prefer a transparent
+  center 9-sliced border Sprite or four thin child Images rather than an opaque
+  white rectangle.
+- Place a phase row between the two player fields in this order: Recovery,
+  Standby, Main, Battle, End.
+- Recovery and an empty Standby advance automatically after their required
+  steps/triggers resolve. The active phase is highlighted.
+- From Main, the Battle button requests Battle Phase. It is disabled when the
+  first turn or an effect skips Battle; core validation remains authoritative.
+- From Main or Battle, the End button requests progression to End Phase.
+- Board UI sends GameActions and renders GameEvents; it never changes rules or
+  GameState directly.
 
 ## 11. Architecture Boundaries
 
@@ -370,12 +396,11 @@ Completed or explored:
 
 Known next gaps:
 
-1. Add Main Phase actions for summoning, tribute selection, Energy allocation,
-   and battle-position changes through the shared validation/apply path.
-2. Add Battle Phase attack validation, damage, destruction penalty, Graveyard,
-   direct attacks, and win checking.
-3. Add serializable action payloads, replay loading/state hashes, reusable card
-   effects and triggers, board presentation, bots, simulation, and networking.
+1. Connect the new effect contracts to the first playable Normal Spell action.
+2. Add Spell/Trap Zones, Graveyard movement events, then simple response/chain
+   handling after the Normal Spell path is verified.
+3. Add replay loading/state hashes, board presentation, bots, simulation, and
+   networking adapters.
 
 ## 16. Roadmap
 
@@ -385,7 +410,14 @@ Verified checkpoints:
 - Step 2 pure definitions, runtime instances, configuration, seeded match
   initialization, players, deck shuffle/draw/hand, and basic state: **complete**.
 - Step 3 turn/action foundation: **in progress**; phase flow and action logging
-  are complete, while summon/allocation/position actions remain next.
+  plus summon/allocation/position actions are complete.
+- Step 4 combat rules foundation: **complete and smoke-tested**; board UI and a
+  full hot-seat match remain presentation milestones.
+- Effect architecture foundation: **in progress**; the activation contract and
+  rules document exist. EffectData is now a separate Unity authoring asset
+  converted into pure EffectDefinition data. The first Normal Spell supports
+  an Available Energy cost, Draw Cards, and movement to Graveyard; Unity
+  verification of the migrated sample remains pending.
 
 | Step | Target | Content | Verification |
 |---|---|---|---|

@@ -597,7 +597,6 @@ public static class GameStateDiagnostics
             SpellType.Normal,
             TrapType.Normal,
             0,
-            0,
             CardSpeed.Speed1);
     }
 

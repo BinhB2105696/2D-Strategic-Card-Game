@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c659b216e84cc464298688b309586499, type: 3}
+  m_Name: Arcane_Insight_Draw
+  m_EditorClassIdentifier: 
+  effectId: effect_arcane_insight_draw
+  trigger: 0
+  activationPhase: 2
+  maxUsesPerTurn: 0
+  conditions: []
+  costs:
+  - type: 0
+    amount: 1
+  targetType: 0
+  operations:
+  - type: 1
+    amount: 1
