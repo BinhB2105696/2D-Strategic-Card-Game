@@ -295,11 +295,13 @@ This structure may change as implementation progresses.
 - [x] Card UI/presentation
 - [x] Game state and player state
 - [x] Basic turn and phase flow
-- [ ] Energy/resource system
-- [ ] Monster summon system
-- [ ] Combat system
-- [ ] Spell/Trap system
-- [ ] Graveyard/recovery mechanics
+- [x] Core Energy/resource system
+- [x] Basic Monster summon and tribute system
+- [x] Basic combat and winner detection
+- [x] Reusable effect data and Normal Spell activation flow
+- [x] Basic Graveyard movement and Recovery Phase steps
+- [ ] Remaining Spell/Trap types, targeting, and chain system
+- [ ] Playable board UI and local hot-seat match
 - [ ] Initial cards and decks
 - [ ] Easy Bot
 - [ ] Normal Bot
@@ -325,7 +327,7 @@ This document is intended to be updated whenever important gameplay, architectur
 
 The repository and Unity project have been initialized using Unity 2022.3 LTS.
 
-The current development focus is the core card system. An initial UI prototype for cards has been created using Unity UI, TextMeshPro, Prefabs, and Prefab Variants. The project is now beginning the implementation of the CardData system and other core gameplay foundations.
+The current development focus is connecting the deterministic gameplay core to a playable portrait board UI. Card authoring and presentation, runtime card instances, seeded match setup, turn flow, Energy, summons, combat, action/event logging, reusable effects, and the first Normal Spell flow are implemented and smoke-tested. The board currently has its background/layer structure and four three-slot Monster/Spell-Trap rows; Deck, Graveyard, Field, Hand, HUD, phase controls, and runtime binding are the next presentation tasks.
 
 Detailed gameplay rules, current design decisions, implementation progress, and development constraints are maintained in:
 

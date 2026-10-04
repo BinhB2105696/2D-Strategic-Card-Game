@@ -1,6 +1,6 @@
 # PROJECT CONTEXT
 
-> Last updated: 1 October 2026
+> Last updated: 4 October 2026
 >
 > Status tags:
 > - **[CONFIRMED]**: implement as written unless the user changes it.
@@ -95,7 +95,7 @@ After each development step, report:
 - C# is the primary language.
 - Development machine: Ryzen 5 5500U, 8 GB RAM, integrated Radeon Graphics, Windows 10 LTSC.
 - Target platforms in priority order: **Android first, Windows second**.
-- Mobile-first UI: landscape, large touch targets, no gameplay interaction that requires hover or right-click.
+- Mobile-first UI: portrait, large touch targets, no gameplay interaction that requires hover or right-click.
 - Thesis defense is expected in early December 2026.
 
 ## 5. Scope Priority
@@ -252,23 +252,29 @@ Initial deck direction:
 - Current visuals are functional prototypes, not final art.
 - Mobile gameplay will include a card detail panel opened by tapping/selecting
   a card so players can read its full attributes and effect text clearly.
-- Default orientation: landscape, Canvas Scaler reference 1920x1080, Match 0.5 **[OPEN, default]**.
+- Default orientation: portrait, Canvas Scaler reference 1080x1920, Match 0
+  (Width) **[CONFIRMED]**.
 
 ### Board UI direction
 
 - Use one background image; gameplay zones remain separate Unity UI objects.
 - Each player has 3 Monster Zones, 3 Spell/Trap Zones, a Deck area, a
   Graveyard area, and a Hand area.
-- Empty zones should use a white translucent outline. Prefer a transparent
-  center 9-sliced border Sprite or four thin child Images rather than an opaque
-  white rectangle.
-- Place a phase row between the two player fields in this order: Recovery,
-  Standby, Main, Battle, End.
+- Monster and Spell/Trap Zones use the same compact portrait rectangle. A
+  Defense Position Monster may rotate and extend beyond the visual outline;
+  zones must not use Mask or RectMask2D.
+- Empty zones use a thin white translucent outline with only slight corner
+  rounding. The visual border is independent from its transparent raycast hit
+  area. A small 9-sliced outline Sprite, four thin child Images, or a later
+  procedural UI Graphic are valid implementations.
+- Show the turn number and current phase near the upper-right HUD, beside the
+  in-match settings button.
+- Use a compact phase-control button on the right side. During Main Phase it
+  expands to Battle and End choices; during Battle Phase only End is needed.
 - Recovery and an empty Standby advance automatically after their required
-  steps/triggers resolve. The active phase is highlighted.
-- From Main, the Battle button requests Battle Phase. It is disabled when the
-  first turn or an effect skips Battle; core validation remains authoritative.
-- From Main or Battle, the End button requests progression to End Phase.
+  steps/triggers resolve, so they do not need manual transition buttons.
+- Entering Battle or ending the turn uses a confirmation overlay. An
+  unavailable Battle choice is disabled and may show a short reason.
 - Board UI sends GameActions and renders GameEvents; it never changes rules or
   GameState directly.
 
@@ -352,7 +358,7 @@ Do not install networking packages until local core actions are deterministic an
 | Direct attack condition | Opponent has no monsters |
 | First-turn attack restriction | First player's first turn only |
 | First player and draw | Random; first player draws |
-| Mobile layout | Landscape, 1920x1080 reference, Match 0.5 |
+| Mobile layout | Portrait, 1080x1920 reference, Match 0 (Width) |
 | Networking stack | Tentative UGS stack in section 13; decide after spike |
 
 ## 15. Current Progress
@@ -393,14 +399,25 @@ Completed or explored:
 - Editor smoke tests verify card instances, deterministic match initialization,
   equal-seed opening hands, the first complete phase cycle, and rejection of an
   out-of-turn action. All tests passed in Unity on 1 October 2026.
+- Main Phase and combat smoke tests verify Energy allocation, summons and
+  tributes, position changes, first-turn Battle skipping, attacks, destruction,
+  Graveyard movement, direct damage, destruction penalties, and winner checks.
+- Reusable effect contracts and the first Normal Spell flow are implemented and
+  smoke-tested: activation from Hand requires an open Spell/Trap Zone, pays its
+  Energy cost, resolves Draw Cards, and sends the used card to Graveyard.
+- The portrait board UI foundation now uses a 1080x1920 Canvas, full-screen
+  background, SafeAreaRoot, separate Board/HUD/Overlay layers, four 3-slot rows,
+  and twelve zones with independent Border, HitArea, CardAnchor, and Highlight
+  children. Deck, Graveyard, Field, Hand, HUD, and runtime binding remain next.
 
 Known next gaps:
 
-1. Connect the new effect contracts to the first playable Normal Spell action.
-2. Add Spell/Trap Zones, Graveyard movement events, then simple response/chain
-   handling after the Normal Spell path is verified.
-3. Add replay loading/state hashes, board presentation, bots, simulation, and
-   networking adapters.
+1. Complete the board presentation with Deck, Graveyard, Field, Hand, HUD, and
+   phase controls, then bind it to core state and GameEvents.
+2. Add Trap, Equip Spell, Field Spell, targeting, and the first simple response
+   and chain handling on top of the verified Normal Spell path.
+3. Add replay loading/state hashes, full hot-seat flow, bots, headless
+   simulation metrics, and networking adapters.
 
 ## 16. Roadmap
 
@@ -409,15 +426,14 @@ Verified checkpoints:
 - Step 1 card authoring/presentation foundation: **complete**.
 - Step 2 pure definitions, runtime instances, configuration, seeded match
   initialization, players, deck shuffle/draw/hand, and basic state: **complete**.
-- Step 3 turn/action foundation: **in progress**; phase flow and action logging
-  plus summon/allocation/position actions are complete.
-- Step 4 combat rules foundation: **complete and smoke-tested**; board UI and a
-  full hot-seat match remain presentation milestones.
-- Effect architecture foundation: **in progress**; the activation contract and
-  rules document exist. EffectData is now a separate Unity authoring asset
-  converted into pure EffectDefinition data. The first Normal Spell supports
-  an Available Energy cost, Draw Cards, and movement to Graveyard; Unity
-  verification of the migrated sample remains pending.
+- Step 3 turn/action foundation: **complete and smoke-tested**; phase flow,
+  action logging, Energy allocation, summon, tribute, and position actions work.
+- Step 4 combat rules foundation: **complete and smoke-tested**; board UI is in
+  progress and a full hot-seat match remains the next playable milestone.
+- Effect architecture foundation: **in progress**; EffectData is a separate
+  Unity authoring asset converted into pure EffectDefinition data. The first
+  Normal Spell supports an Available Energy cost, Draw Cards, movement through
+  a Spell/Trap Zone, and final movement to Graveyard, verified in Unity.
 
 | Step | Target | Content | Verification |
 |---|---|---|---|
