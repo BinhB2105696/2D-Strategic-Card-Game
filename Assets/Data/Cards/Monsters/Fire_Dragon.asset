@@ -26,4 +26,4 @@ MonoBehaviour:
   attackEnergyRequirement: 2
   spellType: 1
   trapType: 1
-  energyCost: 0
+  effects: []
