@@ -434,9 +434,27 @@ public static class CardSampleTool
                 effect.Targets[i].Amount <= 0)
                 ReportMissing("target", i);
         for (int i = 0; i < effect.Resolution.Count; i++)
-            if (effect.Resolution[i] == null || effect.Resolution[i].Component == null ||
-                effect.Resolution[i].Amount <= 0)
+        {
+            EffectResolutionSlot resolution = effect.Resolution[i];
+            if (resolution == null || resolution.Component == null ||
+                resolution.Amount <= 0)
+            {
                 ReportMissing("resolution", i);
+                continue;
+            }
+
+            try
+            {
+                resolution.Component.CreateDefinition(resolution.Amount);
+            }
+            catch (System.Exception exception)
+            {
+                Debug.LogError(
+                    $"Effect {index} has an invalid resolution at {i}: " +
+                    $"{path}. {exception.Message}", card);
+                componentErrors++;
+            }
+        }
         for (int i = 0; i < effect.ContinuousModifiers.Count; i++)
             if (effect.ContinuousModifiers[i] == null ||
                 effect.ContinuousModifiers[i].Component == null)

@@ -27,6 +27,9 @@ public static class GameRules
             case GameActionType.EndTurn:
                 return EndTurn(state);
 
+            case GameActionType.EnterEndPhase:
+                return EnterEndPhase(state);
+
             case GameActionType.SummonMonster:
                 return SummonMonster(state, action);
 
@@ -97,6 +100,12 @@ public static class GameRules
                     ? string.Empty
                     : "End Turn is only valid in End Phase.";
 
+            case GameActionType.EnterEndPhase:
+                return state.CurrentPhase == TurnPhase.Main ||
+                       state.CurrentPhase == TurnPhase.Battle
+                    ? string.Empty
+                    : "End Phase can only be entered from Main or Battle Phase.";
+
             case GameActionType.SummonMonster:
                 return ValidateSummon(state, action);
 
@@ -122,7 +131,7 @@ public static class GameRules
         PlayerState player = state.Players[state.CurrentPlayerIndex];
         List<GameEvent> events = new List<GameEvent>();
 
-        if (player.ConsumeDrawStepSkip())
+        if (player.ConsumeDrawStepSkip(state.TurnNumber))
         {
             events.Add(GameEvent.DrawStepSkipped(player.PlayerIndex));
         }
@@ -151,7 +160,7 @@ public static class GameRules
         PlayerState player = state.Players[state.CurrentPlayerIndex];
         List<GameEvent> events = new List<GameEvent>();
 
-        if (player.ConsumeEnergyRefreshStepSkip())
+        if (player.ConsumeEnergyRefreshStepSkip(state.TurnNumber))
         {
             events.Add(GameEvent.EnergyRefreshSkipped(player.PlayerIndex));
         }
@@ -163,7 +172,7 @@ public static class GameRules
                 player.AvailableEnergy));
         }
 
-        if (player.ConsumeStandbyPhaseSkip())
+        if (player.ConsumeStandbyPhaseSkip(state.TurnNumber))
         {
             events.Add(GameEvent.StandbyPhaseSkipped(player.PlayerIndex));
             state.SetCurrentPhase(TurnPhase.Main);
@@ -194,8 +203,9 @@ public static class GameRules
         }
         else if (state.CurrentPhase == TurnPhase.Main)
         {
-            bool skipsBattle = state.TurnNumber == 1 ||
-                player.ConsumeBattlePhaseSkip();
+            bool effectSkipsBattle =
+                player.ConsumeBattlePhaseSkip(state.TurnNumber);
+            bool skipsBattle = state.TurnNumber == 1 || effectSkipsBattle;
             nextPhase = skipsBattle ? TurnPhase.End : TurnPhase.Battle;
         }
         else
@@ -230,6 +240,25 @@ public static class GameRules
                 state.CurrentPlayerIndex,
                 TurnPhase.Recovery)
         });
+    }
+
+    private static ActionResult EnterEndPhase(GameState state)
+    {
+        int playerIndex = state.CurrentPlayerIndex;
+        List<GameEvent> events = new List<GameEvent>();
+
+        if (state.CurrentPhase == TurnPhase.Main)
+        {
+            // Leaving Main completes this turn's Battle-skip consequence,
+            // including on turn 1 when Battle is unavailable by default.
+            state.Players[playerIndex].ConsumeBattlePhaseSkip(state.TurnNumber);
+
+            events.Add(GameEvent.BattlePhaseSkipped(playerIndex));
+        }
+
+        state.SetCurrentPhase(TurnPhase.End);
+        events.Add(GameEvent.PhaseChanged(playerIndex, TurnPhase.End));
+        return ActionResult.Success(events);
     }
 
     private static string ValidateSummon(

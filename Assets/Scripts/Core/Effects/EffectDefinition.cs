@@ -34,7 +34,8 @@ public enum EffectTargetType
 public enum EffectOperationType
 {
     None,
-    DrawCards
+    DrawCards,
+    SkipNextOpponentDrawStep
 }
 
 [Serializable]
@@ -75,6 +76,11 @@ public sealed class EffectOperationDefinition
         EffectOperationType type,
         int amount)
     {
+        if (type == EffectOperationType.SkipNextOpponentDrawStep && amount != 1)
+            throw new ArgumentOutOfRangeException(
+                nameof(amount),
+                "Skipping the next opponent Draw Step requires Amount 1.");
+
         Type = type;
         Amount = Math.Max(0, amount);
     }

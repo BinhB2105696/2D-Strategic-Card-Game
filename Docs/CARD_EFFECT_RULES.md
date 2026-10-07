@@ -57,7 +57,8 @@ message from charging a cost and leaving a half-resolved action.
   trigger/timing, component slots, and optional usage limit.
 - `EffectConditionAsset`, `EffectCostAsset`, `EffectTargetAsset`,
   `EffectResolutionAsset`, and `ContinuousModifierAsset`: reusable Unity assets
-  assigned to the matching slots. The sample assets are Pay Energy and Draw Cards.
+  assigned to the matching slots. Current reusable assets include Pay Energy,
+  Draw Cards, and Skip Next Opponent Draw.
 - `EffectDefinition`: immutable pure-C# copy used by the running match. It has
   no Sprite, ScriptableObject, GameObject, or other presentation dependency.
 - `EffectContext`: the match, activating player, source instance, and selected
@@ -80,8 +81,10 @@ operations live in the component slots and are validated separately.
 per-card-ID counting, and Reset selects per-turn or per-match counting.
 
 Only Manual Activation in Main Phase, Available Energy cost, no target, and
-Draw Cards are executable in the first slice. Continuous modifiers, response
-windows, other triggers/conditions/targets/operations, and multi-effect
+Draw Cards are executable through the current Normal Spell action. Skip Next
+Opponent Draw resolves in the reusable effect pipeline and is smoke-tested
+across turns, but no Trap activation action uses it yet. Continuous modifiers,
+response windows, other triggers/conditions/targets, and multi-effect
 activation have authoring slots but are not executable yet. Unsupported
 combinations must be rejected clearly until implemented.
 

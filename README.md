@@ -12,7 +12,7 @@
 - **Student:** Nguyễn Thanh Bình
 - **Student ID:** B2105696
 - **Institution:** Can Tho University (CTU)
-- **Project status:** Core card system development
+- **Project status:** Core rules established; playable duel integration in progress
 
 ## Overview
 
@@ -300,6 +300,8 @@ This structure may change as implementation progresses.
 - [x] Basic combat and winner detection
 - [x] Reusable effect data and Normal Spell activation flow
 - [x] Basic Graveyard movement and Recovery Phase steps
+- [x] Portrait board layout and seeded match state preview
+- [x] Turn-specific phase/step skip rules and reusable next-opponent-Draw operation
 - [ ] Remaining Spell/Trap types, targeting, and chain system
 - [ ] Playable board UI and local hot-seat match
 - [ ] Initial cards and decks
@@ -327,7 +329,19 @@ This document is intended to be updated whenever important gameplay, architectur
 
 The repository and Unity project have been initialized using Unity 2022.3 LTS.
 
-The current development focus is connecting the deterministic gameplay core to a playable portrait board UI. Card authoring and presentation, runtime card instances, seeded match setup, turn flow, Energy, summons, combat, action/event logging, reusable effects, and the first Normal Spell flow are implemented and smoke-tested. The board currently has its background/layer structure and four three-slot Monster/Spell-Trap rows; Deck, Graveyard, Field, Hand, HUD, phase controls, and runtime binding are the next presentation tasks.
+As of 7 October 2026, card authoring and presentation, runtime instances,
+seeded match setup, turn flow, Energy, summons, combat, action/event logging,
+and the first Normal Spell flow are implemented and smoke-tested. The portrait
+board has Deck, Graveyard, Field, Hand, HUD, and zone presentation; a sample
+match displays real state. The phase controls have code bindings, but their
+full Play-mode interaction still needs verification. Card selection and action
+menus, a complete local match through the UI, remaining Spell/Trap types,
+bots, simulation metrics, online PvP, and platform builds are not complete.
+
+The December thesis schedule and dated milestones are in
+`Docs/PROJECT_CONTEXT.md`. Start a new development chat by reading
+`Docs/HANDOFF_2026-10-07.md`, then the context and relevant code. Preserve the
+Tier 1 scope unless the student explicitly changes it.
 
 Detailed gameplay rules, current design decisions, implementation progress, and development constraints are maintained in:
 

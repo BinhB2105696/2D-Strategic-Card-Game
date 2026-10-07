@@ -118,6 +118,13 @@ public class DuelHudPrototypeController : MonoBehaviour
 
     private void RequestBattlePhase()
     {
+        if (!TryGetDuel(out _, out GameState state) ||
+            state.CurrentPhase != TurnPhase.Main ||
+            state.TurnNumber == 1 ||
+            state.Players[state.CurrentPlayerIndex]
+                .IsBattlePhaseSkipScheduled(state.TurnNumber))
+            return;
+
         OpenConfirmation(
             PendingConfirmation.EnterBattle,
             "Enter Battle Phase?\nYou cannot return to Main Phase this turn.");
@@ -125,6 +132,12 @@ public class DuelHudPrototypeController : MonoBehaviour
 
     private void RequestEndTurn()
     {
+        if (!TryGetDuel(out _, out GameState state) ||
+            (state.CurrentPhase != TurnPhase.Main &&
+             state.CurrentPhase != TurnPhase.Battle &&
+             state.CurrentPhase != TurnPhase.End))
+            return;
+
         OpenConfirmation(
             PendingConfirmation.EndTurn,
             "End the current turn?");
@@ -165,14 +178,74 @@ public class DuelHudPrototypeController : MonoBehaviour
 
     private void AcceptPrototypeConfirmation()
     {
-        Debug.Log(
-            "Prototype HUD confirmation accepted for " + pendingConfirmation +
-            ". Gameplay state is intentionally unchanged until the HUD is bound " +
-            "to GameAction and GameRules.",
-            this);
-
+        PendingConfirmation confirmedAction = pendingConfirmation;
         pendingConfirmation = PendingConfirmation.None;
         SetConfirmationVisible(false);
+
+        if (confirmedAction == PendingConfirmation.Surrender)
+        {
+            Debug.Log("Surrender remains a prototype action.", this);
+            return;
+        }
+
+        if (!TryGetDuel(out DuelBoardReadOnlyDemo board, out GameState state))
+            return;
+
+        int playerIndex = state.CurrentPlayerIndex;
+        if (confirmedAction == PendingConfirmation.EnterBattle)
+        {
+            if (state.CurrentPhase != TurnPhase.Main ||
+                state.TurnNumber == 1 ||
+                state.Players[playerIndex]
+                    .IsBattlePhaseSkipScheduled(state.TurnNumber))
+                return;
+
+            ApplyAction(board, GameAction.AdvancePhase(playerIndex));
+        }
+        else if (confirmedAction == PendingConfirmation.EndTurn)
+        {
+            if (state.CurrentPhase == TurnPhase.Main ||
+                state.CurrentPhase == TurnPhase.Battle)
+            {
+                if (!ApplyAction(
+                    board, GameAction.EnterEndPhase(playerIndex), false))
+                    return;
+            }
+
+            if (!ApplyAction(board, GameAction.EndTurn(playerIndex), false))
+                return;
+
+            if (!board.ResolveAutomaticTurnStart())
+            {
+                board.RefreshBoard();
+                Debug.LogError("Could not complete the next turn's automatic steps.", this);
+            }
+        }
+    }
+
+    private bool TryGetDuel(
+        out DuelBoardReadOnlyDemo board,
+        out GameState state)
+    {
+        board = GetComponentInParent<DuelBoardReadOnlyDemo>();
+        state = board != null && board.Session != null
+            ? board.Session.State
+            : null;
+        return state != null && !state.IsFinished;
+    }
+
+    private bool ApplyAction(
+        DuelBoardReadOnlyDemo board,
+        GameAction action,
+        bool refreshBoard = true)
+    {
+        ActionResult result = board.TryApplyAction(action, refreshBoard);
+        if (result.Succeeded)
+            return true;
+
+        board.RefreshBoard();
+        Debug.LogWarning("Phase action rejected: " + result.ErrorMessage, this);
+        return false;
     }
 
     private void CancelConfirmation()

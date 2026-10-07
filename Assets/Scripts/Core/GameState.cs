@@ -68,8 +68,27 @@ public sealed class GameState
         CurrentRecoveryStep = step;
     }
 
+    // Find the target player's next unresolved Draw Step, regardless of whose
+    // turn the effect is activated on.
+    public int GetNextDrawTurnForPlayer(int playerIndex)
+    {
+        if (playerIndex < 0 || playerIndex >= players.Length)
+            throw new ArgumentOutOfRangeException(nameof(playerIndex));
+
+        if (playerIndex != CurrentPlayerIndex)
+            return checked(TurnNumber + 1);
+
+        return CurrentPhase == TurnPhase.Recovery &&
+               CurrentRecoveryStep == RecoveryStep.Draw
+            ? TurnNumber
+            : checked(TurnNumber + 2);
+    }
+
     internal void StartNextTurn()
     {
+        foreach (PlayerState player in players)
+            player.ClearPhaseSkipsForTurn(TurnNumber);
+
         CurrentPlayerIndex = 1 - CurrentPlayerIndex;
         TurnNumber++;
         CurrentPhase = TurnPhase.Recovery;

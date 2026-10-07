@@ -139,6 +139,13 @@ public sealed class DefinitionCardEffect : ICardEffect
                 case EffectOperationType.DrawCards:
                     ResolveDrawCards(context, operation.Amount, events);
                     break;
+
+                case EffectOperationType.SkipNextOpponentDrawStep:
+                    int opponentIndex = 1 - context.ActivatingPlayerIndex;
+                    int drawTurn = context.State.GetNextDrawTurnForPlayer(
+                        opponentIndex);
+                    context.Opponent.ScheduleDrawStepSkip(drawTurn);
+                    break;
             }
         }
 

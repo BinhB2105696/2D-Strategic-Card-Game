@@ -9,16 +9,15 @@ public sealed class PlayerState
     private readonly List<CardInstance> graveyard;
     private readonly CardInstance[] monsterZones;
     private readonly CardInstance[] spellTrapZones;
+    private readonly HashSet<int> skippedDrawTurns = new HashSet<int>();
+    private readonly HashSet<int> skippedEnergyRefreshTurns = new HashSet<int>();
+    private readonly HashSet<int> skippedStandbyTurns = new HashSet<int>();
+    private readonly HashSet<int> skippedBattleTurns = new HashSet<int>();
 
     public int PlayerIndex { get; }
     public int Health { get; private set; }
     public int MaxEnergy { get; private set; }
     public int AvailableEnergy { get; private set; }
-    public int PendingDrawStepSkips { get; private set; }
-    public int PendingEnergyRefreshStepSkips { get; private set; }
-    public int PendingStandbyPhaseSkips { get; private set; }
-    public int PendingBattlePhaseSkips { get; private set; }
-
     public IReadOnlyList<CardInstance> Deck => deck;
     public IReadOnlyList<CardInstance> Hand => hand;
     public IReadOnlyList<CardInstance> Graveyard => graveyard;
@@ -142,81 +141,58 @@ public sealed class PlayerState
         Health += amount;
     }
 
-    public void AddDrawStepSkips(int amount)
+    // A skip belongs to an exact match turn. Repeating it for that turn does
+    // not create another skip on a later turn.
+    public void ScheduleDrawStepSkip(int turnNumber) =>
+        ScheduleSkip(skippedDrawTurns, turnNumber);
+
+    public void ScheduleEnergyRefreshStepSkip(int turnNumber) =>
+        ScheduleSkip(skippedEnergyRefreshTurns, turnNumber);
+
+    public void ScheduleStandbyPhaseSkip(int turnNumber) =>
+        ScheduleSkip(skippedStandbyTurns, turnNumber);
+
+    public void ScheduleBattlePhaseSkip(int turnNumber) =>
+        ScheduleSkip(skippedBattleTurns, turnNumber);
+
+    public bool IsDrawStepSkipScheduled(int turnNumber) =>
+        skippedDrawTurns.Contains(turnNumber);
+
+    public bool IsEnergyRefreshStepSkipScheduled(int turnNumber) =>
+        skippedEnergyRefreshTurns.Contains(turnNumber);
+
+    public bool IsStandbyPhaseSkipScheduled(int turnNumber) =>
+        skippedStandbyTurns.Contains(turnNumber);
+
+    public bool IsBattlePhaseSkipScheduled(int turnNumber) =>
+        skippedBattleTurns.Contains(turnNumber);
+
+    internal bool ConsumeDrawStepSkip(int turnNumber) =>
+        skippedDrawTurns.Remove(turnNumber);
+
+    internal bool ConsumeEnergyRefreshStepSkip(int turnNumber) =>
+        skippedEnergyRefreshTurns.Remove(turnNumber);
+
+    internal bool ConsumeStandbyPhaseSkip(int turnNumber) =>
+        skippedStandbyTurns.Remove(turnNumber);
+
+    internal bool ConsumeBattlePhaseSkip(int turnNumber) =>
+        skippedBattleTurns.Remove(turnNumber);
+
+    internal void ClearPhaseSkipsForTurn(int turnNumber)
     {
-        PendingDrawStepSkips = AddSkipCount(PendingDrawStepSkips, amount);
+        skippedDrawTurns.Remove(turnNumber);
+        skippedEnergyRefreshTurns.Remove(turnNumber);
+        skippedStandbyTurns.Remove(turnNumber);
+        skippedBattleTurns.Remove(turnNumber);
     }
 
-    public void AddEnergyRefreshStepSkips(int amount)
+    private static void ScheduleSkip(HashSet<int> turns, int turnNumber)
     {
-        PendingEnergyRefreshStepSkips =
-            AddSkipCount(PendingEnergyRefreshStepSkips, amount);
-    }
+        if (turnNumber <= 0)
+            throw new ArgumentOutOfRangeException(nameof(turnNumber));
 
-    public void AddStandbyPhaseSkips(int amount)
-    {
-        PendingStandbyPhaseSkips =
-            AddSkipCount(PendingStandbyPhaseSkips, amount);
-    }
-
-    public void AddBattlePhaseSkips(int amount)
-    {
-        PendingBattlePhaseSkips =
-            AddSkipCount(PendingBattlePhaseSkips, amount);
-    }
-
-    internal bool ConsumeDrawStepSkip()
-    {
-        if (PendingDrawStepSkips <= 0)
-        {
-            return false;
-        }
-
-        PendingDrawStepSkips--;
-        return true;
-    }
-
-    internal bool ConsumeEnergyRefreshStepSkip()
-    {
-        if (PendingEnergyRefreshStepSkips <= 0)
-        {
-            return false;
-        }
-
-        PendingEnergyRefreshStepSkips--;
-        return true;
-    }
-
-    internal bool ConsumeStandbyPhaseSkip()
-    {
-        if (PendingStandbyPhaseSkips <= 0)
-        {
-            return false;
-        }
-
-        PendingStandbyPhaseSkips--;
-        return true;
-    }
-
-    internal bool ConsumeBattlePhaseSkip()
-    {
-        if (PendingBattlePhaseSkips <= 0)
-        {
-            return false;
-        }
-
-        PendingBattlePhaseSkips--;
-        return true;
-    }
-
-    private static int AddSkipCount(int currentCount, int amount)
-    {
-        if (amount < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(amount));
-        }
-
-        return checked(currentCount + amount);
+        turns.Add(turnNumber);
     }
 
     internal CardInstance FindCardInHand(long instanceId)

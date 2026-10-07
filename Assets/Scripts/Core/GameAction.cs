@@ -11,7 +11,8 @@ public enum GameActionType
     AllocateEnergy,
     ChangeBattlePosition,
     Attack,
-    ActivateNormalSpell
+    ActivateNormalSpell,
+    EnterEndPhase
 }
 
 [Serializable]
@@ -68,6 +69,11 @@ public sealed class GameAction
     public static GameAction EndTurn(int playerIndex)
     {
         return new GameAction(GameActionType.EndTurn, playerIndex);
+    }
+
+    public static GameAction EnterEndPhase(int playerIndex)
+    {
+        return new GameAction(GameActionType.EnterEndPhase, playerIndex);
     }
 
     public static GameAction SummonMonster(

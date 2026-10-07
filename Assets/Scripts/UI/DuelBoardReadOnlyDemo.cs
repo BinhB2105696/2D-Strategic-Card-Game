@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-// Displays a real GameSession without sending any actions back to GameRules.
-// This component is deliberately limited to the sample scene's existing UI.
+// Displays a real GameSession using the sample scene's existing UI.
+// The phase controls can submit actions; card interactions remain prototypes.
 public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
 {
+    private const float HandCardScale = 0.7f;
+
     [Header("Sample Match")]
     [SerializeField] private uint seed = 2026;
     [SerializeField] private CardData[] sampleCards;
@@ -41,10 +43,12 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         try
         {
             session = GameSession.Create(config, seed, deck, deck);
-            Render(session.State);
+            if (!ResolveAutomaticTurnStart())
+                return;
             Debug.Log(
                 "Read-only duel board ready: Turn " + session.State.TurnNumber +
                 ", " + session.State.CurrentPhase +
+                ", active player " + session.State.CurrentPlayerIndex +
                 ", hands " + session.State.Players[0].Hand.Count + "/" +
                 session.State.Players[1].Hand.Count +
                 ", decks " + session.State.Players[0].Deck.Count + "/" +
@@ -55,6 +59,56 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         {
             Debug.LogError("Cannot display sample duel: " + exception, this);
         }
+    }
+
+    public bool ResolveAutomaticTurnStart()
+    {
+        if (session == null)
+            return false;
+
+        // The match begins with a separate starting hand. Recovery's draw and
+        // Energy Refresh are logged actions, then Standby advances to Main.
+        // This same routine is used at the start of each later turn.
+        while (session.State.CurrentPhase == TurnPhase.Recovery)
+        {
+            int player = session.State.CurrentPlayerIndex;
+            GameAction action = session.State.CurrentRecoveryStep == RecoveryStep.Draw
+                ? GameAction.ResolveDrawStep(player)
+                : GameAction.ResolveEnergyRefreshStep(player);
+            if (!ApplyAutomaticAction(action))
+                return false;
+        }
+
+        if (session.State.CurrentPhase == TurnPhase.Standby &&
+            !ApplyAutomaticAction(GameAction.AdvancePhase(
+                session.State.CurrentPlayerIndex)))
+            return false;
+
+        bool reachedMain = session.State.CurrentPhase == TurnPhase.Main;
+        if (reachedMain)
+            Render(session.State);
+        return reachedMain;
+    }
+
+    public ActionResult TryApplyAction(GameAction action, bool refreshBoard = true)
+    {
+        if (session == null)
+            return ActionResult.Failure("The sample duel is not ready.");
+
+        ActionResult result = session.TryApply(action);
+        if (result.Succeeded && refreshBoard)
+            Render(session.State);
+        return result;
+    }
+
+    private bool ApplyAutomaticAction(GameAction action)
+    {
+        ActionResult result = session.TryApply(action);
+        if (result.Succeeded)
+            return true;
+
+        Debug.LogError("Automatic turn step failed: " + result.ErrorMessage, this);
+        return false;
     }
 
     [ContextMenu("Refresh Read-Only Board")]
@@ -148,7 +202,7 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
                 placeholder.gameObject.SetActive(false);
 
             // The saved template is 175x245, exactly 70% of a 250x350 card.
-            CreateCard(hand[i], slot.transform, 0.7f, false, !isLocalPlayer);
+            CreateCard(hand[i], slot.transform, HandCardScale, false, !isLocalPlayer);
             slot.SetActive(true);
         }
     }

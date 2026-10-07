@@ -28,7 +28,7 @@ public static class EffectDiagnostics
 
         if (invalidResult.Succeeded ||
             player.AvailableEnergy != energyBeforeInvalidRequest ||
-            player.PendingDrawStepSkips != 0)
+            player.IsDrawStepSkipScheduled(state.TurnNumber + 2))
         {
             Debug.LogError(
                 "Effect pipeline changed state after invalid targeting.");
@@ -48,7 +48,7 @@ public static class EffectDiagnostics
 
         if (!validResult.Succeeded ||
             player.AvailableEnergy != energyBeforeInvalidRequest - 2 ||
-            player.PendingDrawStepSkips != 1)
+            !player.IsDrawStepSkipScheduled(state.TurnNumber + 2))
         {
             Debug.LogError(
                 "Effect pipeline did not pay and resolve in the expected order.");
@@ -59,8 +59,162 @@ public static class EffectDiagnostics
             "Effect pipeline smoke test passed.\n" +
             "Invalid target paid no cost: True\n" +
             "Valid request paid 2 Energy: True\n" +
-            "Skip-next-Draw effect queued: True\n" +
+            "Next own Draw Step marked to skip: True\n" +
             $"Generated events: {validResult.Events.Count}");
+    }
+
+    [MenuItem("Card Game/Diagnostics/Run Skip Opponent Draw Smoke Test")]
+    public static void RunSkipOpponentDrawSmokeTest()
+    {
+        EffectResolutionAsset component =
+            AssetDatabase.LoadAssetAtPath<EffectResolutionAsset>(
+                "Assets/Data/EffectComponents/Resolutions/" +
+                "Skip_Next_Opponent_Draw.asset");
+        if (component == null)
+        {
+            Debug.LogError("Skip Next Opponent Draw component asset is missing.");
+            return;
+        }
+        EffectOperationDefinition operation = component.CreateDefinition(1);
+        if (operation.Type != EffectOperationType.SkipNextOpponentDrawStep)
+        {
+            Debug.LogError("Skip Next Opponent Draw asset has the wrong operation.");
+            return;
+        }
+
+        EffectDefinition definition = new EffectDefinition(
+            "diagnostic_skip_opponent_draw",
+            EffectTriggerType.ManualActivation,
+            EffectKind.Activated,
+            EffectPhaseMask.Main,
+            EffectTurnScope.EitherTurn,
+            EffectActivationWindow.OpenGameState,
+            null,
+            null,
+            EffectTargetType.None,
+            0,
+            new[] { operation });
+        DefinitionCardEffect effect = new DefinitionCardEffect(definition);
+        GameState state = CreateState();
+        int firstPlayer = state.CurrentPlayerIndex;
+        int opponent = 1 - firstPlayer;
+        EffectContext context = new EffectContext(state, firstPlayer, 0);
+
+        ActionResult firstUse = EffectResolver.TryResolve(
+            context, new AlwaysCondition(), new NoCost(),
+            new NoTargetRule(), effect);
+        ActionResult repeatedUse = EffectResolver.TryResolve(
+            context, new AlwaysCondition(), new NoCost(),
+            new NoTargetRule(), effect);
+        bool scheduledOnce = firstUse.Succeeded && repeatedUse.Succeeded &&
+            state.Players[opponent].IsDrawStepSkipScheduled(2) &&
+            !state.Players[opponent].IsDrawStepSkipScheduled(4);
+
+        ApplyRequired(state, GameAction.ResolveDrawStep(firstPlayer));
+        FinishTurnAfterDraw(state, firstPlayer);
+
+        bool unresolvedDrawIsCurrent =
+            state.GetNextDrawTurnForPlayer(opponent) == state.TurnNumber;
+        PlayerState opponentState = state.Players[opponent];
+        int handBefore = opponentState.Hand.Count;
+        int deckBefore = opponentState.Deck.Count;
+        ActionResult firstSkippedDraw =
+            ApplyRequired(state, GameAction.ResolveDrawStep(opponent));
+        bool skippedOnTurnTwo =
+            firstSkippedDraw.Events.Count > 0 &&
+            firstSkippedDraw.Events[0].Type == GameEventType.DrawStepSkipped &&
+            opponentState.Hand.Count == handBefore &&
+            opponentState.Deck.Count == deckBefore &&
+            !opponentState.IsDrawStepSkipScheduled(2);
+
+        ApplyRequired(state, GameAction.ResolveEnergyRefreshStep(opponent));
+        ApplyRequired(state, GameAction.AdvancePhase(opponent));
+        ActionResult opponentTurnUse = EffectResolver.TryResolve(
+            new EffectContext(state, firstPlayer, 0),
+            new AlwaysCondition(), new NoCost(),
+            new NoTargetRule(), effect);
+        bool opponentTurnScheduled = opponentTurnUse.Succeeded &&
+            state.GetNextDrawTurnForPlayer(opponent) == 4 &&
+            opponentState.IsDrawStepSkipScheduled(4);
+
+        ApplyRequired(state, GameAction.EnterEndPhase(opponent));
+        ApplyRequired(state, GameAction.EndTurn(opponent));
+        ApplyRequired(state, GameAction.ResolveDrawStep(firstPlayer));
+        FinishTurnAfterDraw(state, firstPlayer);
+
+        handBefore = opponentState.Hand.Count;
+        deckBefore = opponentState.Deck.Count;
+        ActionResult secondSkippedDraw =
+            ApplyRequired(state, GameAction.ResolveDrawStep(opponent));
+        bool skippedOnTurnFour =
+            secondSkippedDraw.Events.Count > 0 &&
+            secondSkippedDraw.Events[0].Type == GameEventType.DrawStepSkipped &&
+            opponentState.Hand.Count == handBefore &&
+            opponentState.Deck.Count == deckBefore &&
+            !opponentState.IsDrawStepSkipScheduled(4);
+
+        FinishTurnAfterDraw(state, opponent);
+        ApplyRequired(state, GameAction.ResolveDrawStep(firstPlayer));
+        FinishTurnAfterDraw(state, firstPlayer);
+        handBefore = opponentState.Hand.Count;
+        deckBefore = opponentState.Deck.Count;
+        ActionResult laterDraw =
+            ApplyRequired(state, GameAction.ResolveDrawStep(opponent));
+        bool laterDrawRestored =
+            laterDraw.Events.Count > 0 &&
+            laterDraw.Events[0].Type == GameEventType.CardDrawn &&
+            opponentState.Hand.Count == handBefore + 1 &&
+            opponentState.Deck.Count == deckBefore - 1;
+
+        GameState beforeDrawState = CreateState();
+        int beforeDrawActor = beforeDrawState.CurrentPlayerIndex;
+        int beforeDrawOpponent = 1 - beforeDrawActor;
+        ApplyRequired(beforeDrawState, GameAction.ResolveDrawStep(beforeDrawActor));
+        FinishTurnAfterDraw(beforeDrawState, beforeDrawActor);
+        ActionResult beforeDrawUse = EffectResolver.TryResolve(
+            new EffectContext(beforeDrawState, beforeDrawActor, 0),
+            new AlwaysCondition(), new NoCost(),
+            new NoTargetRule(), effect);
+        ActionResult currentDraw = ApplyRequired(
+            beforeDrawState, GameAction.ResolveDrawStep(beforeDrawOpponent));
+        bool currentUnresolvedDrawSkipped = beforeDrawUse.Succeeded &&
+            currentDraw.Events.Count > 0 &&
+            currentDraw.Events[0].Type == GameEventType.DrawStepSkipped;
+
+        if (!scheduledOnce || !unresolvedDrawIsCurrent ||
+            !skippedOnTurnTwo || !opponentTurnScheduled ||
+            !skippedOnTurnFour || !laterDrawRestored ||
+            !currentUnresolvedDrawSkipped)
+        {
+            Debug.LogError("Skip Opponent Draw produced an incorrect turn sequence.");
+            return;
+        }
+
+        Debug.Log(
+            "Skip Opponent Draw smoke test passed.\n" +
+            "Activation on own turn skips opponent's next Draw Step: True\n" +
+            "Repeated skips for one turn do not stack: True\n" +
+            "Activation on opponent's turn targets their next unresolved Draw Step: True\n" +
+            "The marked Draw Steps were actually skipped: True\n" +
+            "A later unscheduled Draw Step works normally: True");
+    }
+
+    private static ActionResult ApplyRequired(GameState state, GameAction action)
+    {
+        ActionResult result = GameRules.ApplyAction(state, action);
+        if (!result.Succeeded)
+            throw new System.InvalidOperationException(
+                "Required action failed: " + action + ". " + result.ErrorMessage);
+        return result;
+    }
+
+    private static void FinishTurnAfterDraw(GameState state, int playerIndex)
+    {
+        ApplyRequired(state, GameAction.ResolveEnergyRefreshStep(playerIndex));
+        if (state.CurrentPhase == TurnPhase.Standby)
+            ApplyRequired(state, GameAction.AdvancePhase(playerIndex));
+        ApplyRequired(state, GameAction.EnterEndPhase(playerIndex));
+        ApplyRequired(state, GameAction.EndTurn(playerIndex));
     }
 
     private static GameState CreateState()
@@ -151,6 +305,17 @@ public static class EffectDiagnostics
         }
     }
 
+    private sealed class NoCost : IEffectCost
+    {
+        public bool CanPay(EffectContext context, out string failureReason)
+        {
+            failureReason = string.Empty;
+            return true;
+        }
+
+        public void Pay(EffectContext context, List<GameEvent> events) { }
+    }
+
     private sealed class NoTargetRule : IEffectTargetRule
     {
         public bool AreTargetsValid(
@@ -171,7 +336,9 @@ public static class EffectDiagnostics
             EffectContext context,
             List<GameEvent> events)
         {
-            context.ActivatingPlayer.AddDrawStepSkips(1);
+            int nextOwnTurn = context.State.GetNextDrawTurnForPlayer(
+                context.ActivatingPlayerIndex);
+            context.ActivatingPlayer.ScheduleDrawStepSkip(nextOwnTurn);
             events.Add(GameEvent.EffectResolved(
                 context.ActivatingPlayerIndex,
                 context.SourceInstanceId,

@@ -1,6 +1,6 @@
 # PROJECT CONTEXT
 
-> Last updated: 4 October 2026
+> Last updated: 7 October 2026
 >
 > Status tags:
 > - **[CONFIRMED]**: implement as written unless the user changes it.
@@ -169,6 +169,8 @@ Recovery Phase contains two independently resolved steps:
 
 Effects may skip the next Draw Step or Energy Refresh Step independently, but
 ordinary card effects must not skip the entire Recovery Phase.
+Skip consequences are attached to a specific turn, not stored as a stack of
+future skipped turns. Repeating the same skip for one turn does not extend it.
 
 ### Standby Phase
 
@@ -204,6 +206,11 @@ choices when no effect is pending. Effects may skip a future Standby Phase.
 ### End Phase
 
 Resolve end-of-turn effects and pass control to the opponent.
+From Main or Battle, `EnterEndPhase` enters End without first entering any
+intermediate phase. Going directly from Main records Battle as skipped and
+resolves any Battle-skip consequence assigned to that turn, including turn 1.
+It never carries an unused skip into a later turn. `EndTurn` remains a
+separate action available only in End.
 
 ## 9. Cards and Decks
 
@@ -405,15 +412,27 @@ Completed or explored:
 - Reusable effect contracts and the first Normal Spell flow are implemented and
   smoke-tested: activation from Hand requires an open Spell/Trap Zone, pays its
   Energy cost, resolves Draw Cards, and sends the used card to Graveyard.
-- The portrait board UI foundation now uses a 1080x1920 Canvas, full-screen
-  background, SafeAreaRoot, separate Board/HUD/Overlay layers, four 3-slot rows,
-  and twelve zones with independent Border, HitArea, CardAnchor, and Highlight
-  children. Deck, Graveyard, Field, Hand, HUD, and runtime binding remain next.
+- A reusable Skip Next Opponent Draw resolution component is available for
+  future card effects. The core computes the affected player's next unresolved
+  Draw Step regardless of whose turn the effect resolves on. Turn-specific
+  skips do not stack or carry over. On 7 October, the student confirmed its
+  full-turn Unity smoke test, including actual skipped draws and a later normal
+  draw. Trap activation and response-chain rules are not yet wired.
+- The portrait board uses a 1080x1920 Canvas, SafeAreaRoot, separate
+  Board/HUD/Overlay layers, four 3-slot rows, and zones with independent
+  Border, HitArea, CardAnchor, and Highlight children. Deck, Graveyard, Field,
+  Hand, HUD, turn/phase, LP, and Energy have sample presentation. The sample
+  duel renders seeded GameState; card interaction and animations remain open.
+- On 7 October, the student confirmed the Direct End Phase, Recovery Skip,
+  Effect Pipeline, and Skip Opponent Draw smoke tests in Unity. The phase-button
+  code binding has compiled but has not yet been confirmed by a Play-mode
+  interaction report.
 
 Known next gaps:
 
-1. Complete the board presentation with Deck, Graveyard, Field, Hand, HUD, and
-   phase controls, then bind it to core state and GameEvents.
+1. Bind card selection, targeting, Energy allocation, attacks, and event-driven
+   presentation to core actions. The existing phase controls now drive the
+   sample session, but card interactions remain unbound.
 2. Add Trap, Equip Spell, Field Spell, targeting, and the first simple response
    and chain handling on top of the verified Normal Spell path.
 3. Add replay loading/state hashes, full hot-seat flow, bots, headless
@@ -430,10 +449,12 @@ Verified checkpoints:
   action logging, Energy allocation, summon, tribute, and position actions work.
 - Step 4 combat rules foundation: **complete and smoke-tested**; board UI is in
   progress and a full hot-seat match remains the next playable milestone.
-- Read-only board preview: the Unity sample scene now displays a seeded match's
+- Sample board preview: the Unity sample scene now displays a seeded match's
   hands, zone cards, LP, Energy, deck/graveyard counts, turn, and phase during
-  Editor Play Mode. Opponent hand cards remain face-down. The preview does not
-  submit GameActions; phase and settings controls are still UI prototypes.
+  Editor Play Mode. Opponent hand cards remain face-down. Automatic Recovery
+  steps and the transition through Standby submit GameActions to reach Main.
+  The existing Battle and End controls now submit phase actions after confirmation
+  and refresh the board; settings and card interactions remain prototypes.
 - Effect architecture foundation: **in progress**; CardData contains effect
   entries assembled from reusable component assets and converted to pure
   EffectDefinition data. The first
@@ -453,6 +474,9 @@ Verified checkpoints:
 | 9 | 25 Nov-early Dec | Feature freeze, final experiments, report, defense preparation | Final build and thesis materials |
 
 If schedule slips, reduce extra cards, polish, Hard Bot, and ML before compromising Tier 1 stability.
+As of 7 October, Step 4's playable local match is the immediate critical path;
+do not substitute isolated effect components or more smoke tests for that
+integration milestone. Tests remain verification for each finished slice.
 
 ## 17. Change Management
 

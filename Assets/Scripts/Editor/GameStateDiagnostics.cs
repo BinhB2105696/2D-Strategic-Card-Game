@@ -150,9 +150,9 @@ public static class GameStateDiagnostics
         PlayerState secondState = session.State.Players[secondPlayer];
 
         firstState.TrySpendEnergy(2);
-        firstState.AddDrawStepSkips(1);
-        firstState.AddEnergyRefreshStepSkips(1);
-        firstState.AddStandbyPhaseSkips(1);
+        firstState.ScheduleDrawStepSkip(session.State.TurnNumber);
+        firstState.ScheduleEnergyRefreshStepSkip(session.State.TurnNumber);
+        firstState.ScheduleStandbyPhaseSkip(session.State.TurnNumber);
         int firstHandBefore = firstState.Hand.Count;
 
         ApplyRequired(session, GameAction.ResolveDrawStep(firstPlayer));
@@ -164,9 +164,9 @@ public static class GameStateDiagnostics
             firstState.Hand.Count == firstHandBefore &&
             firstState.AvailableEnergy == 3 &&
             session.State.CurrentPhase == TurnPhase.Main &&
-            firstState.PendingDrawStepSkips == 0 &&
-            firstState.PendingEnergyRefreshStepSkips == 0 &&
-            firstState.PendingStandbyPhaseSkips == 0;
+            !firstState.IsDrawStepSkipScheduled(session.State.TurnNumber) &&
+            !firstState.IsEnergyRefreshStepSkipScheduled(session.State.TurnNumber) &&
+            !firstState.IsStandbyPhaseSkipScheduled(session.State.TurnNumber);
 
         if (!recoverySkipsAreCorrect)
         {
@@ -175,12 +175,12 @@ public static class GameStateDiagnostics
         }
 
         FinishTurn(session, firstPlayer);
-        secondState.AddBattlePhaseSkips(1);
+        secondState.ScheduleBattlePhaseSkip(session.State.TurnNumber);
         StartTurnToMain(session, secondPlayer);
         ApplyRequired(session, GameAction.AdvancePhase(secondPlayer));
 
         if (session.State.CurrentPhase != TurnPhase.End ||
-            secondState.PendingBattlePhaseSkips != 0)
+            secondState.IsBattlePhaseSkipScheduled(session.State.TurnNumber))
         {
             Debug.LogError("Battle Phase skip behavior is incorrect.");
             return;
@@ -193,6 +193,109 @@ public static class GameStateDiagnostics
             "Standby Phase skipped: True\n" +
             "Battle Phase skipped: True\n" +
             "Main and End Phase remained available: True");
+    }
+
+    [MenuItem("Card Game/Diagnostics/Run Direct End Phase Smoke Test")]
+    public static void RunDirectEndPhaseSmokeTest()
+    {
+        List<CardDefinition> availableCards = LoadDefinitions();
+        if (availableCards.Count == 0)
+        {
+            Debug.LogError("Direct End Phase test needs CardData assets.");
+            return;
+        }
+
+        GameConfig config = GameConfig.CreateDefault();
+        List<CardDefinition> deck =
+            BuildTestDeck(availableCards, config.MinimumDeckSize, 0);
+        GameSession session = GameSession.Create(config, TestSeed, deck, deck);
+        int firstPlayer = session.State.CurrentPlayerIndex;
+        int secondPlayer = 1 - firstPlayer;
+
+        ActionResult recoveryRejected =
+            session.TryApply(GameAction.EnterEndPhase(firstPlayer));
+        if (recoveryRejected.Succeeded || session.Log.Actions.Count != 0)
+        {
+            Debug.LogError("Direct End Phase was accepted during Recovery.");
+            return;
+        }
+
+        StartTurnToMain(session, firstPlayer);
+        PlayerState firstState = session.State.Players[firstPlayer];
+        firstState.ScheduleBattlePhaseSkip(session.State.TurnNumber);
+        firstState.ScheduleBattlePhaseSkip(session.State.TurnNumber);
+        int loggedBefore = session.Log.Actions.Count;
+        ActionResult wrongPlayer =
+            session.TryApply(GameAction.EnterEndPhase(secondPlayer));
+        ActionResult turnOneEnd =
+            session.TryApply(GameAction.EnterEndPhase(firstPlayer));
+        bool turnOneCorrect =
+            !wrongPlayer.Succeeded &&
+            turnOneEnd.Succeeded &&
+            session.State.CurrentPhase == TurnPhase.End &&
+            !firstState.IsBattlePhaseSkipScheduled(session.State.TurnNumber) &&
+            turnOneEnd.Events.Count == 2 &&
+            turnOneEnd.Events[0].Type == GameEventType.BattlePhaseSkipped &&
+            turnOneEnd.Events[1].Type == GameEventType.PhaseChanged &&
+            session.Log.Actions.Count == loggedBefore + 1;
+
+        ActionResult repeated =
+            session.TryApply(GameAction.EnterEndPhase(firstPlayer));
+        if (!turnOneCorrect || repeated.Succeeded ||
+            session.Log.Actions.Count != loggedBefore + 1)
+        {
+            Debug.LogError("Turn 1 direct End Phase rules or logging failed.");
+            return;
+        }
+
+        ApplyRequired(session, GameAction.EndTurn(firstPlayer));
+        StartTurnToMain(session, secondPlayer);
+        PlayerState secondState = session.State.Players[secondPlayer];
+        secondState.ScheduleBattlePhaseSkip(session.State.TurnNumber);
+        secondState.ScheduleBattlePhaseSkip(session.State.TurnNumber);
+        ActionResult turnTwoEnd =
+            session.TryApply(GameAction.EnterEndPhase(secondPlayer));
+        if (!turnTwoEnd.Succeeded ||
+            session.State.CurrentPhase != TurnPhase.End ||
+            secondState.IsBattlePhaseSkipScheduled(session.State.TurnNumber) ||
+            turnTwoEnd.Events.Count != 2 ||
+            turnTwoEnd.Events[0].Type != GameEventType.BattlePhaseSkipped)
+        {
+            Debug.LogError("Turn 2 direct End Phase did not consume Battle skip.");
+            return;
+        }
+
+        ApplyRequired(session, GameAction.EndTurn(secondPlayer));
+        StartTurnToMain(session, firstPlayer);
+        ApplyRequired(session, GameAction.AdvancePhase(firstPlayer));
+        if (session.State.CurrentPhase != TurnPhase.Battle)
+        {
+            Debug.LogError("Turn 1 Battle skip leaked into the next own turn.");
+            return;
+        }
+        ApplyRequired(session, GameAction.AdvancePhase(firstPlayer));
+        ApplyRequired(session, GameAction.EndTurn(firstPlayer));
+        StartTurnToMain(session, secondPlayer);
+        ApplyRequired(session, GameAction.AdvancePhase(secondPlayer));
+        ActionResult fromBattle =
+            session.TryApply(GameAction.EnterEndPhase(secondPlayer));
+        if (!fromBattle.Succeeded ||
+            session.State.CurrentPhase != TurnPhase.End ||
+            fromBattle.Events.Count != 1 ||
+            fromBattle.Events[0].Type != GameEventType.PhaseChanged)
+        {
+            Debug.LogError("Battle to End Phase transition is incorrect.");
+            return;
+        }
+
+        Debug.Log(
+            "Direct End Phase smoke test passed.\n" +
+            "Recovery and out-of-turn requests rejected: True\n" +
+            "Main to End skips Battle without entering it: True\n" +
+            "Turn 1 Battle skip applied and not deferred: True\n" +
+            "Repeated Battle skips on one turn do not stack: True\n" +
+            "Battle to End has no Battle-skipped event: True\n" +
+            "Only valid actions logged: True");
     }
 
     [MenuItem("Card Game/Diagnostics/Run Main Phase Actions Smoke Test")]
