@@ -9,10 +9,14 @@ public static class CardSampleTool
     private const string MonstersFolder = CardsRoot + "/Monsters";
     private const string SpellsFolder = CardsRoot + "/Spells";
     private const string TrapsFolder = CardsRoot + "/Traps";
-    private const string EffectsRoot = "Assets/Data/Effects";
-    private const string SpellEffectsFolder = EffectsRoot + "/Spells";
-    private const string ArcaneInsightEffectPath =
-        SpellEffectsFolder + "/Arcane_Insight_Draw.asset";
+    private const string ComponentsRoot = "Assets/Data/EffectComponents";
+    private const string ConditionFolder = ComponentsRoot + "/Conditions";
+    private const string CostFolder = ComponentsRoot + "/Costs";
+    private const string TargetFolder = ComponentsRoot + "/Targets";
+    private const string ResolutionFolder = ComponentsRoot + "/Resolutions";
+    private const string ModifierFolder = ComponentsRoot + "/ContinuousModifiers";
+    private const string PayEnergyPath = CostFolder + "/Pay_Energy.asset";
+    private const string DrawCardsPath = ResolutionFolder + "/Draw_Cards.asset";
 
     [MenuItem("Card Game/Sample Cards/Create Missing Sample Cards")]
     public static void CreateMissingSampleCards()
@@ -21,11 +25,16 @@ public static class CardSampleTool
         EnsureFolder(MonstersFolder);
         EnsureFolder(SpellsFolder);
         EnsureFolder(TrapsFolder);
-        EnsureFolder(EffectsRoot);
-        EnsureFolder(SpellEffectsFolder);
-
-        EffectData arcaneInsightEffect =
-            CreateOrUpdateArcaneInsightEffect();
+        EnsureFolder(ComponentsRoot);
+        EnsureFolder(ConditionFolder);
+        EnsureFolder(CostFolder);
+        EnsureFolder(TargetFolder);
+        EnsureFolder(ResolutionFolder);
+        EnsureFolder(ModifierFolder);
+        PayEnergyCostAsset payEnergy = CreateComponent<PayEnergyCostAsset>(
+            PayEnergyPath);
+        DrawCardsResolutionAsset drawCards =
+            CreateComponent<DrawCardsResolutionAsset>(DrawCardsPath);
 
         int createdCount = 0;
         int skippedCount = 0;
@@ -154,7 +163,7 @@ public static class CardSampleTool
             ref createdCount,
             ref skippedCount);
 
-        ConfigureArcaneInsightCard(arcaneInsightEffect);
+        ConfigureArcaneInsightCard(payEnergy, drawCards);
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -225,24 +234,35 @@ public static class CardSampleTool
                 errorCount++;
             }
 
+            HashSet<string> effectIds = new HashSet<string>(
+                StringComparer.OrdinalIgnoreCase);
             for (int effectIndex = 0;
                  effectIndex < card.Effects.Count;
                  effectIndex++)
             {
-                EffectData effect = card.Effects[effectIndex];
+                CardEffectData effect = card.Effects[effectIndex];
 
                 if (effect == null)
                 {
                     Debug.LogError(
-                        $"CardData has a missing EffectData reference at index " +
+                        $"CardData has an empty effect at index " +
                         $"{effectIndex}: {path}",
+                        card);
+                    errorCount++;
+                    continue;
+                }
+
+                ValidateEffect(card, effect, effectIndex, path, ref errorCount);
+                if (!string.IsNullOrWhiteSpace(effect.EffectId) &&
+                    !effectIds.Add(effect.EffectId))
+                {
+                    Debug.LogError(
+                        $"Duplicate Effect ID '{effect.EffectId}' on card: {path}",
                         card);
                     errorCount++;
                 }
             }
         }
-
-        ValidateAllEffectData(ref errorCount);
 
         Debug.Log(
             $"CardData validation finished. Cards: {cardGuids.Length}, " +
@@ -309,57 +329,21 @@ public static class CardSampleTool
         SetString(card, "effectText", effectText);
     }
 
-    private static EffectData CreateOrUpdateArcaneInsightEffect()
+    private static T CreateComponent<T>(string path)
+        where T : ScriptableObject
     {
-        EffectData effect = AssetDatabase.LoadAssetAtPath<EffectData>(
-            ArcaneInsightEffectPath);
-        bool isNew = effect == null;
+        T component = AssetDatabase.LoadAssetAtPath<T>(path);
+        if (component != null)
+            return component;
 
-        if (isNew)
-        {
-            effect = ScriptableObject.CreateInstance<EffectData>();
-        }
-
-        SerializedObject serializedEffect = new SerializedObject(effect);
-        SetString(
-            serializedEffect,
-            "effectId",
-            "effect_arcane_insight_draw");
-        SetEnum(
-            serializedEffect,
-            "trigger",
-            EffectTriggerType.ManualActivation);
-        SetEnum(serializedEffect, "activationPhase", TurnPhase.Main);
-        SetInt(serializedEffect, "maxUsesPerTurn", 0);
-        serializedEffect.FindProperty("conditions").arraySize = 0;
-
-        SerializedProperty costs = serializedEffect.FindProperty("costs");
-        costs.arraySize = 1;
-        SerializedProperty cost = costs.GetArrayElementAtIndex(0);
-        cost.FindPropertyRelative("type").enumValueIndex =
-            (int)EffectCostType.AvailableEnergy;
-        cost.FindPropertyRelative("amount").intValue = 1;
-
-        SetEnum(serializedEffect, "targetType", EffectTargetType.None);
-        SerializedProperty operations =
-            serializedEffect.FindProperty("operations");
-        operations.arraySize = 1;
-        SerializedProperty operation = operations.GetArrayElementAtIndex(0);
-        operation.FindPropertyRelative("type").enumValueIndex =
-            (int)EffectOperationType.DrawCards;
-        operation.FindPropertyRelative("amount").intValue = 1;
-        serializedEffect.ApplyModifiedPropertiesWithoutUndo();
-
-        if (isNew)
-        {
-            AssetDatabase.CreateAsset(effect, ArcaneInsightEffectPath);
-        }
-
-        EditorUtility.SetDirty(effect);
-        return effect;
+        component = ScriptableObject.CreateInstance<T>();
+        AssetDatabase.CreateAsset(component, path);
+        return component;
     }
 
-    private static void ConfigureArcaneInsightCard(EffectData effect)
+    private static void ConfigureArcaneInsightCard(
+        PayEnergyCostAsset payEnergy,
+        DrawCardsResolutionAsset drawCards)
     {
         CardData card = FindCardById("sample_arcane_insight");
 
@@ -369,75 +353,105 @@ public static class CardSampleTool
         }
 
         SerializedObject serializedCard = new SerializedObject(card);
-        SetString(
-            serializedCard,
-            "effectText",
-            "Pay 1 Energy; draw 1 card.");
         SerializedProperty effects = serializedCard.FindProperty("effects");
+        if (effects.arraySize != 0)
+            return;
+
         effects.arraySize = 1;
-        effects.GetArrayElementAtIndex(0).objectReferenceValue = effect;
+        SerializedProperty effect = effects.GetArrayElementAtIndex(0);
+        effect.FindPropertyRelative("effectId").stringValue =
+            "effect_arcane_insight_draw";
+        effect.FindPropertyRelative("effectKind").enumValueIndex =
+            (int)EffectKind.Activated;
+        effect.FindPropertyRelative("trigger").enumValueIndex =
+            (int)EffectTriggerType.ManualActivation;
+        effect.FindPropertyRelative("allowedPhases").intValue =
+            (int)EffectPhaseMask.Main;
+        effect.FindPropertyRelative("allowedTurn").enumValueIndex =
+            (int)EffectTurnScope.YourTurn;
+        effect.FindPropertyRelative("activationWindow").enumValueIndex =
+            (int)EffectActivationWindow.OpenGameState;
+        SerializedProperty costs = effect.FindPropertyRelative("costs");
+        costs.arraySize = 1;
+        SerializedProperty cost = costs.GetArrayElementAtIndex(0);
+        cost.FindPropertyRelative("component").objectReferenceValue = payEnergy;
+        cost.FindPropertyRelative("amount").intValue = 1;
+        SerializedProperty resolution =
+            effect.FindPropertyRelative("resolution");
+        resolution.arraySize = 1;
+        SerializedProperty operation = resolution.GetArrayElementAtIndex(0);
+        operation.FindPropertyRelative("component").objectReferenceValue =
+            drawCards;
+        operation.FindPropertyRelative("amount").intValue = 1;
         serializedCard.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(card);
     }
 
-    private static void ValidateAllEffectData(ref int errorCount)
+    private static void ValidateEffect(
+        CardData card,
+        CardEffectData effect,
+        int index,
+        string path,
+        ref int errorCount)
     {
-        string[] guids = AssetDatabase.FindAssets(
-            "t:EffectData",
-            new[] { EffectsRoot });
-        Dictionary<string, string> pathsById =
-            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (string guid in guids)
+        int componentErrors = 0;
+        if (string.IsNullOrWhiteSpace(effect.EffectId))
         {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-            EffectData effect = AssetDatabase.LoadAssetAtPath<EffectData>(path);
-
-            if (effect == null)
-            {
-                continue;
-            }
-
-            if (string.IsNullOrWhiteSpace(effect.EffectId))
-            {
-                Debug.LogError($"EffectData has an empty Effect ID: {path}", effect);
-                errorCount++;
-            }
-            else if (pathsById.TryGetValue(effect.EffectId, out string firstPath))
-            {
-                Debug.LogError(
-                    $"Duplicate Effect ID '{effect.EffectId}' found in:\n" +
-                    $"- {firstPath}\n- {path}",
-                    effect);
-                errorCount++;
-            }
-            else
-            {
-                pathsById.Add(effect.EffectId, path);
-            }
-
-            if (effect.Operations.Count == 0)
-            {
-                Debug.LogError($"EffectData has no operations: {path}", effect);
-                errorCount++;
-            }
-
-            for (int index = 0; index < effect.Operations.Count; index++)
-            {
-                EffectOperationData operation = effect.Operations[index];
-
-                if (operation == null ||
-                    operation.Type == EffectOperationType.None ||
-                    operation.Amount <= 0)
-                {
-                    Debug.LogError(
-                        $"EffectData has an invalid operation at index " +
-                        $"{index}: {path}",
-                        effect);
-                    errorCount++;
-                }
-            }
+            Debug.LogError($"Effect {index} needs an Effect ID: {path}", card);
+            errorCount++;
         }
+
+        if (effect.Kind == EffectKind.Activated && effect.Resolution.Count == 0)
+        {
+            Debug.LogError($"Activated effect {index} has no resolution: {path}", card);
+            errorCount++;
+        }
+
+        if (effect.Kind == EffectKind.Continuous &&
+            effect.ContinuousModifiers.Count == 0)
+        {
+            Debug.LogError($"Continuous effect {index} has no modifier: {path}", card);
+            errorCount++;
+        }
+
+        if (effect.Targets.Count > 1)
+        {
+            Debug.LogError(
+                $"Effect {index} has multiple targets, which are not supported yet: {path}",
+                card);
+            errorCount++;
+        }
+
+        for (int i = 0; i < effect.Conditions.Count; i++)
+            if (effect.Conditions[i] == null || effect.Conditions[i].Component == null)
+                ReportMissing("condition", i);
+        for (int i = 0; i < effect.Costs.Count; i++)
+            if (effect.Costs[i] == null || effect.Costs[i].Component == null ||
+                effect.Costs[i].Amount <= 0)
+                ReportMissing("cost", i);
+        for (int i = 0; i < effect.Targets.Count; i++)
+            if (effect.Targets[i] == null || effect.Targets[i].Component == null ||
+                effect.Targets[i].Amount <= 0)
+                ReportMissing("target", i);
+        for (int i = 0; i < effect.Resolution.Count; i++)
+            if (effect.Resolution[i] == null || effect.Resolution[i].Component == null ||
+                effect.Resolution[i].Amount <= 0)
+                ReportMissing("resolution", i);
+        for (int i = 0; i < effect.ContinuousModifiers.Count; i++)
+            if (effect.ContinuousModifiers[i] == null ||
+                effect.ContinuousModifiers[i].Component == null)
+                ReportMissing("modifier", i);
+
+        void ReportMissing(string componentKind, int componentIndex)
+        {
+            Debug.LogError(
+                $"Effect {index} has an invalid {componentKind} at " +
+                $"{componentIndex}: {path}. Assign a component and valid " +
+                "Amount, or remove the unused list element.", card);
+            componentErrors++;
+        }
+
+        errorCount += componentErrors;
     }
 
     private static void SetString(

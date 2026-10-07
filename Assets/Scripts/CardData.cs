@@ -91,9 +91,8 @@ public class CardData : ScriptableObject
     [Header("Trap Information")]
     [SerializeField] private TrapType trapType;
 
-    [Header("Effect References")]
-    [SerializeField] private List<EffectData> effects =
-        new List<EffectData>();
+    [SerializeField] private List<CardEffectData> effects =
+        new List<CardEffectData>();
 
     public string CardId => cardId;
     public string CardName => cardName;
@@ -112,7 +111,7 @@ public class CardData : ScriptableObject
     public SpellType SpellType => spellType;
     public TrapType TrapType => trapType;
 
-    public IReadOnlyList<EffectData> Effects => effects;
+    public IReadOnlyList<CardEffectData> Effects => effects;
 
     public int TributeCount
     {
@@ -155,7 +154,7 @@ public class CardData : ScriptableObject
         attackEnergyRequirement = Mathf.Max(0, attackEnergyRequirement);
         if (effects == null)
         {
-            effects = new List<EffectData>();
+            effects = new List<CardEffectData>();
         }
     }
 }

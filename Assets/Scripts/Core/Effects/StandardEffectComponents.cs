@@ -100,7 +100,8 @@ public sealed class EffectDefinitionTargetRule : IEffectTargetRule
         EffectContext context,
         out string failureReason)
     {
-        if (effect.TargetType != EffectTargetType.None)
+        if (effect.TargetType != EffectTargetType.None ||
+            effect.TargetCount != 0)
         {
             failureReason =
                 "This target type is not implemented in the first " +

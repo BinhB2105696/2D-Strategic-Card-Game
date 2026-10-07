@@ -1,0 +1,281 @@
+using System;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+
+// Displays a real GameSession without sending any actions back to GameRules.
+// This component is deliberately limited to the sample scene's existing UI.
+public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
+{
+    [Header("Sample Match")]
+    [SerializeField] private uint seed = 2026;
+    [SerializeField] private CardData[] sampleCards;
+    [SerializeField] private GameObject monsterCardPrefab;
+    [SerializeField] private GameObject spellTrapCardPrefab;
+
+    private readonly Dictionary<string, CardData> cardsById =
+        new Dictionary<string, CardData>();
+    private readonly List<GameObject> displayedCards = new List<GameObject>();
+    private GameSession session;
+
+    public GameSession Session => session;
+
+    public void Configure(CardData[] cards, GameObject monsterPrefab, GameObject spellTrapPrefab)
+    {
+        sampleCards = cards;
+        monsterCardPrefab = monsterPrefab;
+        spellTrapCardPrefab = spellTrapPrefab;
+    }
+
+    private void Start()
+    {
+        if (!ValidateSetup())
+            return;
+
+        GameConfig config = GameConfig.CreateDefault();
+        List<CardDefinition> deck = new List<CardDefinition>(config.MinimumDeckSize);
+
+        for (int i = 0; i < config.MinimumDeckSize; i++)
+            deck.Add(CardDataConverter.ToDefinition(sampleCards[i % sampleCards.Length]));
+
+        try
+        {
+            session = GameSession.Create(config, seed, deck, deck);
+            Render(session.State);
+            Debug.Log(
+                "Read-only duel board ready: Turn " + session.State.TurnNumber +
+                ", " + session.State.CurrentPhase +
+                ", hands " + session.State.Players[0].Hand.Count + "/" +
+                session.State.Players[1].Hand.Count +
+                ", decks " + session.State.Players[0].Deck.Count + "/" +
+                session.State.Players[1].Deck.Count + ".",
+                this);
+        }
+        catch (Exception exception)
+        {
+            Debug.LogError("Cannot display sample duel: " + exception, this);
+        }
+    }
+
+    [ContextMenu("Refresh Read-Only Board")]
+    public void RefreshBoard()
+    {
+        if (session != null)
+            Render(session.State);
+    }
+
+    public void Render(GameState state)
+    {
+        if (state == null)
+            return;
+
+        Transform safeArea = transform.Find("SafeAreaRoot");
+        if (safeArea == null)
+        {
+            Debug.LogError("SafeAreaRoot is missing from Field_Canvas.", this);
+            return;
+        }
+
+        ClearDisplayedCards();
+        Transform board = safeArea.Find("BoardLayer");
+        Transform hud = safeArea.Find("HudLayer");
+        Transform overlay = safeArea.Find("OverlayLayer");
+        if (board == null || hud == null || overlay == null)
+        {
+            Debug.LogError("The existing Board, HUD or Overlay layer is missing.", this);
+            return;
+        }
+
+        RenderPlayer(state.Players[0], board, hud, "Player", true);
+        RenderPlayer(state.Players[1], board, hud, "Opp", false);
+
+        string phase = state.CurrentPhase + " Phase";
+        SetText(hud, "TurnPhaseHUD/TurnText", "Turn " + state.TurnNumber);
+        SetText(hud, "TurnPhaseHUD/PhaseText", phase);
+        SetText(overlay, "SettingsOverlay/TurnPhaseText",
+            "Turn " + state.TurnNumber + " - " + phase);
+        SetText(overlay, "SettingsOverlay/PlayerHpText",
+            "LP: " + state.Players[0].Health);
+        SetText(overlay, "SettingsOverlay/OpponentHpText",
+            "LP: " + state.Players[1].Health);
+    }
+
+    private void RenderPlayer(
+        PlayerState player,
+        Transform board,
+        Transform hud,
+        string side,
+        bool isLocalPlayer)
+    {
+        SetText(hud, side + "_HUD/LpText", "LP:" + player.Health);
+        SetText(hud, side + "_EnergyWidget/ValueText",
+            player.AvailableEnergy.ToString());
+        SetText(board, side + "_PileColumn/" + side + "_DeckZone/CountText",
+            player.Deck.Count.ToString());
+        SetText(board, side + "_PileColumn/" + side + "_GraveyardZone/CountText",
+            player.Graveyard.Count.ToString());
+
+        RenderHand(player.Hand, board, side, isLocalPlayer);
+        RenderZones(player.MonsterZones, board, side + "_MonsterRow",
+            side + "_MonsterZone_", true);
+        RenderZones(player.SpellTrapZones, board, side + "_SpellTrapRow",
+            side + "_SpellTrapZone_", false);
+    }
+
+    private void RenderHand(
+        IReadOnlyList<CardInstance> hand,
+        Transform board,
+        string side,
+        bool isLocalPlayer)
+    {
+        Transform content = board.Find(side + "_HandArea/HandContent");
+        Transform template = content != null
+            ? content.Find("HandCardSlot_Template")
+            : null;
+        if (template == null)
+        {
+            Debug.LogError(side + " hand template is missing.", this);
+            return;
+        }
+
+        for (int i = 0; i < hand.Count; i++)
+        {
+            GameObject slot = Instantiate(template.gameObject, content);
+            slot.name = "HandCardSlot_" + hand[i].InstanceId;
+            displayedCards.Add(slot);
+            Transform placeholder = slot.transform.Find("PlaceholderText");
+            if (placeholder != null)
+                placeholder.gameObject.SetActive(false);
+
+            // The saved template is 175x245, exactly 70% of a 250x350 card.
+            CreateCard(hand[i], slot.transform, 0.7f, false, !isLocalPlayer);
+            slot.SetActive(true);
+        }
+    }
+
+    private void RenderZones(
+        IReadOnlyList<CardInstance> cards,
+        Transform board,
+        string rowName,
+        string zonePrefix,
+        bool monsterRow)
+    {
+        for (int i = 0; i < cards.Count; i++)
+        {
+            if (cards[i] == null)
+                continue;
+
+            Transform anchor = board.Find(rowName + "/" + zonePrefix + i + "/CardAnchor");
+            if (anchor == null)
+            {
+                Debug.LogError("Missing CardAnchor in " + zonePrefix + i, this);
+                continue;
+            }
+
+            bool defense = monsterRow && cards[i].BattlePosition == BattlePosition.Defense;
+            // Existing CardAnchor is already scaled to 60% by the scene.
+            CreateCard(cards[i], anchor, 1f, defense, cards[i].IsFaceDown);
+        }
+    }
+
+    private void CreateCard(
+        CardInstance instance,
+        Transform parent,
+        float scale,
+        bool defense,
+        bool faceDown)
+    {
+        if (!cardsById.TryGetValue(instance.Definition.CardId, out CardData cardData))
+        {
+            Debug.LogWarning("No visual CardData for " + instance.Definition.CardId, this);
+            return;
+        }
+
+        GameObject prefab = cardData.Category == CardCategory.Monster
+            ? monsterCardPrefab
+            : spellTrapCardPrefab;
+        GameObject card = Instantiate(prefab, parent);
+        card.name = "Card_" + instance.InstanceId;
+        displayedCards.Add(card);
+
+        RectTransform rect = card.GetComponent<RectTransform>();
+        rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = Vector2.zero;
+        rect.sizeDelta = new Vector2(250f, 350f);
+        rect.localScale = Vector3.one * scale;
+        rect.localRotation = Quaternion.Euler(0f, 0f, defense ? 90f : 0f);
+
+        CardView view = card.GetComponent<CardView>();
+        view.SetCardData(cardData);
+        view.SetFaceDown(faceDown);
+    }
+
+    private bool ValidateSetup()
+    {
+        if (sampleCards == null || sampleCards.Length == 0 ||
+            monsterCardPrefab == null || spellTrapCardPrefab == null)
+        {
+            Debug.LogError("Sample cards and both card prefabs are required.", this);
+            return false;
+        }
+
+        cardsById.Clear();
+        foreach (CardData card in sampleCards)
+        {
+            if (card == null || string.IsNullOrEmpty(card.CardId) ||
+                cardsById.ContainsKey(card.CardId))
+            {
+                Debug.LogError("Sample cards must have unique, nonempty Card IDs.", this);
+                return false;
+            }
+            cardsById.Add(card.CardId, card);
+        }
+        return true;
+    }
+
+    private void ClearDisplayedCards()
+    {
+        foreach (GameObject card in displayedCards)
+            if (card != null)
+                Destroy(card);
+        displayedCards.Clear();
+    }
+
+    private void SetText(Transform root, string path, string value)
+    {
+        Transform target = FindPath(root, path);
+        TMP_Text label = target != null ? target.GetComponent<TMP_Text>() : null;
+        if (label != null)
+            label.text = value;
+        else
+            Debug.LogWarning("Read-only UI label missing: " + path, this);
+    }
+
+    private static Transform FindPath(Transform root, string path)
+    {
+        Transform current = root;
+        foreach (string part in path.Split('/'))
+        {
+            Transform next = current.Find(part);
+            if (next == null)
+                next = FindDescendant(current, part);
+            if (next == null)
+                return null;
+            current = next;
+        }
+        return current;
+    }
+
+    private static Transform FindDescendant(Transform parent, string name)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.name == name)
+                return child;
+            Transform nested = FindDescendant(child, name);
+            if (nested != null)
+                return nested;
+        }
+        return null;
+    }
+}

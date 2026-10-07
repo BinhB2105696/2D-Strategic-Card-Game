@@ -16,7 +16,7 @@ public static class NormalSpellDiagnostics
         {
             Debug.LogError(
                 "Normal Spell test requires Sample_Arcane_Insight with its " +
-                "EffectData reference. Run Card Game > Sample Cards > " +
+                "component effect. Run Card Game > Sample Cards > " +
                 "Create Missing Sample Cards first.");
             return;
         }

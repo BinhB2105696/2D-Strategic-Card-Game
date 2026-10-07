@@ -5,6 +5,8 @@ using System.Collections.Generic;
 public sealed class GameState
 {
     private readonly PlayerState[] players;
+    private readonly Dictionary<string, int> effectUses =
+        new Dictionary<string, int>();
 
     public GameConfig Config { get; }
     public SeededGameRandom Random { get; }
@@ -79,6 +81,47 @@ public sealed class GameState
     {
         IsFinished = true;
         WinnerPlayerIndex = winnerPlayerIndex;
+    }
+
+    internal bool CanUseEffect(
+        EffectDefinition effect,
+        int playerIndex,
+        CardInstance source)
+    {
+        if (effect.MaxUses == 0)
+            return true;
+
+        return !effectUses.TryGetValue(
+            EffectUseKey(effect, playerIndex, source), out int count) ||
+            count < effect.MaxUses;
+    }
+
+    internal void RecordEffectUse(
+        EffectDefinition effect,
+        int playerIndex,
+        CardInstance source)
+    {
+        if (effect.MaxUses == 0)
+            return;
+
+        string key = EffectUseKey(effect, playerIndex, source);
+        effectUses.TryGetValue(key, out int count);
+        effectUses[key] = count + 1;
+    }
+
+    private string EffectUseKey(
+        EffectDefinition effect,
+        int playerIndex,
+        CardInstance source)
+    {
+        string identity = effect.CountBy == EffectUsageScope.PerCardId
+            ? "card:" + source.Definition.CardId
+            : "instance:" + source.InstanceId;
+        string period = effect.Reset == EffectUsageReset.PerTurn
+            ? "turn:" + TurnNumber
+            : "match";
+        return playerIndex + "/" + period + "/" + identity +
+            "/" + effect.EffectId;
     }
 
     private PlayerState CreatePlayer(

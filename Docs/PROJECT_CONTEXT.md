@@ -217,7 +217,7 @@ Resolve end-of-turn effects and pass control to the opponent.
 - Spell is Speed 1; Normal Trap is Speed 2; Counter Trap is Speed 3.
 - Activation Speed must be derived from card category/type, not entered inconsistently by hand.
 - Start with a simple last-in-first-out chain and avoid premature generalization.
-- Activation costs are structured inside each EffectData referenced by a card.
+- Activation costs are structured as component slots in each CardData effect.
 - A standard Spell/Trap activated from Hand requires an appropriate empty zone
   and first moves onto the field. Cost and effect then resolve from the field.
 - A resolved Normal Spell moves from its shared Spell/Trap Zone to Graveyard
@@ -430,8 +430,13 @@ Verified checkpoints:
   action logging, Energy allocation, summon, tribute, and position actions work.
 - Step 4 combat rules foundation: **complete and smoke-tested**; board UI is in
   progress and a full hot-seat match remains the next playable milestone.
-- Effect architecture foundation: **in progress**; EffectData is a separate
-  Unity authoring asset converted into pure EffectDefinition data. The first
+- Read-only board preview: the Unity sample scene now displays a seeded match's
+  hands, zone cards, LP, Energy, deck/graveyard counts, turn, and phase during
+  Editor Play Mode. Opponent hand cards remain face-down. The preview does not
+  submit GameActions; phase and settings controls are still UI prototypes.
+- Effect architecture foundation: **in progress**; CardData contains effect
+  entries assembled from reusable component assets and converted to pure
+  EffectDefinition data. The first
   Normal Spell supports an Available Energy cost, Draw Cards, movement through
   a Spell/Trap Zone, and final movement to Graveyard, verified in Unity.
 

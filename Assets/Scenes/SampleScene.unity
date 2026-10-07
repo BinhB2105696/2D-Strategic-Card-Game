@@ -3995,7 +3995,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.047058824, g: 0.13333334, b: 0.29411766, a: 0.78431374}
+  m_Color: {r: 0.047058824, g: 0.13333334, b: 0.29411766, a: 0.8627451}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -6800,7 +6800,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Player
+  m_text: Opponent
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: cb0b3f911c417274fb50f06ca23ad0d7, type: 2}
   m_sharedMaterial: {fileID: -7615366240013093389, guid: cb0b3f911c417274fb50f06ca23ad0d7, type: 2}
@@ -7286,7 +7286,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.11764706, g: 0.34901962, b: 0.5686275, a: 0.9019608}
+  m_Color: {r: 0.5686275, g: 0.1764706, b: 0.23529412, a: 0.9019608}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -7368,7 +7368,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: PLAYER
+  m_text: OPP
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: cb0b3f911c417274fb50f06ca23ad0d7, type: 2}
   m_sharedMaterial: {fileID: -7615366240013093389, guid: cb0b3f911c417274fb50f06ca23ad0d7, type: 2}

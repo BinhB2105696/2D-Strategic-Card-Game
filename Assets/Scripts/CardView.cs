@@ -87,6 +87,9 @@ public class CardView : MonoBehaviour
 
     public void SetFaceDown(bool faceDown)
     {
+        // Keep the requested state when Start runs after a runtime card is spawned.
+        startFaceDown = faceDown;
+
         if (cardBackImage == null)
         {
             Debug.LogWarning(

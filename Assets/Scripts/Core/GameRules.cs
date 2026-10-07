@@ -527,21 +527,27 @@ public static class GameRules
 
         if (spell.Definition.Effects.Count != 1)
         {
-            return "The first Normal Spell slice requires exactly one EffectData.";
+            return "The current Normal Spell action requires exactly one effect.";
         }
 
         EffectDefinition effect = spell.Definition.Effects[0];
 
-        if (effect.Trigger != EffectTriggerType.ManualActivation ||
-            effect.ActivationPhase != TurnPhase.Main)
+        if (effect.Kind != EffectKind.Activated ||
+            effect.Trigger != EffectTriggerType.ManualActivation ||
+            (effect.AllowedPhases & EffectPhaseMask.Main) == 0 ||
+            effect.AllowedTurn != EffectTurnScope.YourTurn ||
+            effect.ActivationWindow != EffectActivationWindow.OpenGameState)
         {
-            return "This EffectData is not a manual Main Phase effect.";
+            return "This is not a manual Main Phase effect.";
         }
 
-        if (effect.MaxUsesPerTurn != 0)
+        if (!state.CanUseEffect(effect, action.PlayerIndex, spell))
         {
-            return "Per-turn effect limits are not implemented yet.";
+            return "This effect has reached its usage limit.";
         }
+
+        if (effect.ContinuousModifiers.Count != 0)
+            return "Continuous modifiers do not resolve as a Normal Spell.";
 
         for (int index = 0; index < effect.Conditions.Count; index++)
         {
@@ -571,6 +577,7 @@ public static class GameRules
         }
 
         if (effect.TargetType != EffectTargetType.None ||
+            effect.TargetCount != 0 ||
             action.TargetInstanceId != 0)
         {
             return "Targeted Spell effects are not implemented yet.";
@@ -626,6 +633,8 @@ public static class GameRules
         {
             return effectResult;
         }
+
+        state.RecordEffectUse(effect, action.PlayerIndex, spell);
 
         List<GameEvent> events = new List<GameEvent>
         {

@@ -53,8 +53,11 @@ message from charging a cost and leaving a half-resolved action.
 
 ## 3. Current C# contracts
 
-- `EffectData`: Unity authoring asset referenced by one or more CardData assets.
-  It stores activation, conditions, costs, target rules, and operations.
+- `CardEffectData`: one effect entry embedded in `CardData`. It stores kind,
+  trigger/timing, component slots, and optional usage limit.
+- `EffectConditionAsset`, `EffectCostAsset`, `EffectTargetAsset`,
+  `EffectResolutionAsset`, and `ContinuousModifierAsset`: reusable Unity assets
+  assigned to the matching slots. The sample assets are Pay Energy and Draw Cards.
 - `EffectDefinition`: immutable pure-C# copy used by the running match. It has
   no Sprite, ScriptableObject, GameObject, or other presentation dependency.
 - `EffectContext`: the match, activating player, source instance, and selected
@@ -65,17 +68,22 @@ message from charging a cost and leaving a half-resolved action.
 - `ICardEffect`: resolves the gameplay change and appends `GameEvent` results.
 - `EffectResolver`: performs the shared validation and resolution order.
 
-`CardData` references complete `EffectData` assets instead of embedding a loose
-list of operations. One card may reference multiple effects, and a reusable
-effect may be referenced by multiple cards when that sharing is intentional.
+`CardData` owns an ordered list of effect entries. Each entry references
+reusable components; it does not reference a whole-effect asset. Components
+are organized under `Assets/Data/EffectComponents` by role.
 
 The visible Effect Text remains authored for the player and should mention
 costs clearly. Rules never parse that prose. Machine-readable costs and
-operations live in EffectData and are validated separately.
+operations live in the component slots and are validated separately.
+
+`Max Uses = 0` means unlimited. Otherwise Count By selects per-instance or
+per-card-ID counting, and Reset selects per-turn or per-match counting.
 
 Only Manual Activation in Main Phase, Available Energy cost, no target, and
-Draw Cards are executable in the first slice. Other enum values reserve the
-shape of future data and must be rejected clearly until implemented.
+Draw Cards are executable in the first slice. Continuous modifiers, response
+windows, other triggers/conditions/targets/operations, and multi-effect
+activation have authoring slots but are not executable yet. Unsupported
+combinations must be rejected clearly until implemented.
 
 ## 4. First implementation slice
 
@@ -84,7 +92,8 @@ The recommended first playable slice is:
 1. Activate a Normal Spell from hand during Main Phase.
 2. Require and select an empty shared Spell/Trap Zone.
 3. Move the Spell from Hand to that zone face-up.
-4. Load its referenced EffectData as a pure EffectDefinition.
+4. Convert its embedded effect and referenced components into an
+   `EffectDefinition`.
 5. Pay its Available Energy cost.
 6. Resolve the reusable Draw Cards operation.
 7. Move the resolved Spell from its zone to Graveyard face-down.

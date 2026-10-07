@@ -175,7 +175,7 @@ The planned architecture separates game logic from Unity presentation:
 ```text
 GAME DATA
 ├── CardData
-├── EffectData
+├── CardEffectData + reusable effect components
 └── DeckData
       ↓
 GAME LOGIC

@@ -27,4 +27,21 @@ MonoBehaviour:
   spellType: 0
   trapType: 0
   effects:
-  - {fileID: 11400000, guid: 2f87de4f9fce2964fac484ca786fffe6, type: 2}
+  - effectId: sample_arcane_insight_effect_0
+    effectKind: 0
+    trigger: 0
+    allowedPhases: 4
+    allowedTurn: 0
+    activationWindow: 0
+    conditions: []
+    costs:
+    - component: {fileID: 11400000, guid: 5d1203d777274285bd8e17473215d35e, type: 2}
+      amount: 1
+    targets: []
+    resolution:
+    - component: {fileID: 11400000, guid: 6907c02ae32e40218146ba8a36426674, type: 2}
+      amount: 1
+    continuousModifiers: []
+    maxUses: 0
+    countBy: 0
+    reset: 0

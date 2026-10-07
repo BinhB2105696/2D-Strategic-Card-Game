@@ -6,7 +6,8 @@ public enum EffectTriggerType
     ManualActivation,
     OnSummoned,
     OnDestroyed,
-    StandbyPhase
+    StandbyPhase,
+    OnSpellTrapActivated
 }
 
 public enum EffectConditionType
@@ -91,22 +92,36 @@ public sealed class EffectDefinition
 
     public string EffectId { get; }
     public EffectTriggerType Trigger { get; }
-    public TurnPhase ActivationPhase { get; }
+    public EffectKind Kind { get; }
+    public EffectPhaseMask AllowedPhases { get; }
+    public EffectTurnScope AllowedTurn { get; }
+    public EffectActivationWindow ActivationWindow { get; }
     public IReadOnlyList<EffectConditionDefinition> Conditions { get; }
     public IReadOnlyList<EffectCostDefinition> Costs { get; }
     public EffectTargetType TargetType { get; }
+    public int TargetCount { get; }
     public IReadOnlyList<EffectOperationDefinition> Operations { get; }
-    public int MaxUsesPerTurn { get; }
+    public int MaxUses { get; }
+    public EffectUsageScope CountBy { get; }
+    public EffectUsageReset Reset { get; }
+    public IReadOnlyList<IContinuousModifier> ContinuousModifiers { get; }
 
     public EffectDefinition(
         string effectId,
         EffectTriggerType trigger,
-        TurnPhase activationPhase,
+        EffectKind kind,
+        EffectPhaseMask allowedPhases,
+        EffectTurnScope allowedTurn,
+        EffectActivationWindow activationWindow,
         IReadOnlyList<EffectConditionDefinition> conditions,
         IReadOnlyList<EffectCostDefinition> costs,
         EffectTargetType targetType,
+        int targetCount,
         IReadOnlyList<EffectOperationDefinition> operations,
-        int maxUsesPerTurn = 0)
+        int maxUses = 0,
+        EffectUsageScope countBy = EffectUsageScope.PerInstance,
+        EffectUsageReset reset = EffectUsageReset.PerTurn,
+        IReadOnlyList<IContinuousModifier> continuousModifiers = null)
     {
         if (string.IsNullOrWhiteSpace(effectId))
         {
@@ -117,12 +132,22 @@ public sealed class EffectDefinition
 
         EffectId = effectId;
         Trigger = trigger;
-        ActivationPhase = activationPhase;
+        Kind = kind;
+        AllowedPhases = allowedPhases;
+        AllowedTurn = allowedTurn;
+        ActivationWindow = activationWindow;
         Conditions = CopyList(conditions, NoConditions, nameof(conditions));
         Costs = CopyList(costs, NoCosts, nameof(costs));
         TargetType = targetType;
+        TargetCount = Math.Max(0, targetCount);
         Operations = CopyList(operations, NoOperations, nameof(operations));
-        MaxUsesPerTurn = Math.Max(0, maxUsesPerTurn);
+        MaxUses = Math.Max(0, maxUses);
+        CountBy = countBy;
+        Reset = reset;
+        ContinuousModifiers = CopyList(
+            continuousModifiers,
+            new IContinuousModifier[0],
+            nameof(continuousModifiers));
     }
 
     private static IReadOnlyList<T> CopyList<T>(
