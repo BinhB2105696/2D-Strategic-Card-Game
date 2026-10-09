@@ -303,7 +303,7 @@ This structure may change as implementation progresses.
 - [x] Portrait board layout and seeded match state preview
 - [x] Turn-specific phase/step skip rules and reusable next-opponent-Draw operation
 - [ ] Remaining Spell/Trap types, targeting, and chain system
-- [ ] Playable board UI and local hot-seat match
+- [x] Playable board UI and core local hot-seat match
 - [ ] Initial cards and decks
 - [ ] Easy Bot
 - [ ] Normal Bot
@@ -327,21 +327,26 @@ This document is intended to be updated whenever important gameplay, architectur
 
 ## Current Status
 
-The repository and Unity project have been initialized using Unity 2022.3 LTS.
+The repository and Unity project use Unity 2022.3.62f3 LTS.
 
-As of 7 October 2026, card authoring and presentation, runtime instances,
-seeded match setup, turn flow, Energy, summons, combat, action/event logging,
-and the first Normal Spell flow are implemented and smoke-tested. The portrait
-board has Deck, Graveyard, Field, Hand, HUD, and zone presentation; a sample
-match displays real state. The phase controls have code bindings, but their
-full Play-mode interaction still needs verification. Card selection and action
-menus, a complete local match through the UI, remaining Spell/Trap types,
-bots, simulation metrics, online PvP, and platform builds are not complete.
+As of 9 October 2026, the core Monster and Normal Spell duel loop is playable
+as a local hot-seat match through the portrait UI. The student has verified
+automatic turn-start steps, phase controls, card selection, basic and tribute
+summons, Energy allocation, position changes, Normal Spell activation, attacks,
+damage, Graveyard movement, perspective changes, and winner detection in Play
+Mode. The hand layout, Monster Zone combat HUD, modal ordering, and mirrored
+opponent zone presentation are also connected to the live `GameState`.
+
+This is not yet a representative all-card-types match. Equip and Field Spells,
+Normal and Counter Traps, targeting beyond attacks, response windows, the
+simple chain system, representative decks, bots, simulation metrics, online
+PvP, platform builds, and event-driven animation remain incomplete.
 
 The December thesis schedule and dated milestones are in
-`Docs/PROJECT_CONTEXT.md`. Start a new development chat by reading
-`Docs/HANDOFF_2026-10-07.md`, then the context and relevant code. Preserve the
-Tier 1 scope unless the student explicitly changes it.
+`Docs/PROJECT_CONTEXT.md`. The dated `Docs/HANDOFF_2026-10-07.md` records the
+earlier integration state; use the newer progress section in Project Context
+when they differ. Preserve the Tier 1 scope unless the student explicitly
+changes it.
 
 Detailed gameplay rules, current design decisions, implementation progress, and development constraints are maintained in:
 

@@ -1,6 +1,6 @@
 # PROJECT CONTEXT
 
-> Last updated: 7 October 2026
+> Last updated: 9 October 2026
 >
 > Status tags:
 > - **[CONFIRMED]**: implement as written unless the user changes it.
@@ -421,22 +421,36 @@ Completed or explored:
 - The portrait board uses a 1080x1920 Canvas, SafeAreaRoot, separate
   Board/HUD/Overlay layers, four 3-slot rows, and zones with independent
   Border, HitArea, CardAnchor, and Highlight children. Deck, Graveyard, Field,
-  Hand, HUD, turn/phase, LP, and Energy have sample presentation. The sample
-  duel renders seeded GameState; card interaction and animations remain open.
+  Hand, HUD, turn/phase, LP, Energy, and live card state are presented from the
+  active player's perspective. Opponent Monster and Spell/Trap Zone indices are
+  mirrored for the rotated perspective without changing logical zone indices.
+- The local hot-seat UI now submits validated GameActions for phase changes,
+  basic and tribute summons, Energy allocation, position changes, attacks, and
+  the existing Normal Spell flow. Tribute selection, adaptive hand layout,
+  Monster Zone HP/ATK/DEF/Energy status, modal exclusivity, settings layering,
+  and match-result presentation are implemented.
+- By 9 October, the student had verified Play-mode interaction for automatic
+  Recovery/Standby, first-turn Battle disablement, phase confirmation and turn
+  changes, summons and selected tributes, Energy allocation, position changes,
+  Normal Spell draw/cost/Graveyard behavior, combat damage/destruction, LP-zero
+  stopping the match, perspective mirroring, and modal/layer ordering.
 - On 7 October, the student confirmed the Direct End Phase, Recovery Skip,
-  Effect Pipeline, and Skip Opponent Draw smoke tests in Unity. The phase-button
-  code binding has compiled but has not yet been confirmed by a Play-mode
-  interaction report.
+  Effect Pipeline, Skip Opponent Draw, and Normal Spell smoke tests in Unity.
 
 Known next gaps:
 
-1. Bind card selection, targeting, Energy allocation, attacks, and event-driven
-   presentation to core actions. The existing phase controls now drive the
-   sample session, but card interactions remain unbound.
-2. Add Trap, Equip Spell, Field Spell, targeting, and the first simple response
-   and chain handling on top of the verified Normal Spell path.
-3. Add replay loading/state hashes, full hot-seat flow, bots, headless
-   simulation metrics, and networking adapters.
+1. Run a short repeatable regression of the complete current hot-seat path,
+   including the match-result overlay. Presentation still refreshes directly
+   to final state; accepted GameEvents are not yet animated or queued.
+2. Generalize the Normal-Spell-specific activation action into a small shared
+   Spell/Trap lifecycle with target selection and persistent-card support.
+   Then add one vertical slice each for Equip Spell and Field Spell before
+   implementing Trap set/activate, response windows, and the Speed 1/2/3 LIFO
+   chain. Do not create many disconnected effect scripts ahead of these flows.
+3. Add representative cards and fixed sample decks after the shared flows are
+   executable. The current sample deck repeats prototype cards.
+4. Add a shared legal-action enumerator/view, Easy and Normal bots, headless
+   simulation/CSV metrics, replay loading/state hashes, and networking adapters.
 
 ## 16. Roadmap
 
@@ -447,14 +461,16 @@ Verified checkpoints:
   initialization, players, deck shuffle/draw/hand, and basic state: **complete**.
 - Step 3 turn/action foundation: **complete and smoke-tested**; phase flow,
   action logging, Energy allocation, summon, tribute, and position actions work.
-- Step 4 combat rules foundation: **complete and smoke-tested**; board UI is in
-  progress and a full hot-seat match remains the next playable milestone.
-- Sample board preview: the Unity sample scene now displays a seeded match's
-  hands, zone cards, LP, Energy, deck/graveyard counts, turn, and phase during
-  Editor Play Mode. Opponent hand cards remain face-down. Automatic Recovery
-  steps and the transition through Standby submit GameActions to reach Main.
-  The existing Battle and End controls now submit phase actions after confirmation
-  and refresh the board; settings and card interactions remain prototypes.
+- Step 4 combat/local-play foundation: **complete for the Monster + Normal
+  Spell slice and verified in Play Mode**. A local hot-seat match can proceed
+  through phase controls, card actions, combat, perspective changes, and LP-zero
+  winner detection. A brief repeatable full-match regression remains useful,
+  while the remaining card categories belong to Step 5.
+- Playable board UI: the Unity sample scene displays and interacts with a seeded
+  match's hands, zone cards, LP, Energy, deck/graveyard counts, turn, and phase.
+  Opponent hands remain face-down; opponent zones mirror horizontally as the
+  active-player perspective changes. Settings, Phase, and card-action modals
+  have explicit runtime sorting and mutually exclusive open states.
 - Effect architecture foundation: **in progress**; CardData contains effect
   entries assembled from reusable component assets and converted to pure
   EffectDefinition data. The first
@@ -474,9 +490,12 @@ Verified checkpoints:
 | 9 | 25 Nov-early Dec | Feature freeze, final experiments, report, defense preparation | Final build and thesis materials |
 
 If schedule slips, reduce extra cards, polish, Hard Bot, and ML before compromising Tier 1 stability.
-As of 7 October, Step 4's playable local match is the immediate critical path;
-do not substitute isolated effect components or more smoke tests for that
-integration milestone. Tests remain verification for each finished slice.
+As of 9 October, the core Step 4 local-play slice is working ahead of its dated
+target. The immediate critical path is to close its regression check and build
+Step 5 as executable vertical card flows: shared activation/targeting and
+persistent lifetime first, then Trap response windows and a simple chain.
+Do not substitute isolated effect components or more smoke tests for those
+integration milestones. Tests remain verification for each finished slice.
 
 ## 17. Change Management
 
