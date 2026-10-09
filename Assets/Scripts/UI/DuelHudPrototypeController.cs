@@ -116,7 +116,18 @@ public class DuelHudPrototypeController : MonoBehaviour
             RefreshPhaseControls(state);
 
         bool becomesVisible = phaseChoices != null && !phaseChoices.activeSelf;
+        if (becomesVisible)
+        {
+            CloseCardWindows();
+            SetSettingsVisible(false);
+        }
         SetPhaseChoicesVisible(becomesVisible);
+    }
+
+    public void PrepareForCardSelection()
+    {
+        SetPhaseChoicesVisible(false);
+        SetSettingsVisible(false);
     }
 
     public void RefreshPhaseControls(GameState state)
@@ -188,6 +199,7 @@ public class DuelHudPrototypeController : MonoBehaviour
 
     private void OpenSettings()
     {
+        CloseCardWindows();
         SetPhaseChoicesVisible(false);
         SetSettingsVisible(true);
         ShowDuelLogTab();
@@ -344,5 +356,15 @@ public class DuelHudPrototypeController : MonoBehaviour
         {
             confirmationPopup.SetActive(visible);
         }
+    }
+
+    private void CloseCardWindows()
+    {
+        DuelBoardReadOnlyDemo board =
+            GetComponentInParent<DuelBoardReadOnlyDemo>();
+        DuelCardInteractionController cardInteraction = board != null
+            ? board.GetComponent<DuelCardInteractionController>()
+            : null;
+        cardInteraction?.CloseAllCardWindows();
     }
 }

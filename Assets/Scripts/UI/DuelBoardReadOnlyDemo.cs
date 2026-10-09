@@ -200,9 +200,9 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
 
         RenderHand(player.Hand, board, side, isLocalPlayer);
         RenderZones(player.MonsterZones, board, side + "_MonsterRow",
-            side + "_MonsterZone_", true, true);
+            side + "_MonsterZone_", true, true, !isLocalPlayer);
         RenderZones(player.SpellTrapZones, board, side + "_SpellTrapRow",
-            side + "_SpellTrapZone_", false, true);
+            side + "_SpellTrapZone_", false, true, !isLocalPlayer);
     }
 
     private void RenderHand(
@@ -257,14 +257,21 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         string rowName,
         string zonePrefix,
         bool monsterRow,
-        bool allowInteraction)
+        bool allowInteraction,
+        bool mirrorZoneOrder)
     {
         for (int i = 0; i < cards.Count; i++)
         {
-            Transform zone = board.Find(rowName + "/" + zonePrefix + i);
+            int displayZoneIndex = mirrorZoneOrder
+                ? cards.Count - 1 - i
+                : i;
+            Transform zone = board.Find(
+                rowName + "/" + zonePrefix + displayZoneIndex);
             if (zone == null)
             {
-                Debug.LogError("Missing zone " + zonePrefix + i, this);
+                Debug.LogError(
+                    "Missing zone " + zonePrefix + displayZoneIndex,
+                    this);
                 continue;
             }
 
@@ -342,8 +349,14 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         EnsureOverrideCanvas(board.Find("Player_HandArea"), 10, true);
         EnsureOverrideCanvas(board.Find("Opp_HandArea"), 10, true);
         EnsureOverrideCanvas(hud.Find("TurnPhaseHUD"), 20, true);
+        EnsureOverrideCanvas(hud.Find("SettingsButton"), 20, true);
         EnsureOverrideCanvas(hud.Find("PhaseControl"), 20, true);
         EnsureOverrideCanvas(overlay, 30, true);
+        EnsureOverrideCanvas(overlay.Find("SettingsOverlay"), 50, true);
+        EnsureOverrideCanvas(
+            overlay.Find("PhaseConfirmationPopup"),
+            60,
+            true);
     }
 
     private static void EnsureOverrideCanvas(

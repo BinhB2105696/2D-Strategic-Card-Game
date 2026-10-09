@@ -42,7 +42,6 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         new Dictionary<long, GameObject>();
     private readonly List<long> selectedTributes = new List<long>();
     private CardInstance selectedCard;
-    private BattlePosition pendingSummonPosition;
     private Button tributeConfirmButton;
 
     public void Initialize(DuelBoardReadOnlyDemo duelBoard)
@@ -133,6 +132,11 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         LayoutPanelButtons(detailButtons);
     }
 
+    public void CloseAllCardWindows()
+    {
+        CloseSelection();
+    }
+
     private void SelectCard(CardInstance card)
     {
         if (state == null || state.IsFinished || card == null)
@@ -144,6 +148,9 @@ public sealed class DuelCardInteractionController : MonoBehaviour
             return;
         }
 
+        DuelHudPrototypeController hudController =
+            GetComponentInChildren<DuelHudPrototypeController>(true);
+        hudController?.PrepareForCardSelection();
         selectedCard = card;
         ShowActions(string.Empty);
     }
@@ -455,7 +462,7 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         {
             AddButton(
                 "Attack Position",
-                () => ChooseSummonPosition(BattlePosition.Attack));
+                () => SubmitSummon(BattlePosition.Attack));
         }
 
         GameAction defenseSummon = FindPreferredSummon(
@@ -466,7 +473,7 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         {
             AddButton(
                 "Defense Position",
-                () => ChooseSummonPosition(BattlePosition.Defense));
+                () => SubmitSummon(BattlePosition.Defense));
         }
 
         AddButton("Cancel", CancelCardWorkflow);
@@ -476,17 +483,11 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         actionText.fontSize = 25f;
     }
 
-    private void ChooseSummonPosition(BattlePosition position)
-    {
-        pendingSummonPosition = position;
-        ShowSummonConfirmation();
-    }
-
-    private void ShowSummonConfirmation()
+    private void SubmitSummon(BattlePosition position)
     {
         GameAction action = FindPreferredSummon(
             selectedCard,
-            pendingSummonPosition,
+            position,
             selectedTributes);
         if (action == null)
         {
@@ -494,38 +495,7 @@ public sealed class DuelCardInteractionController : MonoBehaviour
             return;
         }
 
-        SetPanelVisible(false);
-        ClearDetailRuntime();
-        detailPanel.SetActive(true);
-
-        string positionName = pendingSummonPosition == BattlePosition.Attack
-            ? "Attack Position"
-            : "Defense Position";
-        string tributeText = selectedTributes.Count == 0
-            ? "No tribute"
-            : "Tribute " + BuildTributeNames(selectedTributes);
-        detailText.text = "Confirm Summon\n" + tributeText +
-            " to summon " + selectedCard.Definition.CardName +
-            " in " + positionName + " at " +
-            GetZoneName(action.ZoneIndex) + "?";
-
-        GameAction confirmedAction = action;
-        AddPanelButton(
-            detailButtonArea,
-            detailButtons,
-            "Confirm",
-            () => Submit(confirmedAction));
-        AddPanelButton(
-            detailButtonArea,
-            detailButtons,
-            "Back",
-            ShowSummonPositionChoices);
-        AddPanelButton(
-            detailButtonArea,
-            detailButtons,
-            "Cancel",
-            CancelCardWorkflow);
-        LayoutPanelButtons(detailButtons);
+        Submit(action);
     }
 
     private void ShowEnergyAllocation()
@@ -570,16 +540,12 @@ public sealed class DuelCardInteractionController : MonoBehaviour
 
     private void CancelEnergyAllocation()
     {
-        CloseEnergyPanel();
-        ShowActions(string.Empty);
+        CloseSelection();
     }
 
     private void CancelCardWorkflow()
     {
-        selectedTributes.Clear();
-        CloseDetailPanel();
-        CloseEnergyPanel();
-        ShowActions(string.Empty);
+        CloseSelection();
     }
 
     private void Submit(GameAction action)
@@ -636,45 +602,12 @@ public sealed class DuelCardInteractionController : MonoBehaviour
             card.Definition.AttackEnergyRequirement;
     }
 
-    private string BuildTributeNames(
-        IReadOnlyList<long> tributes)
-    {
-        PlayerState player = state.Players[state.CurrentPlayerIndex];
-        string result = string.Empty;
-        for (int index = 0; index < tributes.Count; index++)
-        {
-            int zoneIndex = FindMonsterZoneIndex(player, tributes[index]);
-            CardInstance monster = zoneIndex >= 0
-                ? player.MonsterZones[zoneIndex]
-                : null;
-            if (index > 0)
-                result += " and ";
-            result += monster != null
-                ? monster.Definition.CardName
-                : "Unknown Monster";
-        }
-        return result;
-    }
-
     private static long[] ToArray(IReadOnlyList<long> values)
     {
         long[] result = new long[values.Count];
         for (int index = 0; index < values.Count; index++)
             result[index] = values[index];
         return result;
-    }
-
-    private static string GetZoneName(int zoneIndex)
-    {
-        switch (zoneIndex)
-        {
-            case 1:
-                return "Center Zone";
-            case 2:
-                return "Right Zone";
-            default:
-                return "Left Zone";
-        }
     }
 
     private static int FindMonsterZoneIndex(
