@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 // Displays a real GameSession using the sample scene's existing UI.
 // The phase controls can submit actions; card interactions remain prototypes.
@@ -19,6 +20,8 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         new Dictionary<string, CardData>();
     private readonly List<GameObject> displayedCards = new List<GameObject>();
     private GameSession session;
+    private DuelCardInteractionController cardInteraction;
+    private TMP_FontAsset runtimeFont;
 
     public GameSession Session => session;
 
@@ -42,6 +45,11 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
 
         try
         {
+            cardInteraction = GetComponent<DuelCardInteractionController>();
+            if (cardInteraction == null)
+                cardInteraction = gameObject.AddComponent<DuelCardInteractionController>();
+            cardInteraction.Initialize(this);
+
             session = GameSession.Create(config, seed, deck, deck);
             if (!ResolveAutomaticTurnStart())
                 return;
@@ -140,8 +148,21 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
             return;
         }
 
-        RenderPlayer(state.Players[0], board, hud, "Player", true);
-        RenderPlayer(state.Players[1], board, hud, "Opp", false);
+        ConfigureRuntimeSorting(board, hud, overlay);
+        if (runtimeFont == null)
+        {
+            TMP_Text sampleText = hud.GetComponentInChildren<TMP_Text>(true);
+            runtimeFont = sampleText != null
+                ? sampleText.font
+                : TMP_Settings.defaultFontAsset;
+        }
+
+        cardInteraction?.BeginRender(state);
+
+        PlayerState activePlayer = state.Players[state.CurrentPlayerIndex];
+        PlayerState opponent = state.Players[1 - state.CurrentPlayerIndex];
+        RenderPlayer(activePlayer, board, hud, "Player", true);
+        RenderPlayer(opponent, board, hud, "Opp", false);
 
         string phase = state.CurrentPhase + " Phase";
         SetText(hud, "TurnPhaseHUD/TurnText", "Turn " + state.TurnNumber);
@@ -149,9 +170,17 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         SetText(overlay, "SettingsOverlay/TurnPhaseText",
             "Turn " + state.TurnNumber + " - " + phase);
         SetText(overlay, "SettingsOverlay/PlayerHpText",
-            "LP: " + state.Players[0].Health);
+            "LP: " + activePlayer.Health);
         SetText(overlay, "SettingsOverlay/OpponentHpText",
-            "LP: " + state.Players[1].Health);
+            "LP: " + opponent.Health);
+
+        DuelHudPrototypeController hudController =
+            GetComponentInChildren<DuelHudPrototypeController>(true);
+        if (hudController != null)
+            hudController.RefreshPhaseControls(state);
+
+        if (state.IsFinished)
+            cardInteraction?.ShowMatchResult(state);
     }
 
     private void RenderPlayer(
@@ -171,9 +200,9 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
 
         RenderHand(player.Hand, board, side, isLocalPlayer);
         RenderZones(player.MonsterZones, board, side + "_MonsterRow",
-            side + "_MonsterZone_", true);
+            side + "_MonsterZone_", true, true);
         RenderZones(player.SpellTrapZones, board, side + "_SpellTrapRow",
-            side + "_SpellTrapZone_", false);
+            side + "_SpellTrapZone_", false, true);
     }
 
     private void RenderHand(
@@ -192,6 +221,12 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
             return;
         }
 
+        DuelHandLayoutController handLayout =
+            content.GetComponent<DuelHandLayoutController>();
+        if (handLayout == null)
+            handLayout = content.gameObject.AddComponent<DuelHandLayoutController>();
+        handLayout.BeginLayout(isLocalPlayer);
+
         for (int i = 0; i < hand.Count; i++)
         {
             GameObject slot = Instantiate(template.gameObject, content);
@@ -202,9 +237,18 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
                 placeholder.gameObject.SetActive(false);
 
             // The saved template is 175x245, exactly 70% of a 250x350 card.
-            CreateCard(hand[i], slot.transform, HandCardScale, false, !isLocalPlayer);
+            CreateCard(
+                hand[i],
+                slot.transform,
+                HandCardScale,
+                false,
+                !isLocalPlayer,
+                isLocalPlayer);
+            handLayout.AddSlot(slot.GetComponent<RectTransform>());
             slot.SetActive(true);
         }
+
+        handLayout.ApplyLayout();
     }
 
     private void RenderZones(
@@ -212,14 +256,32 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         Transform board,
         string rowName,
         string zonePrefix,
-        bool monsterRow)
+        bool monsterRow,
+        bool allowInteraction)
     {
         for (int i = 0; i < cards.Count; i++)
         {
+            Transform zone = board.Find(rowName + "/" + zonePrefix + i);
+            if (zone == null)
+            {
+                Debug.LogError("Missing zone " + zonePrefix + i, this);
+                continue;
+            }
+
+            if (monsterRow)
+            {
+                DuelMonsterZoneStatusView status =
+                    zone.GetComponent<DuelMonsterZoneStatusView>();
+                if (status == null)
+                    status = zone.gameObject.AddComponent<DuelMonsterZoneStatusView>();
+                status.Initialize(runtimeFont);
+                status.SetMonster(cards[i]);
+            }
+
             if (cards[i] == null)
                 continue;
 
-            Transform anchor = board.Find(rowName + "/" + zonePrefix + i + "/CardAnchor");
+            Transform anchor = zone.Find("CardAnchor");
             if (anchor == null)
             {
                 Debug.LogError("Missing CardAnchor in " + zonePrefix + i, this);
@@ -228,7 +290,13 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
 
             bool defense = monsterRow && cards[i].BattlePosition == BattlePosition.Defense;
             // Existing CardAnchor is already scaled to 60% by the scene.
-            CreateCard(cards[i], anchor, 1f, defense, cards[i].IsFaceDown);
+            CreateCard(
+                cards[i],
+                anchor,
+                1f,
+                defense,
+                cards[i].IsFaceDown,
+                allowInteraction && !cards[i].IsFaceDown);
         }
     }
 
@@ -237,7 +305,8 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         Transform parent,
         float scale,
         bool defense,
-        bool faceDown)
+        bool faceDown,
+        bool allowInteraction)
     {
         if (!cardsById.TryGetValue(instance.Definition.CardId, out CardData cardData))
         {
@@ -262,6 +331,37 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         CardView view = card.GetComponent<CardView>();
         view.SetCardData(cardData);
         view.SetFaceDown(faceDown);
+        cardInteraction?.BindCard(instance, card, allowInteraction);
+    }
+
+    private static void ConfigureRuntimeSorting(
+        Transform board,
+        Transform hud,
+        Transform overlay)
+    {
+        EnsureOverrideCanvas(board.Find("Player_HandArea"), 10, true);
+        EnsureOverrideCanvas(board.Find("Opp_HandArea"), 10, true);
+        EnsureOverrideCanvas(hud.Find("TurnPhaseHUD"), 20, true);
+        EnsureOverrideCanvas(hud.Find("PhaseControl"), 20, true);
+        EnsureOverrideCanvas(overlay, 30, true);
+    }
+
+    private static void EnsureOverrideCanvas(
+        Transform target,
+        int sortingOrder,
+        bool needsRaycaster)
+    {
+        if (target == null)
+            return;
+
+        Canvas canvas = target.GetComponent<Canvas>();
+        if (canvas == null)
+            canvas = target.gameObject.AddComponent<Canvas>();
+        canvas.overrideSorting = true;
+        canvas.sortingOrder = sortingOrder;
+
+        if (needsRaycaster && target.GetComponent<GraphicRaycaster>() == null)
+            target.gameObject.AddComponent<GraphicRaycaster>();
     }
 
     private bool ValidateSetup()

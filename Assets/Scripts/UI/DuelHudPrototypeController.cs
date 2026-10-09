@@ -112,8 +112,43 @@ public class DuelHudPrototypeController : MonoBehaviour
 
     private void TogglePhaseChoices()
     {
+        if (TryGetDuel(out _, out GameState state))
+            RefreshPhaseControls(state);
+
         bool becomesVisible = phaseChoices != null && !phaseChoices.activeSelf;
         SetPhaseChoicesVisible(becomesVisible);
+    }
+
+    public void RefreshPhaseControls(GameState state)
+    {
+        bool matchActive = state != null && !state.IsFinished;
+        bool mayOpenPhaseMenu = matchActive &&
+            (state.CurrentPhase == TurnPhase.Main ||
+             state.CurrentPhase == TurnPhase.Battle ||
+             state.CurrentPhase == TurnPhase.End);
+
+        if (phaseMenuButton != null)
+            phaseMenuButton.interactable = mayOpenPhaseMenu;
+
+        if (battlePhaseButton != null)
+        {
+            battlePhaseButton.interactable = matchActive &&
+                state.CurrentPhase == TurnPhase.Main &&
+                state.TurnNumber != 1 &&
+                !state.Players[state.CurrentPlayerIndex]
+                    .IsBattlePhaseSkipScheduled(state.TurnNumber);
+        }
+
+        if (endPhaseButton != null)
+        {
+            endPhaseButton.interactable = matchActive &&
+                (state.CurrentPhase == TurnPhase.Main ||
+                 state.CurrentPhase == TurnPhase.Battle ||
+                 state.CurrentPhase == TurnPhase.End);
+        }
+
+        if (!mayOpenPhaseMenu)
+            SetPhaseChoicesVisible(false);
     }
 
     private void RequestBattlePhase()
