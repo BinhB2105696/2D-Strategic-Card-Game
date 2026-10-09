@@ -12,6 +12,9 @@ public enum GameActionType
     ChangeBattlePosition,
     Attack,
     ActivateNormalSpell,
+    ActivateCard,
+    SetTrap,
+    PassResponse,
     EnterEndPhase
 }
 
@@ -144,6 +147,39 @@ public sealed class GameAction
             spellInstanceId,
             targetInstanceId,
             zoneIndex);
+    }
+
+    public static GameAction ActivateCard(
+        int playerIndex,
+        long cardInstanceId,
+        int zoneIndex = -1,
+        long targetInstanceId = 0)
+    {
+        return new GameAction(
+            GameActionType.ActivateCard,
+            playerIndex,
+            cardInstanceId,
+            targetInstanceId,
+            zoneIndex);
+    }
+
+    public static GameAction SetTrap(
+        int playerIndex,
+        long cardInstanceId,
+        int zoneIndex)
+    {
+        return new GameAction(
+            GameActionType.SetTrap,
+            playerIndex,
+            cardInstanceId,
+            zoneIndex: zoneIndex);
+    }
+
+    public static GameAction PassResponse(int playerIndex)
+    {
+        return new GameAction(
+            GameActionType.PassResponse,
+            playerIndex);
     }
 
     public override string ToString()

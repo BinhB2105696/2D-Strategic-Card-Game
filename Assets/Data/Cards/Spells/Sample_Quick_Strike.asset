@@ -16,7 +16,8 @@ MonoBehaviour:
   cardName: Quick Strike
   category: 1
   artwork: {fileID: 0}
-  effectText: A Normal Spell used to test Spell card presentation.
+  effectText: Pay 1 Energy; target 1 monster you control. It gains 300 ATK until
+    the end of this turn.
   monsterAttribute: 0
   monsterRank: 0
   monsterType: 0
@@ -26,4 +27,25 @@ MonoBehaviour:
   attackEnergyRequirement: 0
   spellType: 0
   trapType: 0
-  energyCost: 1
+  effects:
+  - effectId: effect_quick_strike_attack_boost
+    effectKind: 0
+    trigger: 0
+    allowedPhases: 4
+    allowedTurn: 0
+    activationWindow: 0
+    activationSource: 0
+    conditions: []
+    costs:
+    - component: {fileID: 11400000, guid: 5d1203d777274285bd8e17473215d35e, type: 2}
+      amount: 1
+    targets:
+    - component: {fileID: 11400000, guid: 5d26860cb073c8445b79f4a8f6a2f198, type: 2}
+      amount: 1
+    resolution:
+    - component: {fileID: 11400000, guid: b7ed089b88944834586ef87deb631189, type: 2}
+      amount: 300
+    continuousModifiers: []
+    maxUses: 0
+    countBy: 0
+    reset: 0

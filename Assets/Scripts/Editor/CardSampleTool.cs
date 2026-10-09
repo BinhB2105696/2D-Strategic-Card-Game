@@ -17,6 +17,23 @@ public static class CardSampleTool
     private const string ModifierFolder = ComponentsRoot + "/ContinuousModifiers";
     private const string PayEnergyPath = CostFolder + "/Pay_Energy.asset";
     private const string DrawCardsPath = ResolutionFolder + "/Draw_Cards.asset";
+    private const string OwnMonsterPath = TargetFolder + "/Own_Monster.asset";
+    private const string OpponentMonsterPath =
+        TargetFolder + "/Opponent_Monster.asset";
+    private const string ModifyAttackPath =
+        ModifierFolder + "/Modify_Attack.asset";
+    private const string ModifyDefensePath =
+        ModifierFolder + "/Modify_Defense.asset";
+    private const string ReduceAttackPath =
+        ResolutionFolder + "/Reduce_Attack_Until_End_Of_Turn.asset";
+    private const string NegatePreviousPath =
+        ResolutionFolder + "/Negate_Previous_Activation.asset";
+    private const string IncreaseAttackPath =
+        ResolutionFolder + "/Increase_Attack_Until_End_Of_Turn.asset";
+    private const string IncreaseDefensePath =
+        ResolutionFolder + "/Increase_Defense_Until_End_Of_Turn.asset";
+    private const string RestoreHealthPath =
+        ResolutionFolder + "/Restore_Monster_Health.asset";
 
     [MenuItem("Card Game/Sample Cards/Create Missing Sample Cards")]
     public static void CreateMissingSampleCards()
@@ -80,6 +97,13 @@ public static class CardSampleTool
                 SetInt(card, "baseDefense", 1800);
                 SetInt(card, "attackEnergyRequirement", 3);
             },
+            ref createdCount,
+            ref skippedCount);
+
+        CreateCardIfMissing(
+            MonstersFolder + "/Sample_Tide_Sprite.asset",
+            "sample_tide_sprite",
+            card => ConfigureTideSpriteBaseData(card),
             ref createdCount,
             ref skippedCount);
 
@@ -164,6 +188,7 @@ public static class CardSampleTool
             ref skippedCount);
 
         ConfigureArcaneInsightCard(payEnergy, drawCards);
+        ConfigurePlayableSpellTrapSamplesInternal();
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -171,6 +196,33 @@ public static class CardSampleTool
         Debug.Log(
             $"Sample card generation finished. Created: {createdCount}, " +
             $"skipped existing: {skippedCount}. Run Validate All Card Data next.");
+    }
+
+    [MenuItem("Card Game/Sample Cards/Configure Playable Spell and Trap Samples")]
+    public static void ConfigurePlayableSpellTrapSamples()
+    {
+        EnsureFolder(CardsRoot);
+        EnsureFolder(MonstersFolder);
+        EnsureFolder(SpellsFolder);
+        EnsureFolder(TrapsFolder);
+        EnsureFolder(ComponentsRoot);
+        EnsureFolder(CostFolder);
+        EnsureFolder(TargetFolder);
+        EnsureFolder(ResolutionFolder);
+        EnsureFolder(ModifierFolder);
+        ConfigurePlayableSpellTrapSamplesInternal();
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log(
+            "Playable demo card configuration finished. The fixed deck now " +
+            "has 10 card designs and 3 copies of each design.");
+    }
+
+    [MenuItem("Card Game/Sample Cards/Prepare Fixed Playable Demo Deck")]
+    public static void PrepareFixedPlayableDemoDeck()
+    {
+        ConfigurePlayableSpellTrapSamples();
+        ValidateAllCardData();
     }
 
     [MenuItem("Card Game/Sample Cards/Validate All Card Data")]
@@ -230,6 +282,14 @@ public static class CardSampleTool
             {
                 Debug.LogError(
                     $"Monster must have Base Health greater than 0: {path}",
+                    card);
+                errorCount++;
+            }
+
+            if (card.Effects.Count == 0)
+            {
+                Debug.LogError(
+                    $"Playable sample card has no executable effect: {path}",
                     card);
                 errorCount++;
             }
@@ -401,7 +461,9 @@ public static class CardSampleTool
             errorCount++;
         }
 
-        if (effect.Kind == EffectKind.Activated && effect.Resolution.Count == 0)
+        if (effect.Kind == EffectKind.Activated &&
+            effect.Trigger != EffectTriggerType.EndPhase &&
+            effect.Resolution.Count == 0)
         {
             Debug.LogError($"Activated effect {index} has no resolution: {path}", card);
             errorCount++;
@@ -478,6 +540,412 @@ public static class CardSampleTool
         string value)
     {
         target.FindProperty(propertyName).stringValue = value;
+    }
+
+    private static void ConfigurePlayableSpellTrapSamplesInternal()
+    {
+        PayEnergyCostAsset payEnergy = CreateComponent<PayEnergyCostAsset>(
+            PayEnergyPath);
+        OwnMonsterTargetAsset ownMonster =
+            CreateComponent<OwnMonsterTargetAsset>(OwnMonsterPath);
+        CreateComponent<OpponentMonsterTargetAsset>(OpponentMonsterPath);
+        ModifyAttackContinuousAsset modifyAttack =
+            CreateComponent<ModifyAttackContinuousAsset>(ModifyAttackPath);
+        ModifyDefenseContinuousAsset modifyDefense =
+            CreateComponent<ModifyDefenseContinuousAsset>(ModifyDefensePath);
+        ReduceAttackUntilEndOfTurnResolutionAsset reduceAttack =
+            CreateComponent<ReduceAttackUntilEndOfTurnResolutionAsset>(
+                ReduceAttackPath);
+        NegatePreviousActivationResolutionAsset negatePrevious =
+            CreateComponent<NegatePreviousActivationResolutionAsset>(
+                NegatePreviousPath);
+        IncreaseAttackUntilEndOfTurnResolutionAsset increaseAttack =
+            CreateComponent<IncreaseAttackUntilEndOfTurnResolutionAsset>(
+                IncreaseAttackPath);
+        IncreaseDefenseUntilEndOfTurnResolutionAsset increaseDefense =
+            CreateComponent<IncreaseDefenseUntilEndOfTurnResolutionAsset>(
+                IncreaseDefensePath);
+        RestoreMonsterHealthResolutionAsset restoreHealth =
+            CreateComponent<RestoreMonsterHealthResolutionAsset>(
+                RestoreHealthPath);
+
+        EnsureTideSpriteExists();
+
+        ConfigureIronBlade(payEnergy, ownMonster, modifyAttack);
+        ConfigureTestField(payEnergy, modifyAttack, modifyDefense);
+        ConfigureAmbush(reduceAttack);
+        ConfigureDivineReversal(payEnergy, negatePrevious);
+        ConfigureMonsterSamples(
+            payEnergy,
+            CreateComponent<DrawCardsResolutionAsset>(DrawCardsPath),
+            increaseAttack,
+            increaseDefense,
+            restoreHealth);
+        ConfigureQuickStrike(payEnergy, ownMonster, increaseAttack);
+    }
+
+    private static void ConfigureIronBlade(
+        PayEnergyCostAsset payEnergy,
+        OwnMonsterTargetAsset ownMonster,
+        ModifyAttackContinuousAsset modifyAttack)
+    {
+        CardData card = FindCardById("sample_iron_blade");
+        if (card == null)
+        {
+            Debug.LogWarning("Iron Blade CardData was not found.");
+            return;
+        }
+
+        SerializedObject serializedCard = new SerializedObject(card);
+        SetString(
+            serializedCard,
+            "effectText",
+            "Pay 1 Energy; equip to 1 monster you control. It gains 300 ATK.");
+        SerializedProperty effects = ResetEffects(serializedCard, 1);
+        SerializedProperty effect = effects.GetArrayElementAtIndex(0);
+        ConfigureEffectHeader(
+            effect,
+            "effect_iron_blade_equip",
+            EffectKind.Continuous,
+            EffectTriggerType.ManualActivation,
+            EffectPhaseMask.Main,
+            EffectTurnScope.YourTurn,
+            EffectActivationWindow.OpenGameState);
+        SetComponentSlot(effect, "costs", payEnergy, 1);
+        SetComponentSlot(effect, "targets", ownMonster, 1);
+        SetComponentSlot(effect, "continuousModifiers", modifyAttack, 300);
+        SaveCard(serializedCard, card);
+    }
+
+    private static void ConfigureTestField(
+        PayEnergyCostAsset payEnergy,
+        ModifyAttackContinuousAsset modifyAttack,
+        ModifyDefenseContinuousAsset modifyDefense)
+    {
+        CardData card = FindCardById("test_field_spell");
+        if (card == null)
+        {
+            Debug.LogWarning("Test Field CardData was not found.");
+            return;
+        }
+
+        SerializedObject serializedCard = new SerializedObject(card);
+        SetString(
+            serializedCard,
+            "effectText",
+            "Monsters you control gain 200 ATK and DEF. At the end of your " +
+            "turn, pay 1 Energy or send this card to the Graveyard.");
+        SerializedProperty effects = ResetEffects(serializedCard, 2);
+        SerializedProperty fieldEffect = effects.GetArrayElementAtIndex(0);
+        ConfigureEffectHeader(
+            fieldEffect,
+            "effect_test_field_boost",
+            EffectKind.Continuous,
+            EffectTriggerType.ManualActivation,
+            EffectPhaseMask.Main,
+            EffectTurnScope.YourTurn,
+            EffectActivationWindow.OpenGameState);
+        SetComponentSlots(
+            fieldEffect,
+            "continuousModifiers",
+            new UnityEngine.Object[] { modifyAttack, modifyDefense },
+            new[] { 200, 200 });
+
+        SerializedProperty maintenance = effects.GetArrayElementAtIndex(1);
+        ConfigureEffectHeader(
+            maintenance,
+            "effect_test_field_maintenance",
+            EffectKind.Activated,
+            EffectTriggerType.EndPhase,
+            EffectPhaseMask.End,
+            EffectTurnScope.YourTurn,
+            EffectActivationWindow.OpenGameState);
+        SetComponentSlot(maintenance, "costs", payEnergy, 1);
+        SaveCard(serializedCard, card);
+    }
+
+    private static void ConfigureAmbush(
+        ReduceAttackUntilEndOfTurnResolutionAsset reduceAttack)
+    {
+        CardData card = FindCardById("sample_ambush");
+        if (card == null)
+        {
+            Debug.LogWarning("Ambush CardData was not found.");
+            return;
+        }
+
+        SerializedObject serializedCard = new SerializedObject(card);
+        SetString(
+            serializedCard,
+            "effectText",
+            "When an opponent's monster declares an attack: That monster " +
+            "loses 500 ATK until the end of this turn.");
+        SerializedProperty effects = ResetEffects(serializedCard, 1);
+        SerializedProperty effect = effects.GetArrayElementAtIndex(0);
+        ConfigureEffectHeader(
+            effect,
+            "effect_ambush_reduce_attacker",
+            EffectKind.Activated,
+            EffectTriggerType.OnAttackDeclared,
+            EffectPhaseMask.Battle,
+            EffectTurnScope.OpponentTurn,
+            EffectActivationWindow.ResponseToAttackDeclaration);
+        SetComponentSlot(effect, "targets", CreateComponent<OpponentMonsterTargetAsset>(
+            OpponentMonsterPath), 1);
+        SetComponentSlot(effect, "resolution", reduceAttack, 500);
+        SaveCard(serializedCard, card);
+    }
+
+    private static void ConfigureDivineReversal(
+        PayEnergyCostAsset payEnergy,
+        NegatePreviousActivationResolutionAsset negatePrevious)
+    {
+        CardData card = FindCardById("sample_divine_reversal");
+        if (card == null)
+        {
+            Debug.LogWarning("Divine Reversal CardData was not found.");
+            return;
+        }
+
+        SerializedObject serializedCard = new SerializedObject(card);
+        SetString(
+            serializedCard,
+            "effectText",
+            "When your opponent activates a Spell or Trap: Pay 1 Energy; " +
+            "negate that activation and send that card to the Graveyard.");
+        SerializedProperty effects = ResetEffects(serializedCard, 1);
+        SerializedProperty effect = effects.GetArrayElementAtIndex(0);
+        ConfigureEffectHeader(
+            effect,
+            "effect_divine_reversal_negate",
+            EffectKind.Activated,
+            EffectTriggerType.OnSpellTrapActivated,
+            EffectPhaseMask.Any,
+            EffectTurnScope.EitherTurn,
+            EffectActivationWindow.ResponseToActivation);
+        SetComponentSlot(effect, "costs", payEnergy, 1);
+        SetComponentSlot(effect, "resolution", negatePrevious, 1);
+        SaveCard(serializedCard, card);
+    }
+
+    private static void ConfigureMonsterSamples(
+        PayEnergyCostAsset payEnergy,
+        DrawCardsResolutionAsset drawCards,
+        IncreaseAttackUntilEndOfTurnResolutionAsset increaseAttack,
+        IncreaseDefenseUntilEndOfTurnResolutionAsset increaseDefense,
+        RestoreMonsterHealthResolutionAsset restoreHealth)
+    {
+        ConfigureSingleActivatedCard(
+            "fire_dragon",
+            "Pay 1 Energy: This card gains 300 ATK until the end of this turn.",
+            "effect_fire_dragon_flame_charge",
+            payEnergy,
+            1,
+            increaseAttack,
+            300);
+        ConfigureSingleActivatedCard(
+            "sample_stone_guardian",
+            "Pay 1 Energy: This card gains 300 DEF until the end of this turn.",
+            "effect_stone_guardian_fortify",
+            payEnergy,
+            1,
+            increaseDefense,
+            300);
+        ConfigureSingleActivatedCard(
+            "sample_sky_sage",
+            "Pay 2 Energy: Draw 1 card.",
+            "effect_sky_sage_insight",
+            payEnergy,
+            2,
+            drawCards,
+            1);
+        ConfigureSingleActivatedCard(
+            "sample_tide_sprite",
+            "Pay 1 Energy: This card gains 300 HP.",
+            "effect_tide_sprite_restore",
+            payEnergy,
+            1,
+            restoreHealth,
+            300);
+    }
+
+    private static void ConfigureQuickStrike(
+        PayEnergyCostAsset payEnergy,
+        OwnMonsterTargetAsset ownMonster,
+        IncreaseAttackUntilEndOfTurnResolutionAsset increaseAttack)
+    {
+        CardData card = FindCardById("sample_quick_strike");
+        if (card == null)
+        {
+            Debug.LogWarning("Quick Strike CardData was not found.");
+            return;
+        }
+
+        SerializedObject serializedCard = new SerializedObject(card);
+        SetString(
+            serializedCard,
+            "effectText",
+            "Pay 1 Energy; target 1 monster you control. It gains 300 ATK " +
+            "until the end of this turn.");
+        SerializedProperty effects = ResetEffects(serializedCard, 1);
+        SerializedProperty effect = effects.GetArrayElementAtIndex(0);
+        ConfigureEffectHeader(
+            effect,
+            "effect_quick_strike_attack_boost",
+            EffectKind.Activated,
+            EffectTriggerType.ManualActivation,
+            EffectPhaseMask.Main,
+            EffectTurnScope.YourTurn,
+            EffectActivationWindow.OpenGameState);
+        SetComponentSlot(effect, "costs", payEnergy, 1);
+        SetComponentSlot(effect, "targets", ownMonster, 1);
+        SetComponentSlot(effect, "resolution", increaseAttack, 300);
+        SaveCard(serializedCard, card);
+    }
+
+    private static void ConfigureSingleActivatedCard(
+        string cardId,
+        string effectText,
+        string effectId,
+        PayEnergyCostAsset payEnergy,
+        int energyCost,
+        EffectResolutionAsset resolution,
+        int amount)
+    {
+        CardData card = FindCardById(cardId);
+        if (card == null)
+        {
+            Debug.LogWarning("Playable CardData was not found: " + cardId);
+            return;
+        }
+
+        SerializedObject serializedCard = new SerializedObject(card);
+        SetString(serializedCard, "effectText", effectText);
+        SerializedProperty effects = ResetEffects(serializedCard, 1);
+        SerializedProperty effect = effects.GetArrayElementAtIndex(0);
+        ConfigureEffectHeader(
+            effect,
+            effectId,
+            EffectKind.Activated,
+            EffectTriggerType.ManualActivation,
+            EffectPhaseMask.Main,
+            EffectTurnScope.YourTurn,
+            EffectActivationWindow.OpenGameState);
+        effect.FindPropertyRelative("maxUses").intValue = 1;
+        SetComponentSlot(effect, "costs", payEnergy, energyCost);
+        SetComponentSlot(effect, "resolution", resolution, amount);
+        SaveCard(serializedCard, card);
+    }
+
+    private static void EnsureTideSpriteExists()
+    {
+        if (FindCardById("sample_tide_sprite") != null)
+            return;
+
+        CardData card = ScriptableObject.CreateInstance<CardData>();
+        SerializedObject serializedCard = new SerializedObject(card);
+        ConfigureTideSpriteBaseData(serializedCard);
+        serializedCard.ApplyModifiedPropertiesWithoutUndo();
+        AssetDatabase.CreateAsset(
+            card,
+            MonstersFolder + "/Sample_Tide_Sprite.asset");
+        EditorUtility.SetDirty(card);
+    }
+
+    private static void ConfigureTideSpriteBaseData(SerializedObject card)
+    {
+        SetCommonData(
+            card,
+            "sample_tide_sprite",
+            "Tide Sprite",
+            CardCategory.Monster,
+            "Pay 1 Energy: This card gains 300 HP.");
+        SetEnum(card, "monsterAttribute", MonsterAttribute.Water);
+        SetEnum(card, "monsterRank", MonsterRank.Basic);
+        SetEnum(card, "monsterType", MonsterType.Spirit);
+        SetInt(card, "baseHealth", 1000);
+        SetInt(card, "baseAttack", 600);
+        SetInt(card, "baseDefense", 900);
+        SetInt(card, "attackEnergyRequirement", 1);
+    }
+
+    private static SerializedProperty ResetEffects(
+        SerializedObject serializedCard,
+        int count)
+    {
+        SerializedProperty effects = serializedCard.FindProperty("effects");
+        effects.ClearArray();
+        effects.arraySize = count;
+        return effects;
+    }
+
+    private static void ConfigureEffectHeader(
+        SerializedProperty effect,
+        string effectId,
+        EffectKind kind,
+        EffectTriggerType trigger,
+        EffectPhaseMask phases,
+        EffectTurnScope turnScope,
+        EffectActivationWindow window)
+    {
+        effect.FindPropertyRelative("effectId").stringValue = effectId;
+        effect.FindPropertyRelative("effectKind").enumValueIndex = (int)kind;
+        effect.FindPropertyRelative("trigger").enumValueIndex = (int)trigger;
+        effect.FindPropertyRelative("allowedPhases").intValue = (int)phases;
+        effect.FindPropertyRelative("allowedTurn").enumValueIndex =
+            (int)turnScope;
+        effect.FindPropertyRelative("activationWindow").enumValueIndex =
+            (int)window;
+        effect.FindPropertyRelative("activationSource").enumValueIndex =
+            (int)EffectActivationSource.Standard;
+        effect.FindPropertyRelative("conditions").ClearArray();
+        effect.FindPropertyRelative("costs").ClearArray();
+        effect.FindPropertyRelative("targets").ClearArray();
+        effect.FindPropertyRelative("resolution").ClearArray();
+        effect.FindPropertyRelative("continuousModifiers").ClearArray();
+        effect.FindPropertyRelative("maxUses").intValue = 0;
+        effect.FindPropertyRelative("countBy").enumValueIndex =
+            (int)EffectUsageScope.PerInstance;
+        effect.FindPropertyRelative("reset").enumValueIndex =
+            (int)EffectUsageReset.PerTurn;
+    }
+
+    private static void SetComponentSlot(
+        SerializedProperty effect,
+        string listName,
+        UnityEngine.Object component,
+        int amount)
+    {
+        SetComponentSlots(
+            effect,
+            listName,
+            new[] { component },
+            new[] { amount });
+    }
+
+    private static void SetComponentSlots(
+        SerializedProperty effect,
+        string listName,
+        IReadOnlyList<UnityEngine.Object> components,
+        IReadOnlyList<int> amounts)
+    {
+        SerializedProperty list = effect.FindPropertyRelative(listName);
+        list.arraySize = components.Count;
+        for (int index = 0; index < components.Count; index++)
+        {
+            SerializedProperty slot = list.GetArrayElementAtIndex(index);
+            slot.FindPropertyRelative("component").objectReferenceValue =
+                components[index];
+            slot.FindPropertyRelative("amount").intValue = amounts[index];
+        }
+    }
+
+    private static void SaveCard(
+        SerializedObject serializedCard,
+        CardData card)
+    {
+        serializedCard.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(card);
     }
 
     private static void SetInt(

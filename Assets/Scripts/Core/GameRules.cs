@@ -2,6 +2,76 @@ using System.Collections.Generic;
 
 public static class GameRules
 {
+    public static IReadOnlyList<GameAction> GetLegalResponseActions(
+        GameState state,
+        int playerIndex)
+    {
+        List<GameAction> actions = new List<GameAction>();
+        if (state == null ||
+            !state.HasOpenResponseWindow ||
+            state.InteractionPlayerIndex != playerIndex)
+        {
+            return actions;
+        }
+
+        PlayerState player = state.Players[playerIndex];
+        for (int zoneIndex = 0;
+             zoneIndex < player.SpellTrapZones.Count;
+             zoneIndex++)
+        {
+            CardInstance card = player.SpellTrapZones[zoneIndex];
+            if (card == null || card.Definition.Category != CardCategory.Trap)
+                continue;
+
+            EffectDefinition effect = FindActivationEffect(
+                card,
+                state.ActiveChain);
+            if (effect == null || effect.TargetCount > 1)
+                continue;
+
+            if (effect.TargetCount == 0)
+            {
+                AddResponseIfLegal(card.InstanceId, 0);
+                continue;
+            }
+
+            if (state.ActiveChain.Links.Count == 0 &&
+                state.ActiveChain.PendingAttack != null)
+            {
+                AddResponseIfLegal(
+                    card.InstanceId,
+                    state.ActiveChain.PendingAttack.AttackerInstanceId);
+                continue;
+            }
+
+            int targetOwnerIndex = effect.TargetType ==
+                EffectTargetType.OwnMonster
+                ? playerIndex
+                : 1 - playerIndex;
+            PlayerState targetOwner = state.Players[targetOwnerIndex];
+            for (int targetZone = 0;
+                 targetZone < targetOwner.MonsterZones.Count;
+                 targetZone++)
+            {
+                CardInstance target = targetOwner.MonsterZones[targetZone];
+                if (target != null)
+                    AddResponseIfLegal(card.InstanceId, target.InstanceId);
+            }
+        }
+
+        return actions;
+
+        void AddResponseIfLegal(long sourceId, long targetId)
+        {
+            GameAction action = GameAction.ActivateCard(
+                playerIndex,
+                sourceId,
+                targetInstanceId: targetId);
+            if (string.IsNullOrEmpty(ValidateAction(state, action)))
+                actions.Add(action);
+        }
+    }
+
     public static ActionResult ApplyAction(
         GameState state,
         GameAction action)
@@ -43,7 +113,14 @@ public static class GameRules
                 return Attack(state, action);
 
             case GameActionType.ActivateNormalSpell:
-                return ActivateNormalSpell(state, action);
+            case GameActionType.ActivateCard:
+                return ActivateCard(state, action);
+
+            case GameActionType.SetTrap:
+                return SetTrap(state, action);
+
+            case GameActionType.PassResponse:
+                return PassResponse(state, action);
 
             default:
                 return ActionResult.Failure("Unknown game action type.");
@@ -69,9 +146,19 @@ public static class GameRules
             return "The match has already ended.";
         }
 
-        if (action.PlayerIndex != state.CurrentPlayerIndex)
+        int expectedPlayer = state.InteractionPlayerIndex;
+        if (action.PlayerIndex != expectedPlayer)
         {
-            return "Only the current player may perform this action.";
+            return state.HasOpenResponseWindow
+                ? "Only the player with response priority may act."
+                : "Only the current player may perform this action.";
+        }
+
+        if (state.HasOpenResponseWindow &&
+            action.Type != GameActionType.ActivateCard &&
+            action.Type != GameActionType.PassResponse)
+        {
+            return "Only a legal response or Pass is allowed while a response window is open.";
         }
 
         switch (action.Type)
@@ -119,7 +206,18 @@ public static class GameRules
                 return ValidateAttack(state, action);
 
             case GameActionType.ActivateNormalSpell:
-                return ValidateNormalSpell(state, action);
+                return ValidateCardActivation(state, action, true);
+
+            case GameActionType.ActivateCard:
+                return ValidateCardActivation(state, action, false);
+
+            case GameActionType.SetTrap:
+                return ValidateSetTrap(state, action);
+
+            case GameActionType.PassResponse:
+                return state.HasOpenResponseWindow
+                    ? string.Empty
+                    : "There is no response window to pass.";
 
             default:
                 return "Unknown game action type.";
@@ -230,16 +328,19 @@ public static class GameRules
 
     private static ActionResult EndTurn(GameState state)
     {
+        int completedTurn = state.TurnNumber;
+        int endingPlayerIndex = state.CurrentPlayerIndex;
+        List<GameEvent> events = new List<GameEvent>();
+        ResolveFieldMaintenance(state, endingPlayerIndex, events);
+        state.ExpireTemporaryModifiers(completedTurn);
         state.StartNextTurn();
-        return ActionResult.Success(new[]
-        {
-            GameEvent.TurnStarted(
-                state.CurrentPlayerIndex,
-                state.TurnNumber),
-            GameEvent.PhaseChanged(
-                state.CurrentPlayerIndex,
-                TurnPhase.Recovery)
-        });
+        events.Add(GameEvent.TurnStarted(
+            state.CurrentPlayerIndex,
+            state.TurnNumber));
+        events.Add(GameEvent.PhaseChanged(
+            state.CurrentPlayerIndex,
+            TurnPhase.Recovery));
+        return ActionResult.Success(events);
     }
 
     private static ActionResult EnterEndPhase(GameState state)
@@ -339,7 +440,11 @@ public static class GameRules
         foreach (long tributeId in action.TributeInstanceIds)
         {
             int tributeZoneIndex = player.FindMonsterZoneIndex(tributeId);
-            CardInstance tribute = player.TributeMonsterAt(tributeZoneIndex);
+            CardInstance tribute = SendMonsterToGraveyard(
+                state,
+                player,
+                tributeZoneIndex,
+                events);
             events.Add(GameEvent.MonsterTributed(
                 player.PlayerIndex,
                 tribute.InstanceId));
@@ -354,6 +459,7 @@ public static class GameRules
             monster,
             action.ZoneIndex,
             action.BattlePosition);
+        ApplyFieldModifiersToMonster(state, player, monster, events);
         events.Add(GameEvent.MonsterSummoned(
             player.PlayerIndex,
             monster.InstanceId,
@@ -519,170 +625,337 @@ public static class GameRules
             : "The attack target is not an opponent field Monster.";
     }
 
-    private static string ValidateNormalSpell(
-        GameState state,
-        GameAction action)
+    private static string ValidateSetTrap(GameState state, GameAction action)
     {
+        if (state.HasOpenResponseWindow)
+            return "A Trap cannot be Set while a response window is open.";
         if (state.CurrentPhase != TurnPhase.Main)
-        {
-            return "A Normal Spell can only be activated during Main Phase.";
-        }
+            return "A Trap can only be Set during Main Phase.";
 
         PlayerState player = state.Players[action.PlayerIndex];
-        CardInstance spell = player.FindCardInHand(action.SourceInstanceId);
-
-        if (spell == null ||
-            spell.Definition.Category != CardCategory.Spell ||
-            spell.Definition.SpellType != SpellType.Normal)
-        {
-            return "The selected Normal Spell must be in the current player's hand.";
-        }
-
-        if (spell.Definition.Effects.Count == 0)
-        {
-            return "This Spell has no structured effect to resolve.";
-        }
-
-        if (action.ZoneIndex < 0 ||
-            action.ZoneIndex >= player.SpellTrapZones.Count)
-        {
-            return "The selected Spell/Trap Zone does not exist.";
-        }
-
+        CardInstance trap = player.FindCardInHand(action.SourceInstanceId);
+        if (trap == null || trap.Definition.Category != CardCategory.Trap)
+            return "The selected Trap must be in the current player's hand.";
         if (!player.IsSpellTrapZoneOpen(action.ZoneIndex))
+            return "A Trap requires an empty Spell/Trap Zone to be Set.";
+        return string.Empty;
+    }
+
+    private static ActionResult SetTrap(GameState state, GameAction action)
+    {
+        PlayerState player = state.Players[action.PlayerIndex];
+        CardInstance trap = player.FindCardInHand(action.SourceInstanceId);
+        player.SetTrapFromHand(trap, action.ZoneIndex, state.TurnNumber);
+        return ActionResult.Success(new[]
         {
-            return "A Normal Spell requires an empty Spell/Trap Zone to activate.";
+            GameEvent.CardPlacedInSpellTrapZone(
+                player.PlayerIndex,
+                trap.InstanceId,
+                action.ZoneIndex,
+                state.CurrentPhase),
+            GameEvent.CardSet(
+                player.PlayerIndex,
+                trap.InstanceId,
+                action.ZoneIndex)
+        });
+    }
+
+    private static string ValidateCardActivation(
+        GameState state,
+        GameAction action,
+        bool requireLegacyNormalSpell)
+    {
+        PlayerState player = state.Players[action.PlayerIndex];
+        CardInstance card = player.FindCard(action.SourceInstanceId);
+        if (card == null)
+            return "The activating card does not belong to this player.";
+
+        if (requireLegacyNormalSpell &&
+            (card.Definition.Category != CardCategory.Spell ||
+             card.Definition.SpellType != SpellType.Normal))
+        {
+            return "The selected card must be a Normal Spell.";
         }
 
-        if (spell.Definition.Effects.Count != 1)
-        {
-            return "The current Normal Spell action requires exactly one effect.";
-        }
-
-        EffectDefinition effect = spell.Definition.Effects[0];
-
-        if (effect.Kind != EffectKind.Activated ||
-            effect.Trigger != EffectTriggerType.ManualActivation ||
-            (effect.AllowedPhases & EffectPhaseMask.Main) == 0 ||
-            effect.AllowedTurn != EffectTurnScope.YourTurn ||
-            effect.ActivationWindow != EffectActivationWindow.OpenGameState)
-        {
-            return "This is not a manual Main Phase effect.";
-        }
-
-        if (!state.CanUseEffect(effect, action.PlayerIndex, spell))
-        {
+        EffectDefinition effect = FindActivationEffect(card, state.ActiveChain);
+        if (effect == null)
+            return "This card has no effect for the current activation window.";
+        if (effect.ActivationSource != EffectActivationSource.Standard)
+            return "This special activation source is not implemented yet.";
+        if ((effect.AllowedPhases & PhaseMask(state.CurrentPhase)) == 0)
+            return "This effect cannot be activated in the current phase.";
+        if (!IsAllowedTurn(effect.AllowedTurn, state, action.PlayerIndex))
+            return "This effect cannot be activated during this player's turn.";
+        if (!state.CanUseEffect(effect, action.PlayerIndex, card))
             return "This effect has reached its usage limit.";
-        }
 
-        if (effect.ContinuousModifiers.Count != 0)
-            return "Continuous modifiers do not resolve as a Normal Spell.";
+        string sourceError = ValidateStandardActivationSource(
+            state,
+            action,
+            player,
+            card);
+        if (!string.IsNullOrEmpty(sourceError))
+            return sourceError;
 
-        for (int index = 0; index < effect.Conditions.Count; index++)
+        string responseError = ValidateResponseTiming(
+            state,
+            action,
+            card,
+            effect);
+        if (!string.IsNullOrEmpty(responseError))
+            return responseError;
+
+        IReadOnlyList<long> targets = ActionTargets(action);
+        EffectContext context = new EffectContext(
+            state,
+            action.PlayerIndex,
+            card.InstanceId,
+            targets);
+        string failureReason;
+        if (!new DefinitionEffectCondition(effect).IsMet(
+                context,
+                out failureReason))
+            return failureReason;
+        if (!new DefinitionEffectCost(effect).CanPay(
+                context,
+                out failureReason))
+            return failureReason;
+        if (!new EffectDefinitionTargetRule(effect).AreTargetsValid(
+                context,
+                out failureReason))
+            return failureReason;
+
+        if (state.ActiveChain != null &&
+            state.ActiveChain.WindowType == ResponseWindowType.AttackDeclaration &&
+            effect.ActivationWindow ==
+                EffectActivationWindow.ResponseToAttackDeclaration &&
+            (state.ActiveChain.PendingAttack == null ||
+             targets.Count != 1 ||
+             targets[0] != state.ActiveChain.PendingAttack.AttackerInstanceId))
         {
-            if (effect.Conditions[index].Type != EffectConditionType.None)
-            {
-                return "This Spell contains an unsupported condition.";
-            }
-        }
-
-        int energyCost = 0;
-
-        for (int index = 0; index < effect.Costs.Count; index++)
-        {
-            EffectCostDefinition cost = effect.Costs[index];
-
-            if (cost.Type != EffectCostType.AvailableEnergy)
-            {
-                return "This Spell contains an unsupported cost.";
-            }
-
-            energyCost += cost.Amount;
-        }
-
-        if (player.AvailableEnergy < energyCost)
-        {
-            return "Not enough Available Energy to activate this card.";
-        }
-
-        if (effect.TargetType != EffectTargetType.None ||
-            effect.TargetCount != 0 ||
-            action.TargetInstanceId != 0)
-        {
-            return "Targeted Spell effects are not implemented yet.";
-        }
-
-        if (effect.Operations.Count == 0)
-        {
-            return "This Spell has no operation to resolve.";
-        }
-
-        for (int index = 0; index < effect.Operations.Count; index++)
-        {
-            EffectOperationDefinition operation = effect.Operations[index];
-
-            if (operation.Type != EffectOperationType.DrawCards ||
-                operation.Amount <= 0)
-            {
-                return "This Spell contains an unsupported or empty operation.";
-            }
+            return "This Trap must target the attacking Monster.";
         }
 
         return string.Empty;
     }
 
-    private static ActionResult ActivateNormalSpell(
+    private static string ValidateStandardActivationSource(
+        GameState state,
+        GameAction action,
+        PlayerState player,
+        CardInstance card)
+    {
+        if (!state.HasOpenResponseWindow)
+        {
+            if (card.Definition.Category == CardCategory.Monster &&
+                card.Zone == CardZone.MonsterZone &&
+                state.CurrentPhase == TurnPhase.Main)
+            {
+                return string.Empty;
+            }
+
+            if (card.Definition.Category != CardCategory.Spell ||
+                card.Zone != CardZone.Hand ||
+                state.CurrentPhase != TurnPhase.Main)
+            {
+                return "Only a Spell in hand can be activated in an open game state.";
+            }
+
+            if (card.Definition.SpellType == SpellType.Field)
+            {
+                return player.LastFieldSpellActivationTurn == state.TurnNumber
+                    ? "Only one Field Spell may be activated per player per turn."
+                    : string.Empty;
+            }
+
+            if (!player.IsSpellTrapZoneOpen(action.ZoneIndex))
+                return "This Spell requires an empty Spell/Trap Zone.";
+            return string.Empty;
+        }
+
+        int zoneIndex = player.FindSpellTrapZoneIndex(card.InstanceId);
+        if (card.Definition.Category != CardCategory.Trap ||
+            zoneIndex < 0 ||
+            !card.IsFaceDown)
+        {
+            return "A standard Trap response must be Set face-down on the field.";
+        }
+        if (card.SetTurnNumber >= state.TurnNumber)
+            return "A Trap cannot be activated during the turn it was Set.";
+        return string.Empty;
+    }
+
+    private static string ValidateResponseTiming(
+        GameState state,
+        GameAction action,
+        CardInstance card,
+        EffectDefinition effect)
+    {
+        ChainState chain = state.ActiveChain;
+        if (chain == null)
+        {
+            return effect.ActivationWindow == EffectActivationWindow.OpenGameState
+                ? string.Empty
+                : "This effect requires a response window.";
+        }
+
+        if (effect.ActivationWindow == EffectActivationWindow.OpenGameState)
+            return "Speed 1 effects cannot be activated as a response.";
+        bool respondsToExistingLink = chain.Links.Count > 0;
+        if (respondsToExistingLink &&
+            effect.ActivationWindow != EffectActivationWindow.ResponseToActivation)
+        {
+            return "This effect does not respond to card activation.";
+        }
+        if (!respondsToExistingLink &&
+            chain.WindowType == ResponseWindowType.AttackDeclaration &&
+            effect.ActivationWindow !=
+                EffectActivationWindow.ResponseToAttackDeclaration)
+        {
+            return "This effect does not respond to an attack declaration.";
+        }
+        if (!respondsToExistingLink &&
+            chain.WindowType == ResponseWindowType.CardActivation &&
+            effect.ActivationWindow != EffectActivationWindow.ResponseToActivation)
+        {
+            return "This effect does not respond to card activation.";
+        }
+        if (card.Definition.Speed == CardSpeed.Speed1)
+            return "Speed 1 cards cannot be added as responses.";
+        if (chain.Links.Count > 0)
+        {
+            ChainLink previous = chain.Links[chain.Links.Count - 1];
+            if (effect.Trigger == EffectTriggerType.OnSpellTrapActivated)
+            {
+                CardInstance previousSource = state.FindCard(
+                    previous.SourceInstanceId);
+                if (previousSource == null ||
+                    (previousSource.Definition.Category != CardCategory.Spell &&
+                     previousSource.Definition.Category != CardCategory.Trap))
+                {
+                    return "This effect only responds to a Spell or Trap activation.";
+                }
+            }
+            if (previous.Speed == CardSpeed.Speed3 &&
+                card.Definition.Speed != CardSpeed.Speed3)
+            {
+                return "Only a Speed 3 card can respond to Speed 3.";
+            }
+            if (ContainsOperation(
+                    effect,
+                    EffectOperationType.NegatePreviousChainLink) &&
+                previous.PlayerIndex == action.PlayerIndex)
+            {
+                return "This Counter Trap must negate an opponent's activation.";
+            }
+        }
+        return string.Empty;
+    }
+
+    private static ActionResult ActivateCard(
         GameState state,
         GameAction action)
     {
         PlayerState player = state.Players[action.PlayerIndex];
-        CardInstance spell = player.FindCardInHand(action.SourceInstanceId);
-        EffectDefinition effect = spell.Definition.Effects[0];
-        IReadOnlyList<long> targets = action.TargetInstanceId == 0
-            ? new long[0]
-            : new[] { action.TargetInstanceId };
+        CardInstance card = player.FindCard(action.SourceInstanceId);
+        EffectDefinition effect = FindActivationEffect(card, state.ActiveChain);
+        IReadOnlyList<long> targets = ActionTargets(action);
         EffectContext context = new EffectContext(
             state,
             action.PlayerIndex,
-            spell.InstanceId,
+            card.InstanceId,
             targets);
+        List<GameEvent> events = new List<GameEvent>();
 
-        player.PlaceSpellTrapFromHand(
-            spell,
-            action.ZoneIndex,
-            false);
-        ActionResult effectResult = EffectResolver.TryResolve(
-            context,
-            new DefinitionEffectCondition(effect),
-            new DefinitionEffectCost(effect),
-            new EffectDefinitionTargetRule(effect),
-            new DefinitionCardEffect(effect));
-
-        if (!effectResult.Succeeded)
+        if (card.Zone == CardZone.Hand)
         {
-            return effectResult;
+            if (card.Definition.SpellType == SpellType.Field)
+            {
+                CardInstance replaced = player.FieldSpell;
+                if (replaced != null)
+                {
+                    state.RemovePersistentModifiersFromSource(
+                        replaced.InstanceId);
+                    events.Add(GameEvent.CardSentToGraveyard(
+                        player.PlayerIndex,
+                        replaced.InstanceId,
+                        state.CurrentPhase));
+                }
+                player.PlaceFieldSpellFromHand(card);
+                player.MarkFieldSpellActivated(state.TurnNumber);
+                events.Add(GameEvent.FieldSpellActivated(
+                    player.PlayerIndex,
+                    card.InstanceId));
+            }
+            else
+            {
+                player.PlaceSpellTrapFromHand(card, action.ZoneIndex, false);
+                events.Add(GameEvent.CardPlacedInSpellTrapZone(
+                    player.PlayerIndex,
+                    card.InstanceId,
+                    action.ZoneIndex,
+                    state.CurrentPhase));
+            }
+        }
+        else
+        {
+            card.Reveal();
         }
 
-        state.RecordEffectUse(effect, action.PlayerIndex, spell);
+        new DefinitionEffectCost(effect).Pay(context, events);
+        state.RecordEffectUse(effect, action.PlayerIndex, card);
 
+        int sourceZoneIndex = player.FindSpellTrapZoneIndex(card.InstanceId);
+        ChainLink link = new ChainLink(
+            action.PlayerIndex,
+            card.InstanceId,
+            sourceZoneIndex,
+            card.Definition.Speed,
+            effect,
+            targets);
+        bool startsChain = state.ActiveChain == null;
+        if (startsChain)
+        {
+            state.OpenChain(new ChainState(
+                ResponseWindowType.CardActivation,
+                1 - action.PlayerIndex));
+        }
+        state.ActiveChain.AddLink(link);
+
+        events.Add(card.Definition.Category == CardCategory.Trap
+            ? GameEvent.TrapActivated(
+                player.PlayerIndex,
+                card.InstanceId,
+                state.CurrentPhase)
+            : GameEvent.SpellActivated(
+                player.PlayerIndex,
+                card.InstanceId,
+                state.CurrentPhase));
+        events.Add(startsChain
+            ? GameEvent.ChainStarted(
+                player.PlayerIndex,
+                card.InstanceId,
+                state.CurrentPhase)
+            : GameEvent.ChainLinkAdded(
+                player.PlayerIndex,
+                card.InstanceId,
+                state.ActiveChain.Links.Count,
+                state.CurrentPhase));
+        AdvancePastUnavailableResponders(state, events);
+        return ActionResult.Success(events);
+    }
+
+    private static ActionResult PassResponse(
+        GameState state,
+        GameAction action)
+    {
+        ChainState chain = state.ActiveChain;
         List<GameEvent> events = new List<GameEvent>
         {
-            GameEvent.CardPlacedInSpellTrapZone(
-                player.PlayerIndex,
-                spell.InstanceId,
-                action.ZoneIndex,
-                state.CurrentPhase),
-            GameEvent.SpellActivated(
-                player.PlayerIndex,
-                spell.InstanceId,
-                state.CurrentPhase)
+            GameEvent.ResponsePassed(action.PlayerIndex, state.CurrentPhase)
         };
-        events.AddRange(effectResult.Events);
-        player.MoveSpellTrapToGraveyard(action.ZoneIndex, true);
-        events.Add(GameEvent.CardSentToGraveyard(
-            player.PlayerIndex,
-            spell.InstanceId,
-            state.CurrentPhase));
+        chain.Pass();
+        AdvancePastUnavailableResponders(state, events);
         return ActionResult.Success(events);
     }
 
@@ -691,7 +964,6 @@ public static class GameRules
         GameAction action)
     {
         PlayerState attackerOwner = state.Players[action.PlayerIndex];
-        PlayerState defenderOwner = state.Players[1 - action.PlayerIndex];
         int attackerZoneIndex =
             attackerOwner.FindMonsterZoneIndex(action.SourceInstanceId);
         CardInstance attacker =
@@ -705,19 +977,76 @@ public static class GameRules
         };
 
         attacker.MarkAttacked();
+        state.OpenChain(new ChainState(
+            ResponseWindowType.AttackDeclaration,
+            1 - action.PlayerIndex,
+            new PendingAttack(
+                action.PlayerIndex,
+                action.SourceInstanceId,
+                action.TargetInstanceId)));
+        events.Add(GameEvent.ChainStarted(
+            action.PlayerIndex,
+            action.SourceInstanceId,
+            state.CurrentPhase));
+        AdvancePastUnavailableResponders(state, events);
+        return ActionResult.Success(events);
+    }
 
-        if (action.TargetInstanceId == 0)
+    private static void AdvancePastUnavailableResponders(
+        GameState state,
+        List<GameEvent> events)
+    {
+        while (state.ActiveChain != null)
+        {
+            ChainState chain = state.ActiveChain;
+            if (chain.ConsecutivePasses >= 2)
+            {
+                ResolveChain(state, chain, events);
+                return;
+            }
+
+            int playerIndex = chain.PriorityPlayerIndex;
+            if (GetLegalResponseActions(state, playerIndex).Count > 0)
+                return;
+
+            events.Add(GameEvent.ResponsePassed(
+                playerIndex,
+                state.CurrentPhase));
+            chain.Pass();
+        }
+    }
+
+    private static void ResolvePendingAttack(
+        GameState state,
+        PendingAttack pendingAttack,
+        List<GameEvent> events)
+    {
+        if (pendingAttack == null)
+            return;
+
+        PlayerState attackerOwner = state.Players[pendingAttack.PlayerIndex];
+        PlayerState defenderOwner = state.Players[1 - pendingAttack.PlayerIndex];
+        int attackerZoneIndex = attackerOwner.FindMonsterZoneIndex(
+            pendingAttack.AttackerInstanceId);
+        if (attackerZoneIndex < 0)
+            return;
+
+        CardInstance attacker = attackerOwner.MonsterZones[attackerZoneIndex];
+
+        if (pendingAttack.TargetInstanceId == 0)
         {
             defenderOwner.TakeDamage(attacker.CurrentAttack);
             events.Add(GameEvent.PlayerDamaged(
                 defenderOwner.PlayerIndex,
                 attacker.CurrentAttack));
             AddMatchEndIfNeeded(state, attackerOwner, defenderOwner, events);
-            return ActionResult.Success(events);
+            return;
         }
 
         int defenderZoneIndex =
-            defenderOwner.FindMonsterZoneIndex(action.TargetInstanceId);
+            defenderOwner.FindMonsterZoneIndex(pendingAttack.TargetInstanceId);
+        if (defenderZoneIndex < 0)
+            return;
         CardInstance defender =
             defenderOwner.MonsterZones[defenderZoneIndex];
         int damage = defender.BattlePosition == BattlePosition.Defense
@@ -736,7 +1065,11 @@ public static class GameRules
         {
             int destructionPenalty = defender.AllocatedEnergy *
                 state.Config.DestructionPenaltyPerEnergy;
-            defenderOwner.MoveMonsterToGraveyard(defenderZoneIndex);
+            SendMonsterToGraveyard(
+                state,
+                defenderOwner,
+                defenderZoneIndex,
+                events);
             events.Add(GameEvent.MonsterDestroyed(
                 defenderOwner.PlayerIndex,
                 defender.InstanceId));
@@ -751,7 +1084,368 @@ public static class GameRules
         }
 
         AddMatchEndIfNeeded(state, attackerOwner, defenderOwner, events);
-        return ActionResult.Success(events);
+    }
+
+    private static void ResolveChain(
+        GameState state,
+        ChainState chain,
+        List<GameEvent> events)
+    {
+        for (int index = chain.Links.Count - 1; index >= 0; index--)
+        {
+            chain.BeginResolvingLink(index);
+            ChainLink link = chain.Links[index];
+            CardInstance source = state.FindCard(link.SourceInstanceId);
+            if (source == null)
+                continue;
+
+            if (!link.IsNegated)
+            {
+                EffectContext context = new EffectContext(
+                    state,
+                    link.PlayerIndex,
+                    link.SourceInstanceId,
+                    link.TargetInstanceIds);
+                new DefinitionCardEffect(link.Effect).Resolve(context, events);
+                ApplyResolvedContinuousEffect(
+                    state,
+                    source,
+                    link,
+                    events);
+            }
+
+            CompleteActivatedCardLifecycle(
+                state,
+                source,
+                link,
+                events);
+        }
+
+        PendingAttack pendingAttack = chain.PendingAttack;
+        state.CloseChain();
+        ResolvePendingAttack(state, pendingAttack, events);
+    }
+
+    private static void ApplyResolvedContinuousEffect(
+        GameState state,
+        CardInstance source,
+        ChainLink link,
+        List<GameEvent> events)
+    {
+        if (link.Effect.ContinuousModifiers.Count == 0)
+            return;
+
+        PlayerState owner = state.Players[link.PlayerIndex];
+        if (source.Definition.SpellType == SpellType.Equip)
+        {
+            if (link.TargetInstanceIds.Count == 0)
+                return;
+            CardInstance target = state.FindCard(link.TargetInstanceIds[0]);
+            if (target == null || target.Zone != CardZone.MonsterZone)
+                return;
+
+            source.EquipTo(target.InstanceId);
+            ApplyModifierSet(state, source, target, link.Effect, events);
+            events.Add(GameEvent.EquipAttached(
+                owner.PlayerIndex,
+                source.InstanceId,
+                target.InstanceId));
+            return;
+        }
+
+        if (source.Definition.SpellType == SpellType.Field)
+        {
+            for (int zoneIndex = 0;
+                 zoneIndex < owner.MonsterZones.Count;
+                 zoneIndex++)
+            {
+                CardInstance target = owner.MonsterZones[zoneIndex];
+                if (target != null)
+                    ApplyModifierSet(state, source, target, link.Effect, events);
+            }
+        }
+    }
+
+    private static void ApplyModifierSet(
+        GameState state,
+        CardInstance source,
+        CardInstance target,
+        EffectDefinition effect,
+        List<GameEvent> events)
+    {
+        if (state.HasModifierFromSourceToTarget(
+                source.InstanceId,
+                target.InstanceId))
+            return;
+
+        int attackAmount = 0;
+        int defenseAmount = 0;
+        for (int index = 0;
+             index < effect.ContinuousModifiers.Count;
+             index++)
+        {
+            IContinuousModifier modifier = effect.ContinuousModifiers[index];
+            attackAmount += modifier.ModifyAttack(source, target);
+            defenseAmount += modifier.ModifyDefense(source, target);
+        }
+
+        state.ApplyStatModifier(
+            source.InstanceId,
+            target,
+            attackAmount,
+            defenseAmount);
+        if (attackAmount != 0)
+        {
+            events.Add(GameEvent.MonsterAttackModified(
+                target.OwnerPlayerIndex,
+                target.InstanceId,
+                attackAmount,
+                state.CurrentPhase));
+        }
+        if (defenseAmount != 0)
+        {
+            events.Add(GameEvent.MonsterDefenseModified(
+                target.OwnerPlayerIndex,
+                target.InstanceId,
+                defenseAmount,
+                state.CurrentPhase));
+        }
+    }
+
+    private static void CompleteActivatedCardLifecycle(
+        GameState state,
+        CardInstance source,
+        ChainLink link,
+        List<GameEvent> events)
+    {
+        bool remainsOnField = !link.IsNegated &&
+            ((source.Definition.Category == CardCategory.Monster &&
+              source.Zone == CardZone.MonsterZone) ||
+             (source.Definition.Category == CardCategory.Spell &&
+              ((source.Definition.SpellType == SpellType.Equip &&
+                source.EquippedTargetInstanceId != 0) ||
+               (source.Definition.SpellType == SpellType.Field &&
+                source.Zone == CardZone.FieldZone))));
+        if (remainsOnField)
+            return;
+
+        SendSpellTrapToGraveyard(state, source, events);
+    }
+
+    private static void SendSpellTrapToGraveyard(
+        GameState state,
+        CardInstance card,
+        List<GameEvent> events)
+    {
+        PlayerState owner = state.Players[card.OwnerPlayerIndex];
+        state.RemovePersistentModifiersFromSource(card.InstanceId);
+        if (card.Zone == CardZone.FieldZone)
+        {
+            owner.MoveFieldSpellToGraveyard(true);
+        }
+        else if (card.Zone == CardZone.SpellTrapZone)
+        {
+            int zoneIndex = owner.FindSpellTrapZoneIndex(card.InstanceId);
+            if (zoneIndex >= 0)
+                owner.MoveSpellTrapToGraveyard(zoneIndex, true);
+        }
+        else
+        {
+            return;
+        }
+
+        events.Add(GameEvent.CardSentToGraveyard(
+            owner.PlayerIndex,
+            card.InstanceId,
+            state.CurrentPhase));
+    }
+
+    private static CardInstance SendMonsterToGraveyard(
+        GameState state,
+        PlayerState owner,
+        int monsterZoneIndex,
+        List<GameEvent> events)
+    {
+        CardInstance monster = owner.MonsterZones[monsterZoneIndex];
+        state.RemoveModifiersFromTarget(monster.InstanceId);
+
+        for (int playerIndex = 0;
+             playerIndex < state.Players.Count;
+             playerIndex++)
+        {
+            PlayerState player = state.Players[playerIndex];
+            for (int zoneIndex = player.SpellTrapZones.Count - 1;
+                 zoneIndex >= 0;
+                 zoneIndex--)
+            {
+                CardInstance equip = player.SpellTrapZones[zoneIndex];
+                if (equip == null ||
+                    equip.EquippedTargetInstanceId != monster.InstanceId)
+                    continue;
+
+                state.RemovePersistentModifiersFromSource(equip.InstanceId);
+                player.MoveSpellTrapToGraveyard(zoneIndex, true);
+                events.Add(GameEvent.CardSentToGraveyard(
+                    player.PlayerIndex,
+                    equip.InstanceId,
+                    state.CurrentPhase));
+            }
+        }
+
+        return owner.MoveMonsterToGraveyard(monsterZoneIndex);
+    }
+
+    private static void ApplyFieldModifiersToMonster(
+        GameState state,
+        PlayerState owner,
+        CardInstance monster,
+        List<GameEvent> events)
+    {
+        CardInstance field = owner.FieldSpell;
+        if (field == null)
+            return;
+        EffectDefinition effect = FindManualActivationEffect(field);
+        if (effect != null)
+            ApplyModifierSet(state, field, monster, effect, events);
+    }
+
+    private static void ResolveFieldMaintenance(
+        GameState state,
+        int playerIndex,
+        List<GameEvent> events)
+    {
+        PlayerState player = state.Players[playerIndex];
+        CardInstance field = player.FieldSpell;
+        if (field == null)
+            return;
+
+        EffectDefinition maintenance = null;
+        for (int index = 0; index < field.Definition.Effects.Count; index++)
+        {
+            EffectDefinition candidate = field.Definition.Effects[index];
+            if (candidate.Trigger == EffectTriggerType.EndPhase)
+            {
+                maintenance = candidate;
+                break;
+            }
+        }
+        if (maintenance == null)
+            return;
+
+        EffectContext context = new EffectContext(
+            state,
+            playerIndex,
+            field.InstanceId);
+        DefinitionEffectCost cost = new DefinitionEffectCost(maintenance);
+        if (cost.CanPay(context, out _))
+        {
+            int before = player.AvailableEnergy;
+            cost.Pay(context, events);
+            events.Add(GameEvent.FieldMaintenancePaid(
+                playerIndex,
+                field.InstanceId,
+                before - player.AvailableEnergy));
+            return;
+        }
+
+        SendSpellTrapToGraveyard(state, field, events);
+    }
+
+    private static EffectDefinition FindActivationEffect(
+        CardInstance card,
+        ChainState chain)
+    {
+        if (card == null)
+            return null;
+
+        EffectActivationWindow window;
+        if (chain == null)
+        {
+            window = EffectActivationWindow.OpenGameState;
+        }
+        else if (chain.Links.Count > 0)
+        {
+            window = EffectActivationWindow.ResponseToActivation;
+        }
+        else
+        {
+            window = chain.WindowType == ResponseWindowType.AttackDeclaration
+                ? EffectActivationWindow.ResponseToAttackDeclaration
+                : EffectActivationWindow.ResponseToActivation;
+        }
+        for (int index = 0; index < card.Definition.Effects.Count; index++)
+        {
+            EffectDefinition effect = card.Definition.Effects[index];
+            if (effect.ActivationWindow == window &&
+                effect.Trigger != EffectTriggerType.EndPhase)
+                return effect;
+        }
+        return null;
+    }
+
+    private static EffectDefinition FindManualActivationEffect(
+        CardInstance card)
+    {
+        if (card == null)
+            return null;
+        for (int index = 0; index < card.Definition.Effects.Count; index++)
+        {
+            EffectDefinition effect = card.Definition.Effects[index];
+            if (effect.Trigger == EffectTriggerType.ManualActivation &&
+                effect.ActivationWindow == EffectActivationWindow.OpenGameState)
+                return effect;
+        }
+        return null;
+    }
+
+    private static IReadOnlyList<long> ActionTargets(GameAction action)
+    {
+        return action.TargetInstanceId == 0
+            ? new long[0]
+            : new[] { action.TargetInstanceId };
+    }
+
+    private static bool IsAllowedTurn(
+        EffectTurnScope scope,
+        GameState state,
+        int playerIndex)
+    {
+        return scope == EffectTurnScope.EitherTurn ||
+            (scope == EffectTurnScope.YourTurn &&
+             playerIndex == state.CurrentPlayerIndex) ||
+            (scope == EffectTurnScope.OpponentTurn &&
+             playerIndex != state.CurrentPlayerIndex);
+    }
+
+    private static EffectPhaseMask PhaseMask(TurnPhase phase)
+    {
+        switch (phase)
+        {
+            case TurnPhase.Recovery:
+                return EffectPhaseMask.Recovery;
+            case TurnPhase.Standby:
+                return EffectPhaseMask.Standby;
+            case TurnPhase.Main:
+                return EffectPhaseMask.Main;
+            case TurnPhase.Battle:
+                return EffectPhaseMask.Battle;
+            case TurnPhase.End:
+                return EffectPhaseMask.End;
+            default:
+                return EffectPhaseMask.None;
+        }
+    }
+
+    private static bool ContainsOperation(
+        EffectDefinition effect,
+        EffectOperationType operationType)
+    {
+        for (int index = 0; index < effect.Operations.Count; index++)
+        {
+            if (effect.Operations[index].Type == operationType)
+                return true;
+        }
+        return false;
     }
 
     private static void AddMatchEndIfNeeded(

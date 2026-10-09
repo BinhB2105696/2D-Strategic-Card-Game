@@ -107,6 +107,7 @@ public static class CardDataConverter
             effect.AllowedPhases,
             effect.AllowedTurn,
             effect.ActivationWindow,
+            effect.ActivationSource,
             conditions,
             costs,
             targetType,

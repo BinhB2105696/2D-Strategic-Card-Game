@@ -16,7 +16,8 @@ MonoBehaviour:
   cardName: Ambush
   category: 2
   artwork: {fileID: 0}
-  effectText: A Normal Trap used to verify Speed 2 presentation.
+  effectText: 'When an opponent''s monster declares an attack: That monster loses
+    500 ATK until the end of this turn.'
   monsterAttribute: 0
   monsterRank: 0
   monsterType: 0
@@ -26,4 +27,23 @@ MonoBehaviour:
   attackEnergyRequirement: 0
   spellType: 0
   trapType: 0
-  energyCost: 1
+  effects:
+  - effectId: effect_ambush_reduce_attacker
+    effectKind: 0
+    trigger: 5
+    allowedPhases: 8
+    allowedTurn: 1
+    activationWindow: 2
+    activationSource: 0
+    conditions: []
+    costs: []
+    targets:
+    - component: {fileID: 11400000, guid: 7ca72ea0240bd0642bfcf07a4573370c, type: 2}
+      amount: 1
+    resolution:
+    - component: {fileID: 11400000, guid: 5f5a7dea6f3b90646bbe6d6f39c6b726, type: 2}
+      amount: 500
+    continuousModifiers: []
+    maxUses: 0
+    countBy: 0
+    reset: 0

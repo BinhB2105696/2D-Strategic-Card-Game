@@ -89,6 +89,7 @@ public static class EffectDiagnostics
             EffectPhaseMask.Main,
             EffectTurnScope.EitherTurn,
             EffectActivationWindow.OpenGameState,
+            EffectActivationSource.Standard,
             null,
             null,
             EffectTargetType.None,

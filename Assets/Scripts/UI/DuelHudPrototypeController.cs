@@ -132,7 +132,9 @@ public class DuelHudPrototypeController : MonoBehaviour
 
     public void RefreshPhaseControls(GameState state)
     {
-        bool matchActive = state != null && !state.IsFinished;
+        bool matchActive = state != null &&
+            !state.IsFinished &&
+            !state.HasOpenResponseWindow;
         bool mayOpenPhaseMenu = matchActive &&
             (state.CurrentPhase == TurnPhase.Main ||
              state.CurrentPhase == TurnPhase.Battle ||
@@ -208,6 +210,11 @@ public class DuelHudPrototypeController : MonoBehaviour
     private void CloseSettings()
     {
         SetSettingsVisible(false);
+        if (TryGetDuel(out DuelBoardReadOnlyDemo board, out GameState state) &&
+            state.HasOpenResponseWindow)
+        {
+            board.RefreshBoard();
+        }
     }
 
     private void OpenConfirmation(PendingConfirmation action, string message)

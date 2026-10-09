@@ -417,7 +417,21 @@ Completed or explored:
   Draw Step regardless of whose turn the effect resolves on. Turn-specific
   skips do not stack or carry over. On 7 October, the student confirmed its
   full-turn Unity smoke test, including actual skipped draws and a later normal
-  draw. Trap activation and response-chain rules are not yet wired.
+  draw.
+- A shared Spell/Trap activation path now supports Normal and Equip Spells,
+  each player's independent Field Zone, Trap setting and next-turn activation,
+  targeted effects, persistent modifiers, Field maintenance, and card cleanup
+  when a persistent source or equipped target leaves play.
+- A simple Speed 1/2/3 last-in-first-out chain is connected to attack and card
+  activation response windows. The core enumerates legal responses and skips
+  players with none, so UI prompts only appear when an actual response can be
+  submitted. Counter Trap negation marks the preceding activation as negated
+  without introducing direct Monster destruction.
+- The fixed playable demo deck contains 30 cards: ten current designs at three
+  copies each. Validation rejects missing cards, empty effect definitions,
+  invalid deck size, or more than three copies. An Edit Mode bootstrap repairs
+  the sample setup before Play instead of requiring a remembered manual menu
+  command.
 - The portrait board uses a 1080x1920 Canvas, SafeAreaRoot, separate
   Board/HUD/Overlay layers, four 3-slot rows, and zones with independent
   Border, HitArea, CardAnchor, and Highlight children. Deck, Graveyard, Field,
@@ -434,23 +448,29 @@ Completed or explored:
   changes, summons and selected tributes, Energy allocation, position changes,
   Normal Spell draw/cost/Graveyard behavior, combat damage/destruction, LP-zero
   stopping the match, perspective mirroring, and modal/layer ordering.
+- On 10 October, the student entered Play Mode with the fixed deck and reported
+  the current match mechanics and action sequence working as a checkpoint.
+  This is an integration acceptance pass, not yet an exhaustive matrix for
+  every Spell/Trap target and multi-link chain combination.
 - On 7 October, the student confirmed the Direct End Phase, Recovery Skip,
   Effect Pipeline, Skip Opponent Draw, and Normal Spell smoke tests in Unity.
 
 Known next gaps:
 
-1. Run a short repeatable regression of the complete current hot-seat path,
-   including the match-result overlay. Presentation still refreshes directly
-   to final state; accepted GameEvents are not yet animated or queued.
-2. Generalize the Normal-Spell-specific activation action into a small shared
-   Spell/Trap lifecycle with target selection and persistent-card support.
-   Then add one vertical slice each for Equip Spell and Field Spell before
-   implementing Trap set/activate, response windows, and the Speed 1/2/3 LIFO
-   chain. Do not create many disconnected effect scripts ahead of these flows.
-3. Add representative cards and fixed sample decks after the shared flows are
-   executable. The current sample deck repeats prototype cards.
-4. Add a shared legal-action enumerator/view, Easy and Normal bots, headless
-   simulation/CSV metrics, replay loading/state hashes, and networking adapters.
+1. Run a focused Play-mode regression for the new all-category slice: Equip
+   targets and cleanup, Field replacement/maintenance, Trap set-turn lockout,
+   attack responses, Counter Trap negation, two-or-more-link LIFO resolution,
+   insufficient Energy, full zones, and the match-result overlay.
+2. Promote the existing response-action enumeration into a shared complete
+   legal-action view for human UI, Easy/Normal bots, and headless simulation.
+   Add deterministic state hashes/replay loading before networking depends on
+   the action stream.
+3. Perform the short networking feasibility spike described in section 13
+   while the deterministic action boundary is still small. Do not install or
+   commit a networking stack until the result and tradeoffs are discussed.
+4. Queue accepted GameEvents for readable visual sequencing and essential
+   feedback. Optional visual polish remains below bots, simulation, online PvP,
+   and Android/Windows build stability.
 
 ## 16. Roadmap
 
@@ -471,11 +491,12 @@ Verified checkpoints:
   Opponent hands remain face-down; opponent zones mirror horizontally as the
   active-player perspective changes. Settings, Phase, and card-action modals
   have explicit runtime sorting and mutually exclusive open states.
-- Effect architecture foundation: **in progress**; CardData contains effect
-  entries assembled from reusable component assets and converted to pure
-  EffectDefinition data. The first
-  Normal Spell supports an Available Energy cost, Draw Cards, movement through
-  a Spell/Trap Zone, and final movement to Graveyard, verified in Unity.
+- Step 5 card-flow foundation: **implemented and accepted as an initial Play
+  Mode checkpoint**. CardData effects convert to pure EffectDefinition data;
+  Normal/Equip/Field Spells, Normal/Counter Traps, targeting, persistent
+  lifetime, filtered response windows, and simple LIFO chain resolution are
+  connected to the local UI. Focused edge-case regression and the networking
+  feasibility decision still remain before Step 5 is complete.
 
 | Step | Target | Content | Verification |
 |---|---|---|---|
@@ -490,12 +511,13 @@ Verified checkpoints:
 | 9 | 25 Nov-early Dec | Feature freeze, final experiments, report, defense preparation | Final build and thesis materials |
 
 If schedule slips, reduce extra cards, polish, Hard Bot, and ML before compromising Tier 1 stability.
-As of 9 October, the core Step 4 local-play slice is working ahead of its dated
-target. The immediate critical path is to close its regression check and build
-Step 5 as executable vertical card flows: shared activation/targeting and
-persistent lifetime first, then Trap response windows and a simple chain.
-Do not substitute isolated effect components or more smoke tests for those
-integration milestones. Tests remain verification for each finished slice.
+As of 10 October, the core Step 4 local-play slice is working ahead of its dated
+target and the executable card-flow portion of Step 5 has an initial Play Mode
+acceptance pass. The immediate critical path is a focused all-category/chain
+regression, followed by the shared complete legal-action view needed by bots,
+simulation, replay/state-hash checks, and networking. Do not substitute more
+isolated card scripts or smoke tests for those integration milestones. Tests
+remain verification for each finished slice.
 
 ## 17. Change Management
 

@@ -595,6 +595,19 @@ public static class GameStateDiagnostics
                 $"Required test action failed: {action}. " +
                 result.ErrorMessage);
         }
+
+        while (session.State.HasOpenResponseWindow)
+        {
+            int priorityPlayer = session.State.InteractionPlayerIndex;
+            ActionResult passResult = session.TryApply(
+                GameAction.PassResponse(priorityPlayer));
+            if (!passResult.Succeeded)
+            {
+                throw new System.InvalidOperationException(
+                    "Required diagnostic response pass failed. " +
+                    passResult.ErrorMessage);
+            }
+        }
     }
 
     private static void FinishTurn(GameSession session, int playerIndex)

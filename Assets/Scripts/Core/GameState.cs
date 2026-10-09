@@ -7,6 +7,8 @@ public sealed class GameState
     private readonly PlayerState[] players;
     private readonly Dictionary<string, int> effectUses =
         new Dictionary<string, int>();
+    private readonly List<StatModifierApplication> statModifiers =
+        new List<StatModifierApplication>();
 
     public GameConfig Config { get; }
     public SeededGameRandom Random { get; }
@@ -18,6 +20,11 @@ public sealed class GameState
     public long NextInstanceId { get; private set; }
     public bool IsFinished { get; private set; }
     public int WinnerPlayerIndex { get; private set; }
+    public ChainState ActiveChain { get; private set; }
+    public bool HasOpenResponseWindow => ActiveChain != null;
+    public int InteractionPlayerIndex => ActiveChain != null
+        ? ActiveChain.PriorityPlayerIndex
+        : CurrentPlayerIndex;
 
     private GameState(GameConfig config, uint seed)
     {
@@ -94,6 +101,89 @@ public sealed class GameState
         CurrentPhase = TurnPhase.Recovery;
         CurrentRecoveryStep = RecoveryStep.Draw;
         players[CurrentPlayerIndex].ResetTurnCardFlags();
+    }
+
+    internal void OpenChain(ChainState chain)
+    {
+        ActiveChain = chain ?? throw new ArgumentNullException(nameof(chain));
+    }
+
+    internal void CloseChain()
+    {
+        ActiveChain = null;
+    }
+
+    internal CardInstance FindCard(long instanceId)
+    {
+        for (int playerIndex = 0; playerIndex < players.Length; playerIndex++)
+        {
+            CardInstance card = players[playerIndex].FindCard(instanceId);
+            if (card != null)
+                return card;
+        }
+
+        return null;
+    }
+
+    internal void ApplyStatModifier(
+        long sourceInstanceId,
+        CardInstance target,
+        int attackAmount,
+        int defenseAmount,
+        int expireAfterTurn = 0)
+    {
+        StatModifierApplication application = new StatModifierApplication(
+            sourceInstanceId,
+            target,
+            attackAmount,
+            defenseAmount,
+            expireAfterTurn);
+        application.Apply();
+        statModifiers.Add(application);
+    }
+
+    internal void RemovePersistentModifiersFromSource(long sourceInstanceId)
+    {
+        RemoveModifiers(application =>
+            application.SourceInstanceId == sourceInstanceId &&
+            !application.IsTemporary);
+    }
+
+    internal void RemoveModifiersFromTarget(long targetInstanceId)
+    {
+        RemoveModifiers(application =>
+            application.Target.InstanceId == targetInstanceId);
+    }
+
+    internal void ExpireTemporaryModifiers(int completedTurn)
+    {
+        RemoveModifiers(application =>
+            application.IsTemporary &&
+            application.ExpireAfterTurn <= completedTurn);
+    }
+
+    internal bool HasModifierFromSourceToTarget(
+        long sourceInstanceId,
+        long targetInstanceId)
+    {
+        return statModifiers.Exists(application =>
+            !application.IsTemporary &&
+            application.SourceInstanceId == sourceInstanceId &&
+            application.Target.InstanceId == targetInstanceId);
+    }
+
+    private void RemoveModifiers(
+        Predicate<StatModifierApplication> predicate)
+    {
+        for (int index = statModifiers.Count - 1; index >= 0; index--)
+        {
+            StatModifierApplication application = statModifiers[index];
+            if (!predicate(application))
+                continue;
+
+            application.Remove();
+            statModifiers.RemoveAt(index);
+        }
     }
 
     internal void EndMatch(int winnerPlayerIndex)

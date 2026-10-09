@@ -159,8 +159,8 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
 
         cardInteraction?.BeginRender(state);
 
-        PlayerState activePlayer = state.Players[state.CurrentPlayerIndex];
-        PlayerState opponent = state.Players[1 - state.CurrentPlayerIndex];
+        PlayerState activePlayer = state.Players[state.InteractionPlayerIndex];
+        PlayerState opponent = state.Players[1 - state.InteractionPlayerIndex];
         RenderPlayer(activePlayer, board, hud, "Player", true);
         RenderPlayer(opponent, board, hud, "Opp", false);
 
@@ -181,6 +181,8 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
 
         if (state.IsFinished)
             cardInteraction?.ShowMatchResult(state);
+        else if (state.HasOpenResponseWindow)
+            cardInteraction?.ShowResponsePrompt();
     }
 
     private void RenderPlayer(
@@ -200,9 +202,10 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
 
         RenderHand(player.Hand, board, side, isLocalPlayer);
         RenderZones(player.MonsterZones, board, side + "_MonsterRow",
-            side + "_MonsterZone_", true, true, !isLocalPlayer);
+            side + "_MonsterZone_", true, isLocalPlayer, !isLocalPlayer);
         RenderZones(player.SpellTrapZones, board, side + "_SpellTrapRow",
-            side + "_SpellTrapZone_", false, true, !isLocalPlayer);
+            side + "_SpellTrapZone_", false, isLocalPlayer, !isLocalPlayer);
+        RenderFieldSpell(player.FieldSpell, board, side, isLocalPlayer);
     }
 
     private void RenderHand(
@@ -257,7 +260,7 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         string rowName,
         string zonePrefix,
         bool monsterRow,
-        bool allowInteraction,
+        bool ownerCanInteract,
         bool mirrorZoneOrder)
     {
         for (int i = 0; i < cards.Count; i++)
@@ -303,8 +306,34 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
                 1f,
                 defense,
                 cards[i].IsFaceDown,
-                allowInteraction && !cards[i].IsFaceDown);
+                ownerCanInteract || !cards[i].IsFaceDown);
         }
+    }
+
+    private void RenderFieldSpell(
+        CardInstance fieldSpell,
+        Transform board,
+        string side,
+        bool ownerCanInteract)
+    {
+        if (fieldSpell == null)
+            return;
+
+        Transform zone = board.Find(side + "_FieldZone");
+        Transform anchor = zone != null ? zone.Find("CardAnchor") : null;
+        if (anchor == null)
+        {
+            Debug.LogError(side + " Field Zone/CardAnchor is missing.", this);
+            return;
+        }
+
+        CreateCard(
+            fieldSpell,
+            anchor,
+            1f,
+            false,
+            false,
+            true);
     }
 
     private void CreateCard(
@@ -379,23 +408,56 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
 
     private bool ValidateSetup()
     {
+        GameConfig config = GameConfig.CreateDefault();
         if (sampleCards == null || sampleCards.Length == 0 ||
             monsterCardPrefab == null || spellTrapCardPrefab == null)
         {
             Debug.LogError("Sample cards and both card prefabs are required.", this);
             return false;
         }
+        if (sampleCards.Length < config.MinimumDeckSize ||
+            sampleCards.Length > config.MaximumDeckSize)
+        {
+            Debug.LogError(
+                "Demo deck must contain " + config.MinimumDeckSize + "-" +
+                config.MaximumDeckSize + " cards.",
+                this);
+            return false;
+        }
 
         cardsById.Clear();
+        Dictionary<string, int> copyCounts = new Dictionary<string, int>();
         foreach (CardData card in sampleCards)
         {
-            if (card == null || string.IsNullOrEmpty(card.CardId) ||
-                cardsById.ContainsKey(card.CardId))
+            if (card == null || string.IsNullOrEmpty(card.CardId))
             {
-                Debug.LogError("Sample cards must have unique, nonempty Card IDs.", this);
+                Debug.LogError(
+                    "Demo deck cards must have nonempty Card IDs.",
+                    this);
                 return false;
             }
-            cardsById.Add(card.CardId, card);
+            int count = copyCounts.TryGetValue(card.CardId, out int existing)
+                ? existing + 1
+                : 1;
+            copyCounts[card.CardId] = count;
+            if (count > 3)
+            {
+                Debug.LogError(
+                    "Demo deck cannot contain more than 3 copies of " +
+                    card.CardName + ".",
+                    this);
+                return false;
+            }
+            if (card.Effects.Count == 0)
+            {
+                Debug.LogError(
+                    "Demo deck card has no executable effect: " +
+                    card.CardName + ".",
+                    this);
+                return false;
+            }
+            if (!cardsById.ContainsKey(card.CardId))
+                cardsById.Add(card.CardId, card);
         }
         return true;
     }

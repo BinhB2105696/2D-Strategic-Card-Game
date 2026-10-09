@@ -16,7 +16,8 @@ MonoBehaviour:
   cardName: Divine Reversal
   category: 2
   artwork: {fileID: 21300000, guid: f4687b51a231d504abc659c7fe15e5f8, type: 3}
-  effectText: A Counter Trap used to verify Speed 3 presentation.
+  effectText: 'When your opponent activates a Spell or Trap: Pay 1 Energy; negate
+    that activation and send that card to the Graveyard.'
   monsterAttribute: 0
   monsterRank: 0
   monsterType: 0
@@ -26,4 +27,23 @@ MonoBehaviour:
   attackEnergyRequirement: 0
   spellType: 0
   trapType: 1
-  energyCost: 3
+  effects:
+  - effectId: effect_divine_reversal_negate
+    effectKind: 0
+    trigger: 4
+    allowedPhases: 31
+    allowedTurn: 2
+    activationWindow: 1
+    activationSource: 0
+    conditions: []
+    costs:
+    - component: {fileID: 11400000, guid: 5d1203d777274285bd8e17473215d35e, type: 2}
+      amount: 1
+    targets: []
+    resolution:
+    - component: {fileID: 11400000, guid: f0f2559821ab91b4bbd28f3db6a7c88c, type: 2}
+      amount: 1
+    continuousModifiers: []
+    maxUses: 0
+    countBy: 0
+    reset: 0

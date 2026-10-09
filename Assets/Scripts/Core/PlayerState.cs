@@ -9,6 +9,7 @@ public sealed class PlayerState
     private readonly List<CardInstance> graveyard;
     private readonly CardInstance[] monsterZones;
     private readonly CardInstance[] spellTrapZones;
+    private CardInstance fieldSpell;
     private readonly HashSet<int> skippedDrawTurns = new HashSet<int>();
     private readonly HashSet<int> skippedEnergyRefreshTurns = new HashSet<int>();
     private readonly HashSet<int> skippedStandbyTurns = new HashSet<int>();
@@ -23,6 +24,8 @@ public sealed class PlayerState
     public IReadOnlyList<CardInstance> Graveyard => graveyard;
     public IReadOnlyList<CardInstance> MonsterZones => monsterZones;
     public IReadOnlyList<CardInstance> SpellTrapZones => spellTrapZones;
+    public CardInstance FieldSpell => fieldSpell;
+    public int LastFieldSpellActivationTurn { get; private set; } = -1;
     public bool HasLost => Health <= 0;
 
     internal List<CardInstance> MutableDeck => deck;
@@ -214,6 +217,41 @@ public sealed class PlayerState
         return -1;
     }
 
+    internal int FindSpellTrapZoneIndex(long instanceId)
+    {
+        for (int index = 0; index < spellTrapZones.Length; index++)
+        {
+            if (spellTrapZones[index] != null &&
+                spellTrapZones[index].InstanceId == instanceId)
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
+    internal CardInstance FindCard(long instanceId)
+    {
+        CardInstance card = deck.Find(item => item.InstanceId == instanceId) ??
+            hand.Find(item => item.InstanceId == instanceId) ??
+            graveyard.Find(item => item.InstanceId == instanceId);
+        if (card != null)
+            return card;
+
+        int monsterIndex = FindMonsterZoneIndex(instanceId);
+        if (monsterIndex >= 0)
+            return monsterZones[monsterIndex];
+
+        int spellTrapIndex = FindSpellTrapZoneIndex(instanceId);
+        if (spellTrapIndex >= 0)
+            return spellTrapZones[spellTrapIndex];
+
+        return fieldSpell != null && fieldSpell.InstanceId == instanceId
+            ? fieldSpell
+            : null;
+    }
+
     internal bool IsSpellTrapZoneOpen(int zoneIndex)
     {
         return zoneIndex >= 0 &&
@@ -275,6 +313,52 @@ public sealed class PlayerState
 
         spellTrapZones[zoneIndex] = card;
         card.MoveToZone(CardZone.SpellTrapZone, faceDown);
+    }
+
+    internal void SetTrapFromHand(
+        CardInstance card,
+        int zoneIndex,
+        int turnNumber)
+    {
+        PlaceSpellTrapFromHand(card, zoneIndex, true);
+        card.SetFaceDownInSpellTrapZone(turnNumber);
+    }
+
+    internal CardInstance PlaceFieldSpellFromHand(CardInstance card)
+    {
+        if (card == null || !hand.Remove(card))
+        {
+            throw new InvalidOperationException(
+                "The Field Spell must be in this player's hand.");
+        }
+
+        CardInstance replaced = fieldSpell;
+        if (replaced != null)
+        {
+            replaced.MoveToZone(CardZone.Graveyard, false);
+            graveyard.Add(replaced);
+        }
+
+        fieldSpell = card;
+        card.MoveToZone(CardZone.FieldZone, false);
+        return replaced;
+    }
+
+    internal CardInstance MoveFieldSpellToGraveyard(bool faceDown)
+    {
+        if (fieldSpell == null)
+            return null;
+
+        CardInstance card = fieldSpell;
+        fieldSpell = null;
+        card.MoveToZone(CardZone.Graveyard, faceDown);
+        graveyard.Add(card);
+        return card;
+    }
+
+    internal void MarkFieldSpellActivated(int turnNumber)
+    {
+        LastFieldSpellActivationTurn = turnNumber;
     }
 
     internal CardInstance MoveSpellTrapToGraveyard(

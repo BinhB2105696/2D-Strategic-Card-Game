@@ -302,9 +302,9 @@ This structure may change as implementation progresses.
 - [x] Basic Graveyard movement and Recovery Phase steps
 - [x] Portrait board layout and seeded match state preview
 - [x] Turn-specific phase/step skip rules and reusable next-opponent-Draw operation
-- [ ] Remaining Spell/Trap types, targeting, and chain system
+- [x] Equip/Field Spell, Normal/Counter Trap, targeting, and simple chain foundation
 - [x] Playable board UI and core local hot-seat match
-- [ ] Initial cards and decks
+- [x] Fixed 30-card playable sample deck with a three-copy limit
 - [ ] Easy Bot
 - [ ] Normal Bot
 - [ ] Headless bot-vs-bot simulation and evaluation metrics
@@ -329,18 +329,19 @@ This document is intended to be updated whenever important gameplay, architectur
 
 The repository and Unity project use Unity 2022.3.62f3 LTS.
 
-As of 9 October 2026, the core Monster and Normal Spell duel loop is playable
-as a local hot-seat match through the portrait UI. The student has verified
-automatic turn-start steps, phase controls, card selection, basic and tribute
-summons, Energy allocation, position changes, Normal Spell activation, attacks,
-damage, Graveyard movement, perspective changes, and winner detection in Play
-Mode. The hand layout, Monster Zone combat HUD, modal ordering, and mirrored
-opponent zone presentation are also connected to the live `GameState`.
+As of 10 October 2026, the local hot-seat match supports the Monster combat
+loop plus playable Normal and Equip Spells, one Field Spell per player, Set
+Normal/Counter Traps, targeted effects, legal-response filtering, and a simple
+Speed 1/2/3 last-in-first-out chain. Response prompts are skipped when a player
+has no legal response. A fixed 30-card sample deck contains ten card designs at
+three copies each, and Edit Mode prepares or repairs its required sample data
+before Play Mode. The student has entered Play Mode and reported the current
+match mechanics and action sequence working as a checkpoint.
 
-This is not yet a representative all-card-types match. Equip and Field Spells,
-Normal and Counter Traps, targeting beyond attacks, response windows, the
-simple chain system, representative decks, bots, simulation metrics, online
-PvP, platform builds, and event-driven animation remain incomplete.
+This remains a prototype card set and needs focused regression for every
+Spell/Trap and multi-link chain case. Easy/Normal bots, simulation metrics,
+the networking feasibility spike and online PvP, platform builds, and
+event-driven animation remain incomplete.
 
 The December thesis schedule and dated milestones are in
 `Docs/PROJECT_CONTEXT.md`. The dated `Docs/HANDOFF_2026-10-07.md` records the

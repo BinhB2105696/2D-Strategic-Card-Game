@@ -7,7 +7,9 @@ public enum EffectTriggerType
     OnSummoned,
     OnDestroyed,
     StandbyPhase,
-    OnSpellTrapActivated
+    OnSpellTrapActivated,
+    OnAttackDeclared,
+    EndPhase
 }
 
 public enum EffectConditionType
@@ -35,7 +37,12 @@ public enum EffectOperationType
 {
     None,
     DrawCards,
-    SkipNextOpponentDrawStep
+    SkipNextOpponentDrawStep,
+    ReduceAttackUntilEndOfTurn,
+    IncreaseAttackUntilEndOfTurn,
+    IncreaseDefenseUntilEndOfTurn,
+    RestoreMonsterHealth,
+    NegatePreviousChainLink
 }
 
 [Serializable]
@@ -102,6 +109,7 @@ public sealed class EffectDefinition
     public EffectPhaseMask AllowedPhases { get; }
     public EffectTurnScope AllowedTurn { get; }
     public EffectActivationWindow ActivationWindow { get; }
+    public EffectActivationSource ActivationSource { get; }
     public IReadOnlyList<EffectConditionDefinition> Conditions { get; }
     public IReadOnlyList<EffectCostDefinition> Costs { get; }
     public EffectTargetType TargetType { get; }
@@ -119,6 +127,7 @@ public sealed class EffectDefinition
         EffectPhaseMask allowedPhases,
         EffectTurnScope allowedTurn,
         EffectActivationWindow activationWindow,
+        EffectActivationSource activationSource,
         IReadOnlyList<EffectConditionDefinition> conditions,
         IReadOnlyList<EffectCostDefinition> costs,
         EffectTargetType targetType,
@@ -142,6 +151,7 @@ public sealed class EffectDefinition
         AllowedPhases = allowedPhases;
         AllowedTurn = allowedTurn;
         ActivationWindow = activationWindow;
+        ActivationSource = activationSource;
         Conditions = CopyList(conditions, NoConditions, nameof(conditions));
         Costs = CopyList(costs, NoCosts, nameof(costs));
         TargetType = targetType;

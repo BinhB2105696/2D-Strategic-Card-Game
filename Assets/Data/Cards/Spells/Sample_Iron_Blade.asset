@@ -16,7 +16,7 @@ MonoBehaviour:
   cardName: Iron Blade
   category: 1
   artwork: {fileID: 0}
-  effectText: An Equip Spell used to test Spell subtype presentation.
+  effectText: Pay 1 Energy; equip to 1 monster you control. It gains 300 ATK.
   monsterAttribute: 0
   monsterRank: 0
   monsterType: 0
@@ -26,4 +26,25 @@ MonoBehaviour:
   attackEnergyRequirement: 0
   spellType: 1
   trapType: 0
-  energyCost: 2
+  effects:
+  - effectId: effect_iron_blade_equip
+    effectKind: 1
+    trigger: 0
+    allowedPhases: 4
+    allowedTurn: 0
+    activationWindow: 0
+    activationSource: 0
+    conditions: []
+    costs:
+    - component: {fileID: 11400000, guid: 5d1203d777274285bd8e17473215d35e, type: 2}
+      amount: 1
+    targets:
+    - component: {fileID: 11400000, guid: 5d26860cb073c8445b79f4a8f6a2f198, type: 2}
+      amount: 1
+    resolution: []
+    continuousModifiers:
+    - component: {fileID: 11400000, guid: 20466720afd554448bab54aad5206e1f, type: 2}
+      amount: 300
+    maxUses: 0
+    countBy: 0
+    reset: 0

@@ -72,6 +72,21 @@ public static class NormalSpellDiagnostics
             return;
         }
 
+        List<GameEvent> generatedEvents = new List<GameEvent>(result.Events);
+        while (session.State.HasOpenResponseWindow)
+        {
+            ActionResult passResult = session.TryApply(
+                GameAction.PassResponse(session.State.InteractionPlayerIndex));
+            if (!passResult.Succeeded)
+            {
+                Debug.LogError(
+                    "Normal Spell response pass failed: " +
+                    passResult.ErrorMessage);
+                return;
+            }
+            generatedEvents.AddRange(passResult.Events);
+        }
+
         bool spellReachedGraveyard =
             player.Graveyard.Count == graveyardBefore + 1 &&
             player.Graveyard[player.Graveyard.Count - 1].InstanceId ==
@@ -82,14 +97,17 @@ public static class NormalSpellDiagnostics
             player.Hand.Count == handBefore;
         bool paidEnergy = player.AvailableEnergy == energyBefore - 1;
         bool loggedAction = session.Log.Actions.Count == 4;
-        bool eventOrderIsCorrect = result.Events.Count == 6 &&
-            result.Events[0].Type ==
+        bool eventOrderIsCorrect = generatedEvents.Count == 9 &&
+            generatedEvents[0].Type ==
                 GameEventType.CardPlacedInSpellTrapZone &&
-            result.Events[1].Type == GameEventType.SpellActivated &&
-            result.Events[2].Type == GameEventType.EnergySpent &&
-            result.Events[3].Type == GameEventType.CardDrawn &&
-            result.Events[4].Type == GameEventType.EffectResolved &&
-            result.Events[5].Type == GameEventType.CardSentToGraveyard;
+            generatedEvents[1].Type == GameEventType.EnergySpent &&
+            generatedEvents[2].Type == GameEventType.SpellActivated &&
+            generatedEvents[3].Type == GameEventType.ChainStarted &&
+            generatedEvents[4].Type == GameEventType.ResponsePassed &&
+            generatedEvents[5].Type == GameEventType.ResponsePassed &&
+            generatedEvents[6].Type == GameEventType.CardDrawn &&
+            generatedEvents[7].Type == GameEventType.EffectResolved &&
+            generatedEvents[8].Type == GameEventType.CardSentToGraveyard;
 
         if (!spellReachedGraveyard ||
             !drewOneCard ||
@@ -112,7 +130,7 @@ public static class NormalSpellDiagnostics
             "Resolved Spell moved from field to Graveyard face-down: True\n" +
             "Spell/Trap Zone released after resolution: True\n" +
             "Activation event order is correct: True\n" +
-            $"Generated events: {result.Events.Count}\n" +
+            $"Generated events: {generatedEvents.Count}\n" +
             $"Logged valid actions: {session.Log.Actions.Count}");
     }
 

@@ -21,7 +21,19 @@ public enum GameEventType
     MonsterDestroyed,
     PlayerDamaged,
     CardPlacedInSpellTrapZone,
+    CardSet,
     SpellActivated,
+    TrapActivated,
+    FieldSpellActivated,
+    EquipAttached,
+    ChainStarted,
+    ChainLinkAdded,
+    ResponsePassed,
+    CardActivationNegated,
+    MonsterAttackModified,
+    MonsterDefenseModified,
+    MonsterHealthModified,
+    FieldMaintenancePaid,
     EffectResolved,
     CardSentToGraveyard,
     MatchEnded
@@ -304,6 +316,176 @@ public sealed class GameEvent
             0,
             0,
             phase);
+    }
+
+    public static GameEvent CardSet(
+        int playerIndex,
+        long instanceId,
+        int zoneIndex)
+    {
+        return new GameEvent(
+            GameEventType.CardSet,
+            playerIndex,
+            instanceId,
+            0,
+            zoneIndex,
+            TurnPhase.Main);
+    }
+
+    public static GameEvent TrapActivated(
+        int playerIndex,
+        long instanceId,
+        TurnPhase phase)
+    {
+        return new GameEvent(
+            GameEventType.TrapActivated,
+            playerIndex,
+            instanceId,
+            0,
+            0,
+            phase);
+    }
+
+    public static GameEvent FieldSpellActivated(
+        int playerIndex,
+        long instanceId)
+    {
+        return new GameEvent(
+            GameEventType.FieldSpellActivated,
+            playerIndex,
+            instanceId,
+            0,
+            0,
+            TurnPhase.Main);
+    }
+
+    public static GameEvent EquipAttached(
+        int playerIndex,
+        long instanceId,
+        long targetInstanceId)
+    {
+        return new GameEvent(
+            GameEventType.EquipAttached,
+            playerIndex,
+            instanceId,
+            targetInstanceId,
+            0,
+            TurnPhase.Main);
+    }
+
+    public static GameEvent ChainStarted(
+        int playerIndex,
+        long sourceInstanceId,
+        TurnPhase phase)
+    {
+        return new GameEvent(
+            GameEventType.ChainStarted,
+            playerIndex,
+            sourceInstanceId,
+            0,
+            1,
+            phase);
+    }
+
+    public static GameEvent ChainLinkAdded(
+        int playerIndex,
+        long sourceInstanceId,
+        int chainLinkNumber,
+        TurnPhase phase)
+    {
+        return new GameEvent(
+            GameEventType.ChainLinkAdded,
+            playerIndex,
+            sourceInstanceId,
+            0,
+            chainLinkNumber,
+            phase);
+    }
+
+    public static GameEvent ResponsePassed(
+        int playerIndex,
+        TurnPhase phase)
+    {
+        return new GameEvent(
+            GameEventType.ResponsePassed,
+            playerIndex,
+            0,
+            0,
+            0,
+            phase);
+    }
+
+    public static GameEvent CardActivationNegated(
+        int playerIndex,
+        long sourceInstanceId,
+        TurnPhase phase)
+    {
+        return new GameEvent(
+            GameEventType.CardActivationNegated,
+            playerIndex,
+            sourceInstanceId,
+            0,
+            0,
+            phase);
+    }
+
+    public static GameEvent MonsterAttackModified(
+        int playerIndex,
+        long instanceId,
+        int amount,
+        TurnPhase phase)
+    {
+        return new GameEvent(
+            GameEventType.MonsterAttackModified,
+            playerIndex,
+            instanceId,
+            0,
+            amount,
+            phase);
+    }
+
+    public static GameEvent MonsterDefenseModified(
+        int playerIndex,
+        long instanceId,
+        int amount,
+        TurnPhase phase)
+    {
+        return new GameEvent(
+            GameEventType.MonsterDefenseModified,
+            playerIndex,
+            instanceId,
+            0,
+            amount,
+            phase);
+    }
+
+    public static GameEvent MonsterHealthModified(
+        int playerIndex,
+        long instanceId,
+        int amount,
+        TurnPhase phase)
+    {
+        return new GameEvent(
+            GameEventType.MonsterHealthModified,
+            playerIndex,
+            instanceId,
+            0,
+            amount,
+            phase);
+    }
+
+    public static GameEvent FieldMaintenancePaid(
+        int playerIndex,
+        long instanceId,
+        int amount)
+    {
+        return new GameEvent(
+            GameEventType.FieldMaintenancePaid,
+            playerIndex,
+            instanceId,
+            0,
+            amount,
+            TurnPhase.End);
     }
 
     public static GameEvent CardPlacedInSpellTrapZone(

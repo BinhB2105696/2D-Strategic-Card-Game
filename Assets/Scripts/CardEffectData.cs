@@ -6,7 +6,19 @@ public enum EffectKind { Activated, Continuous }
 
 public enum EffectTurnScope { YourTurn, OpponentTurn, EitherTurn }
 
-public enum EffectActivationWindow { OpenGameState, ResponseToActivation }
+public enum EffectActivationWindow
+{
+    OpenGameState,
+    ResponseToActivation,
+    ResponseToAttackDeclaration
+}
+
+public enum EffectActivationSource
+{
+    Standard,
+    Hand,
+    Graveyard
+}
 
 public enum EffectUsageScope { PerInstance, PerCardId }
 
@@ -84,6 +96,8 @@ public sealed class CardEffectData
     [SerializeField] private EffectTurnScope allowedTurn = EffectTurnScope.YourTurn;
     [SerializeField] private EffectActivationWindow activationWindow =
         EffectActivationWindow.OpenGameState;
+    [SerializeField] private EffectActivationSource activationSource =
+        EffectActivationSource.Standard;
     [SerializeField] private List<EffectConditionSlot> conditions =
         new List<EffectConditionSlot>();
     [SerializeField] private List<EffectCostSlot> costs =
@@ -104,6 +118,7 @@ public sealed class CardEffectData
     public EffectPhaseMask AllowedPhases => allowedPhases;
     public EffectTurnScope AllowedTurn => allowedTurn;
     public EffectActivationWindow ActivationWindow => activationWindow;
+    public EffectActivationSource ActivationSource => activationSource;
     public IReadOnlyList<EffectConditionSlot> Conditions => conditions;
     public IReadOnlyList<EffectCostSlot> Costs => costs;
     public IReadOnlyList<EffectTargetSlot> Targets => targets;

@@ -16,7 +16,7 @@ MonoBehaviour:
   cardName: Stone Guardian
   category: 0
   artwork: {fileID: 0}
-  effectText: A reliable Basic Monster used to test card data.
+  effectText: 'Pay 1 Energy: This card gains 300 DEF until the end of this turn.'
   monsterAttribute: 4
   monsterRank: 0
   monsterType: 9
@@ -26,4 +26,23 @@ MonoBehaviour:
   attackEnergyRequirement: 1
   spellType: 0
   trapType: 0
-  energyCost: 1
+  effects:
+  - effectId: effect_stone_guardian_fortify
+    effectKind: 0
+    trigger: 0
+    allowedPhases: 4
+    allowedTurn: 0
+    activationWindow: 0
+    activationSource: 0
+    conditions: []
+    costs:
+    - component: {fileID: 11400000, guid: 5d1203d777274285bd8e17473215d35e, type: 2}
+      amount: 1
+    targets: []
+    resolution:
+    - component: {fileID: 11400000, guid: 4de2be705b9ae2c43b8b3885c7b5eca9, type: 2}
+      amount: 300
+    continuousModifiers: []
+    maxUses: 1
+    countBy: 0
+    reset: 0

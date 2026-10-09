@@ -6,7 +6,8 @@ public enum CardZone
     Hand,
     MonsterZone,
     SpellTrapZone,
-    Graveyard
+    Graveyard,
+    FieldZone
 }
 
 public enum BattlePosition
@@ -26,8 +27,12 @@ public sealed class CardInstance
     public CardDefinition Definition { get; }
 
     public int CurrentHealth { get; private set; }
-    public int CurrentAttack { get; private set; }
-    public int CurrentDefense { get; private set; }
+    public int CurrentAttack => Math.Max(
+        0,
+        Definition.BaseAttack + attackAdjustment);
+    public int CurrentDefense => Math.Max(
+        0,
+        Definition.BaseDefense + defenseAdjustment);
     public int AllocatedEnergy { get; private set; }
 
     public CardZone Zone { get; private set; }
@@ -37,6 +42,11 @@ public sealed class CardInstance
     public int AttacksUsedThisTurn { get; private set; }
     public int MaxAttacksThisTurn { get; private set; }
     public bool HasChangedPositionThisTurn { get; private set; }
+    public int SetTurnNumber { get; private set; }
+    public long EquippedTargetInstanceId { get; private set; }
+
+    private int attackAdjustment;
+    private int defenseAdjustment;
 
     public bool IsDestroyed =>
         Definition.IsMonster && CurrentHealth <= 0;
@@ -66,14 +76,13 @@ public sealed class CardInstance
         InstanceId = instanceId;
         OwnerPlayerIndex = ownerPlayerIndex;
         CurrentHealth = definition.IsMonster ? definition.BaseHealth : 0;
-        CurrentAttack = definition.IsMonster ? definition.BaseAttack : 0;
-        CurrentDefense = definition.IsMonster ? definition.BaseDefense : 0;
         Zone = CardZone.Deck;
         BattlePosition = BattlePosition.None;
         IsFaceDown = true;
         MaxAttacksThisTurn = definition.IsMonster
             ? DefaultMaxAttacksPerTurn
             : 0;
+        SetTurnNumber = -1;
     }
 
     public void MoveToZone(CardZone destination, bool faceDown)
@@ -84,6 +93,12 @@ public sealed class CardInstance
         if (destination != CardZone.MonsterZone)
         {
             BattlePosition = BattlePosition.None;
+        }
+
+        if (destination != CardZone.SpellTrapZone)
+        {
+            SetTurnNumber = -1;
+            EquippedTargetInstanceId = 0;
         }
     }
 
@@ -151,14 +166,49 @@ public sealed class CardInstance
         CurrentHealth = Math.Max(0, CurrentHealth - amount);
     }
 
+    public void RestoreHealth(int amount)
+    {
+        if (!Definition.IsMonster)
+            throw new InvalidOperationException(
+                "Only a Monster can restore Health.");
+        if (amount < 0)
+            throw new ArgumentOutOfRangeException(nameof(amount));
+
+        CurrentHealth = checked(CurrentHealth + amount);
+    }
+
     public void ModifyAttack(int amount)
     {
-        CurrentAttack = Math.Max(0, CurrentAttack + amount);
+        attackAdjustment += amount;
     }
 
     public void ModifyDefense(int amount)
     {
-        CurrentDefense = Math.Max(0, CurrentDefense + amount);
+        defenseAdjustment += amount;
+    }
+
+    public void SetFaceDownInSpellTrapZone(int turnNumber)
+    {
+        if (Zone != CardZone.SpellTrapZone)
+            throw new InvalidOperationException(
+                "Only a card in a Spell/Trap Zone can be Set.");
+
+        IsFaceDown = true;
+        SetTurnNumber = turnNumber;
+    }
+
+    public void Reveal()
+    {
+        IsFaceDown = false;
+    }
+
+    public void EquipTo(long targetInstanceId)
+    {
+        if (targetInstanceId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(targetInstanceId));
+
+        EquippedTargetInstanceId = targetInstanceId;
+        IsFaceDown = false;
     }
 
     public void SetBattlePosition(BattlePosition position)

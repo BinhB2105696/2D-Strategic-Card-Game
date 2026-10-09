@@ -100,25 +100,44 @@ public sealed class EffectDefinitionTargetRule : IEffectTargetRule
         EffectContext context,
         out string failureReason)
     {
-        if (effect.TargetType != EffectTargetType.None ||
-            effect.TargetCount != 0)
+        if (context.TargetInstanceIds.Count != effect.TargetCount)
         {
             failureReason =
-                "This target type is not implemented in the first " +
-                "Normal Spell slice yet.";
+                "This effect requires exactly " + effect.TargetCount +
+                " target(s).";
             return false;
         }
 
-        bool hasNoTargets = context.TargetInstanceIds.Count == 0;
-        failureReason = hasNoTargets
-            ? string.Empty
-            : "This Spell does not require a target.";
-        return hasNoTargets;
+        if (effect.TargetType == EffectTargetType.None)
+        {
+            failureReason = string.Empty;
+            return effect.TargetCount == 0;
+        }
+
+        for (int index = 0; index < context.TargetInstanceIds.Count; index++)
+        {
+            long targetId = context.TargetInstanceIds[index];
+            int ownerIndex = effect.TargetType == EffectTargetType.OwnMonster
+                ? context.ActivatingPlayerIndex
+                : 1 - context.ActivatingPlayerIndex;
+            if (context.State.Players[ownerIndex]
+                    .FindMonsterZoneIndex(targetId) < 0)
+            {
+                failureReason = effect.TargetType == EffectTargetType.OwnMonster
+                    ? "The target must be one of your field Monsters."
+                    : "The target must be an opponent field Monster.";
+                return false;
+            }
+        }
+
+        failureReason = string.Empty;
+        return true;
     }
 }
 
 public sealed class DefinitionCardEffect : ICardEffect
 {
+    // Reusable resolution dispatch for authored card effects.
     private readonly EffectDefinition effect;
 
     public DefinitionCardEffect(EffectDefinition effect)
@@ -146,6 +165,37 @@ public sealed class DefinitionCardEffect : ICardEffect
                         opponentIndex);
                     context.Opponent.ScheduleDrawStepSkip(drawTurn);
                     break;
+
+                case EffectOperationType.ReduceAttackUntilEndOfTurn:
+                    ResolveTemporaryAttackReduction(
+                        context,
+                        operation.Amount,
+                        events);
+                    break;
+
+                case EffectOperationType.IncreaseAttackUntilEndOfTurn:
+                    ResolveTemporaryStatIncrease(
+                        context,
+                        operation.Amount,
+                        0,
+                        events);
+                    break;
+
+                case EffectOperationType.IncreaseDefenseUntilEndOfTurn:
+                    ResolveTemporaryStatIncrease(
+                        context,
+                        0,
+                        operation.Amount,
+                        events);
+                    break;
+
+                case EffectOperationType.RestoreMonsterHealth:
+                    ResolveHealthRestore(context, operation.Amount, events);
+                    break;
+
+                case EffectOperationType.NegatePreviousChainLink:
+                    ResolveNegation(context, events);
+                    break;
             }
         }
 
@@ -153,6 +203,113 @@ public sealed class DefinitionCardEffect : ICardEffect
             context.ActivatingPlayerIndex,
             context.SourceInstanceId,
             context.State.CurrentPhase));
+    }
+
+    private static void ResolveTemporaryAttackReduction(
+        EffectContext context,
+        int amount,
+        List<GameEvent> events)
+    {
+        if (context.TargetInstanceIds.Count == 0)
+            return;
+
+        CardInstance target = context.State.FindCard(
+            context.TargetInstanceIds[0]);
+        if (target == null || target.Zone != CardZone.MonsterZone)
+            return;
+
+        int reduction = System.Math.Max(0, amount);
+        context.State.ApplyStatModifier(
+            context.SourceInstanceId,
+            target,
+            -reduction,
+            0,
+            context.State.TurnNumber);
+        events.Add(GameEvent.MonsterAttackModified(
+            target.OwnerPlayerIndex,
+            target.InstanceId,
+            -reduction,
+            context.State.CurrentPhase));
+    }
+
+    private static void ResolveNegation(
+        EffectContext context,
+        List<GameEvent> events)
+    {
+        ChainState chain = context.State.ActiveChain;
+        if (chain == null ||
+            !chain.TryNegatePreviousLink(out ChainLink negatedLink))
+        {
+            return;
+        }
+
+        events.Add(GameEvent.CardActivationNegated(
+            negatedLink.PlayerIndex,
+            negatedLink.SourceInstanceId,
+            context.State.CurrentPhase));
+    }
+
+    private static void ResolveTemporaryStatIncrease(
+        EffectContext context,
+        int attackAmount,
+        int defenseAmount,
+        List<GameEvent> events)
+    {
+        CardInstance target = FindEffectMonster(context);
+        if (target == null)
+            return;
+
+        context.State.ApplyStatModifier(
+            context.SourceInstanceId,
+            target,
+            System.Math.Max(0, attackAmount),
+            System.Math.Max(0, defenseAmount),
+            context.State.TurnNumber);
+        if (attackAmount > 0)
+        {
+            events.Add(GameEvent.MonsterAttackModified(
+                target.OwnerPlayerIndex,
+                target.InstanceId,
+                attackAmount,
+                context.State.CurrentPhase));
+        }
+        if (defenseAmount > 0)
+        {
+            events.Add(GameEvent.MonsterDefenseModified(
+                target.OwnerPlayerIndex,
+                target.InstanceId,
+                defenseAmount,
+                context.State.CurrentPhase));
+        }
+    }
+
+    private static void ResolveHealthRestore(
+        EffectContext context,
+        int amount,
+        List<GameEvent> events)
+    {
+        CardInstance target = FindEffectMonster(context);
+        if (target == null)
+            return;
+
+        int restored = System.Math.Max(0, amount);
+        target.RestoreHealth(restored);
+        events.Add(GameEvent.MonsterHealthModified(
+            target.OwnerPlayerIndex,
+            target.InstanceId,
+            restored,
+            context.State.CurrentPhase));
+    }
+
+    private static CardInstance FindEffectMonster(EffectContext context)
+    {
+        long targetId = context.TargetInstanceIds.Count > 0
+            ? context.TargetInstanceIds[0]
+            : context.SourceInstanceId;
+        CardInstance target = context.State.FindCard(targetId);
+        return target != null && target.Zone == CardZone.MonsterZone
+            ? target
+            : null;
     }
 
     private static void ResolveDrawCards(

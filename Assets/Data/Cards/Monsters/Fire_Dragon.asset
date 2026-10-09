@@ -16,7 +16,7 @@ MonoBehaviour:
   cardName: Fire Dragon
   category: 0
   artwork: {fileID: 21300000, guid: 1c41066ef5662d74e82c5c8090c2b1d1, type: 3}
-  effectText: "\u2022 This card required 2 energies to attack."
+  effectText: 'Pay 1 Energy: This card gains 300 ATK until the end of this turn.'
   monsterAttribute: 2
   monsterRank: 1
   monsterType: 0
@@ -26,4 +26,23 @@ MonoBehaviour:
   attackEnergyRequirement: 2
   spellType: 1
   trapType: 1
-  effects: []
+  effects:
+  - effectId: effect_fire_dragon_flame_charge
+    effectKind: 0
+    trigger: 0
+    allowedPhases: 4
+    allowedTurn: 0
+    activationWindow: 0
+    activationSource: 0
+    conditions: []
+    costs:
+    - component: {fileID: 11400000, guid: 5d1203d777274285bd8e17473215d35e, type: 2}
+      amount: 1
+    targets: []
+    resolution:
+    - component: {fileID: 11400000, guid: b7ed089b88944834586ef87deb631189, type: 2}
+      amount: 300
+    continuousModifiers: []
+    maxUses: 1
+    countBy: 0
+    reset: 0
