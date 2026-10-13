@@ -6,6 +6,7 @@ using UnityEngine;
 public sealed class DuelMonsterZoneStatusView : MonoBehaviour
 {
     private const string CombatFontName = "Cinzel-Bold SDF";
+    private const int CombatStatusSortingOrder = 15;
 
     private static readonly Color ActiveStatColor =
         new Color32(255, 215, 76, 255);
@@ -34,6 +35,10 @@ public sealed class DuelMonsterZoneStatusView : MonoBehaviour
         rootRect.offsetMin = Vector2.zero;
         rootRect.offsetMax = Vector2.zero;
         rootRect.SetAsLastSibling();
+
+        Canvas statusCanvas = root.AddComponent<Canvas>();
+        statusCanvas.overrideSorting = true;
+        statusCanvas.sortingOrder = CombatStatusSortingOrder;
 
         healthText = CreateLabel(
             rootRect,

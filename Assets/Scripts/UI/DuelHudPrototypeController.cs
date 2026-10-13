@@ -132,33 +132,28 @@ public class DuelHudPrototypeController : MonoBehaviour
 
     public void RefreshPhaseControls(GameState state)
     {
-        bool matchActive = state != null &&
-            !state.IsFinished &&
-            !state.HasOpenResponseWindow;
-        bool mayOpenPhaseMenu = matchActive &&
-            (state.CurrentPhase == TurnPhase.Main ||
-             state.CurrentPhase == TurnPhase.Battle ||
-             state.CurrentPhase == TurnPhase.End);
+        GameAction enterBattle = FindLegalAction(
+            state,
+            GameActionType.AdvancePhase);
+        GameAction enterEnd = FindLegalAction(
+            state,
+            GameActionType.EnterEndPhase);
+        GameAction endTurn = FindLegalAction(
+            state,
+            GameActionType.EndTurn);
+        bool canEnterBattle = enterBattle != null &&
+            state.CurrentPhase == TurnPhase.Main;
+        bool canEndTurn = enterEnd != null || endTurn != null;
+        bool mayOpenPhaseMenu = canEnterBattle || canEndTurn;
 
         if (phaseMenuButton != null)
             phaseMenuButton.interactable = mayOpenPhaseMenu;
 
         if (battlePhaseButton != null)
-        {
-            battlePhaseButton.interactable = matchActive &&
-                state.CurrentPhase == TurnPhase.Main &&
-                state.TurnNumber != 1 &&
-                !state.Players[state.CurrentPlayerIndex]
-                    .IsBattlePhaseSkipScheduled(state.TurnNumber);
-        }
+            battlePhaseButton.interactable = canEnterBattle;
 
         if (endPhaseButton != null)
-        {
-            endPhaseButton.interactable = matchActive &&
-                (state.CurrentPhase == TurnPhase.Main ||
-                 state.CurrentPhase == TurnPhase.Battle ||
-                 state.CurrentPhase == TurnPhase.End);
-        }
+            endPhaseButton.interactable = canEndTurn;
 
         if (!mayOpenPhaseMenu)
             SetPhaseChoicesVisible(false);
@@ -167,10 +162,7 @@ public class DuelHudPrototypeController : MonoBehaviour
     private void RequestBattlePhase()
     {
         if (!TryGetDuel(out _, out GameState state) ||
-            state.CurrentPhase != TurnPhase.Main ||
-            state.TurnNumber == 1 ||
-            state.Players[state.CurrentPlayerIndex]
-                .IsBattlePhaseSkipScheduled(state.TurnNumber))
+            FindLegalAction(state, GameActionType.AdvancePhase) == null)
             return;
 
         OpenConfirmation(
@@ -181,9 +173,8 @@ public class DuelHudPrototypeController : MonoBehaviour
     private void RequestEndTurn()
     {
         if (!TryGetDuel(out _, out GameState state) ||
-            (state.CurrentPhase != TurnPhase.Main &&
-             state.CurrentPhase != TurnPhase.Battle &&
-             state.CurrentPhase != TurnPhase.End))
+            (FindLegalAction(state, GameActionType.EnterEndPhase) == null &&
+             FindLegalAction(state, GameActionType.EndTurn) == null))
             return;
 
         OpenConfirmation(
@@ -245,28 +236,31 @@ public class DuelHudPrototypeController : MonoBehaviour
         if (!TryGetDuel(out DuelBoardReadOnlyDemo board, out GameState state))
             return;
 
-        int playerIndex = state.CurrentPlayerIndex;
         if (confirmedAction == PendingConfirmation.EnterBattle)
         {
-            if (state.CurrentPhase != TurnPhase.Main ||
-                state.TurnNumber == 1 ||
-                state.Players[playerIndex]
-                    .IsBattlePhaseSkipScheduled(state.TurnNumber))
+            GameAction enterBattle = FindLegalAction(
+                state,
+                GameActionType.AdvancePhase);
+            if (enterBattle == null)
                 return;
 
-            ApplyAction(board, GameAction.AdvancePhase(playerIndex));
+            ApplyAction(board, enterBattle);
         }
         else if (confirmedAction == PendingConfirmation.EndTurn)
         {
-            if (state.CurrentPhase == TurnPhase.Main ||
-                state.CurrentPhase == TurnPhase.Battle)
+            GameAction enterEnd = FindLegalAction(
+                state,
+                GameActionType.EnterEndPhase);
+            if (enterEnd != null)
             {
-                if (!ApplyAction(
-                    board, GameAction.EnterEndPhase(playerIndex), false))
+                if (!ApplyAction(board, enterEnd, false))
                     return;
             }
 
-            if (!ApplyAction(board, GameAction.EndTurn(playerIndex), false))
+            GameAction endTurn = FindLegalAction(
+                state,
+                GameActionType.EndTurn);
+            if (endTurn == null || !ApplyAction(board, endTurn, false))
                 return;
 
             if (!board.ResolveAutomaticTurnStart())
@@ -286,6 +280,24 @@ public class DuelHudPrototypeController : MonoBehaviour
             ? board.Session.State
             : null;
         return state != null && !state.IsFinished;
+    }
+
+    private static GameAction FindLegalAction(
+        GameState state,
+        GameActionType type)
+    {
+        if (state == null || state.IsFinished)
+            return null;
+
+        var actions = GameRules.GetLegalActions(
+            state,
+            state.InteractionPlayerIndex);
+        for (int index = 0; index < actions.Count; index++)
+        {
+            if (actions[index].Type == type)
+                return actions[index];
+        }
+        return null;
     }
 
     private bool ApplyAction(

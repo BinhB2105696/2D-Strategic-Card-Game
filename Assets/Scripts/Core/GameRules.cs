@@ -2,6 +2,13 @@ using System.Collections.Generic;
 
 public static class GameRules
 {
+    public static IReadOnlyList<GameAction> GetLegalActions(
+        GameState state,
+        int playerIndex)
+    {
+        return LegalActionEnumerator.GetLegalActions(state, playerIndex);
+    }
+
     public static IReadOnlyList<GameAction> GetLegalResponseActions(
         GameState state,
         int playerIndex)

@@ -34,15 +34,29 @@ public sealed class DuelCardInteractionController : MonoBehaviour
     private readonly List<GameObject> detailButtons = new List<GameObject>();
     private readonly Dictionary<long, Image> tributeHighlights =
         new Dictionary<long, Image>();
+    private readonly Dictionary<long, Image> targetHighlights =
+        new Dictionary<long, Image>();
+    private readonly List<GameAction> pendingTargetActions =
+        new List<GameAction>();
     private GameObject energyPanel;
     private TMP_Text energyText;
-    private RectTransform energyButtonArea;
-    private readonly List<GameObject> energyButtons = new List<GameObject>();
+    private RectTransform energyAmountButtonArea;
+    private RectTransform energyFooterButtonArea;
+    private readonly List<GameObject> energyAmountButtons =
+        new List<GameObject>();
+    private readonly List<GameObject> energyFooterButtons =
+        new List<GameObject>();
+    private readonly Dictionary<int, Button> energyAmountButtonViews =
+        new Dictionary<int, Button>();
     private readonly Dictionary<long, GameObject> cardObjects =
         new Dictionary<long, GameObject>();
     private readonly List<long> selectedTributes = new List<long>();
+    private long selectedTargetInstanceId;
     private CardInstance selectedCard;
     private Button tributeConfirmButton;
+    private Button targetConfirmButton;
+    private GameAction selectedEnergyAction;
+    private Button energyConfirmButton;
 
     public void Initialize(DuelBoardReadOnlyDemo duelBoard)
     {
@@ -143,11 +157,19 @@ public sealed class DuelCardInteractionController : MonoBehaviour
             return;
 
         ClearSelectionWindows();
-        IReadOnlyList<GameAction> legalResponses =
-            GameRules.GetLegalResponseActions(
-                state,
-                state.InteractionPlayerIndex);
-        if (legalResponses.Count == 0)
+        IReadOnlyList<GameAction> legalActions =
+            GameRules.GetLegalActions(state, state.InteractionPlayerIndex);
+        List<GameAction> legalResponses = new List<GameAction>();
+        GameAction passAction = null;
+        for (int index = 0; index < legalActions.Count; index++)
+        {
+            GameAction action = legalActions[index];
+            if (action.Type == GameActionType.ActivateCard)
+                legalResponses.Add(action);
+            else if (action.Type == GameActionType.PassResponse)
+                passAction = action;
+        }
+        if (legalResponses.Count == 0 || passAction == null)
             return;
 
         ClearDetailRuntime();
@@ -197,12 +219,11 @@ public sealed class DuelCardInteractionController : MonoBehaviour
             }
         }
 
-        int playerIndex = state.InteractionPlayerIndex;
         Button passButton = AddPanelButton(
             detailButtonArea,
             detailButtons,
             "NO / PASS",
-            () => Submit(GameAction.PassResponse(playerIndex)));
+            () => Submit(passAction));
         SetButtonColor(passButton, new Color32(142, 31, 31, 250));
         LayoutPanelButtons(detailButtons);
     }
@@ -239,15 +260,16 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         ClearDetailRuntime();
         detailPanel.SetActive(true);
         CreateCardInformation(selectedCard);
-        List<ActionOption> options = BuildLegalOptions(selectedCard);
+        List<GameAction> cardActions = GetLegalActionsForSource(selectedCard);
+        List<ActionOption> options = BuildDisplayOptions(
+            selectedCard,
+            cardActions);
+        List<GameAction> activationActions = FindActions(
+            cardActions,
+            GameActionType.ActivateCard);
         int specialActionCount = 0;
 
-        int interactionPlayer = state.InteractionPlayerIndex;
-        if (!state.HasOpenResponseWindow &&
-            selectedCard.OwnerPlayerIndex == interactionPlayer &&
-            selectedCard.Zone == CardZone.Hand &&
-            selectedCard.Definition.Category == CardCategory.Monster &&
-            HasAnyLegalSummon(selectedCard))
+        if (ContainsActionType(cardActions, GameActionType.SummonMonster))
         {
             AddPanelButton(
                 detailButtonArea,
@@ -257,10 +279,7 @@ public sealed class DuelCardInteractionController : MonoBehaviour
             specialActionCount++;
         }
 
-        if (!state.HasOpenResponseWindow &&
-            selectedCard.OwnerPlayerIndex == interactionPlayer &&
-            selectedCard.Zone == CardZone.MonsterZone &&
-            HasAnyLegalEnergyAllocation(selectedCard))
+        if (ContainsActionType(cardActions, GameActionType.AllocateEnergy))
         {
             AddPanelButton(
                 detailButtonArea,
@@ -270,35 +289,41 @@ public sealed class DuelCardInteractionController : MonoBehaviour
             specialActionCount++;
         }
 
-        foreach (ActionOption option in options)
+        if (activationActions.Count > 0)
         {
-            GameAction action = option.Action;
-            if (selectedCard.Definition.Category == CardCategory.Monster &&
-                action.Type == GameActionType.ActivateCard)
-            {
-                AddPanelButton(
-                    detailButtonArea,
-                    detailButtons,
-                    option.Label,
-                    () => ShowMonsterEffectConfirmation(action));
-            }
-            else
-            {
-                AddPanelButton(
-                    detailButtonArea,
-                    detailButtons,
-                    option.Label,
-                    () => Submit(action));
-            }
-        }
-        if (state.HasOpenResponseWindow)
-        {
-            int playerIndex = state.InteractionPlayerIndex;
+            List<GameAction> actions = activationActions;
             AddPanelButton(
                 detailButtonArea,
                 detailButtons,
-                "Pass",
-                () => Submit(GameAction.PassResponse(playerIndex)));
+                BuildActivationLabel(selectedCard),
+                () => BeginActivation(actions));
+            specialActionCount++;
+        }
+
+        foreach (ActionOption option in options)
+        {
+            GameAction action = option.Action;
+            AddPanelButton(
+                detailButtonArea,
+                detailButtons,
+                option.Label,
+                () => Submit(action));
+        }
+        if (state.HasOpenResponseWindow)
+        {
+            GameAction pass = FindAction(
+                GameRules.GetLegalActions(
+                    state,
+                    state.InteractionPlayerIndex),
+                GameActionType.PassResponse);
+            if (pass != null)
+            {
+                AddPanelButton(
+                    detailButtonArea,
+                    detailButtons,
+                    "Pass",
+                    () => Submit(pass));
+            }
         }
         AddPanelButton(
             detailButtonArea,
@@ -318,332 +343,218 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         LayoutPanelButtons(detailButtons);
     }
 
-    private List<ActionOption> BuildLegalOptions(CardInstance card)
+    private List<GameAction> GetLegalActionsForSource(CardInstance card)
+    {
+        List<GameAction> results = new List<GameAction>();
+        if (card == null || state == null)
+            return results;
+
+        IReadOnlyList<GameAction> legalActions = GameRules.GetLegalActions(
+            state,
+            state.InteractionPlayerIndex);
+        for (int index = 0; index < legalActions.Count; index++)
+        {
+            GameAction action = legalActions[index];
+            if (action.SourceInstanceId == card.InstanceId)
+                results.Add(action);
+        }
+        return results;
+    }
+
+    private List<ActionOption> BuildDisplayOptions(
+        CardInstance card,
+        IReadOnlyList<GameAction> cardActions)
     {
         List<ActionOption> options = new List<ActionOption>();
-        int playerIndex = state.InteractionPlayerIndex;
-        if (card.OwnerPlayerIndex != playerIndex)
-            return options;
-
-        if (state.HasOpenResponseWindow)
+        for (int index = 0; index < cardActions.Count; index++)
         {
-            AddTrapResponseOption(card, options);
-            return options;
-        }
+            GameAction action = cardActions[index];
+            if (action.Type == GameActionType.SummonMonster ||
+                action.Type == GameActionType.AllocateEnergy ||
+                action.Type == GameActionType.ActivateCard)
+                continue;
 
-        if (card.Zone == CardZone.Hand)
-        {
-            if (card.Definition.Category == CardCategory.Spell)
-                AddSpellActivationOptions(card, options);
-            else if (card.Definition.Category == CardCategory.Trap)
-                AddTrapSetOption(card, options);
+            options.Add(new ActionOption(
+                BuildActionLabel(card, action),
+                action));
         }
-        else if (card.Zone == CardZone.MonsterZone)
-        {
-            AddMonsterEffectOption(card, options);
-            AddFieldMonsterOptions(card, options);
-        }
-
         return options;
     }
 
-    private bool HasAnyLegalSummon(CardInstance monster)
+    private string BuildActionLabel(CardInstance card, GameAction action)
     {
-        PlayerState player = state.Players[state.CurrentPlayerIndex];
-        List<long[]> tributeChoices = BuildTributeChoices(
-            player,
-            monster.Definition.TributeCount);
-        BattlePosition[] positions =
+        switch (action.Type)
         {
-            BattlePosition.Attack,
-            BattlePosition.Defense
-        };
-
-        foreach (BattlePosition position in positions)
-        {
-            foreach (long[] tributes in tributeChoices)
-            {
-                GameAction action = FindPreferredSummon(
-                    monster,
-                    position,
-                    tributes);
-                if (action != null)
-                    return true;
-            }
+            case GameActionType.SetTrap:
+                return "Set Trap";
+            case GameActionType.ChangeBattlePosition:
+                return action.BattlePosition == BattlePosition.Attack
+                    ? "To ATK"
+                    : "To DEF";
+            case GameActionType.Attack:
+                return action.TargetInstanceId == 0
+                    ? "Direct Attack"
+                    : "Attack Z" +
+                      (FindMonsterZoneIndex(
+                          state.Players[1 - action.PlayerIndex],
+                          action.TargetInstanceId) + 1);
+            default:
+                return action.Type.ToString();
         }
-
-        return false;
     }
 
-    private GameAction FindPreferredSummon(
-        CardInstance monster,
-        BattlePosition position,
-        IReadOnlyList<long> tributes)
+    private static string BuildActivationLabel(CardInstance card)
     {
-        PlayerState player = state.Players[state.CurrentPlayerIndex];
-        int[] preferredZones = { 1, 2, 0 };
-        foreach (int zoneIndex in preferredZones)
-        {
-            if (zoneIndex < 0 || zoneIndex >= player.MonsterZones.Count)
-                continue;
-
-            GameAction action = GameAction.SummonMonster(
-                state.CurrentPlayerIndex,
-                monster.InstanceId,
-                zoneIndex,
-                position,
-                ToArray(tributes));
-            if (IsLegal(action))
-                return action;
-        }
-
-        return null;
+        if (card.Definition.Category == CardCategory.Monster)
+            return "Activate Effect";
+        if (card.Definition.Category == CardCategory.Trap)
+            return "Activate Trap";
+        if (card.Definition.SpellType == SpellType.Field)
+            return "Activate Field";
+        if (card.Definition.SpellType == SpellType.Equip)
+            return "Equip";
+        return "Activate";
     }
 
-    private void AddSpellActivationOptions(
-        CardInstance spell,
-        List<ActionOption> options)
+    private static List<GameAction> FindActions(
+        IReadOnlyList<GameAction> actions,
+        GameActionType type)
     {
-        int playerIndex = state.InteractionPlayerIndex;
-        PlayerState player = state.Players[playerIndex];
-        if (spell.Definition.SpellType == SpellType.Field)
+        List<GameAction> matches = new List<GameAction>();
+        for (int index = 0; index < actions.Count; index++)
         {
-            GameAction action = GameAction.ActivateCard(
-                playerIndex,
-                spell.InstanceId);
-            if (IsLegal(action))
-                options.Add(new ActionOption("Activate Field", action));
+            if (actions[index].Type == type)
+                matches.Add(actions[index]);
+        }
+        return matches;
+    }
+
+    private void BeginActivation(List<GameAction> actions)
+    {
+        if (actions == null || actions.Count == 0)
+            return;
+
+        List<GameAction> targetedActions = new List<GameAction>();
+        for (int index = 0; index < actions.Count; index++)
+        {
+            if (actions[index].TargetInstanceId != 0)
+                targetedActions.Add(actions[index]);
+        }
+
+        if (targetedActions.Count > 0)
+        {
+            ShowTargetSelection(targetedActions);
             return;
         }
 
-        int zoneIndex = FindPreferredSpellTrapZone(player);
-        if (zoneIndex < 0)
-            return;
-
-        if (spell.Definition.SpellType == SpellType.Equip)
-        {
-            EffectDefinition effect = FindOpenActivationEffect(spell);
-            if (effect == null)
-                return;
-            int targetOwnerIndex = effect.TargetType ==
-                EffectTargetType.OpponentMonster
-                ? 1 - playerIndex
-                : playerIndex;
-            PlayerState targetOwner = state.Players[targetOwnerIndex];
-            for (int index = 0;
-                 index < targetOwner.MonsterZones.Count;
-                 index++)
-            {
-                CardInstance target = targetOwner.MonsterZones[index];
-                if (target == null)
-                    continue;
-
-                GameAction action = GameAction.ActivateCard(
-                    playerIndex,
-                    spell.InstanceId,
-                    zoneIndex,
-                    target.InstanceId);
-                if (IsLegal(action))
-                {
-                    options.Add(new ActionOption(
-                        (targetOwnerIndex == playerIndex
-                            ? "Equip Z"
-                            : "Equip Opp Z") +
-                        (index + 1) + " " +
-                        target.Definition.CardName,
-                        action));
-                }
-            }
-            return;
-        }
-
-        EffectDefinition normalEffect = FindOpenActivationEffect(spell);
-        if (normalEffect != null && normalEffect.TargetCount == 1)
-        {
-            int targetOwnerIndex = normalEffect.TargetType ==
-                EffectTargetType.OpponentMonster
-                ? 1 - playerIndex
-                : playerIndex;
-            PlayerState targetOwner = state.Players[targetOwnerIndex];
-            for (int index = 0;
-                 index < targetOwner.MonsterZones.Count;
-                 index++)
-            {
-                CardInstance target = targetOwner.MonsterZones[index];
-                if (target == null)
-                    continue;
-
-                GameAction targetedSpell = GameAction.ActivateCard(
-                    playerIndex,
-                    spell.InstanceId,
-                    zoneIndex,
-                    target.InstanceId);
-                if (IsLegal(targetedSpell))
-                {
-                    options.Add(new ActionOption(
-                        "Activate on Z" + (index + 1),
-                        targetedSpell));
-                }
-            }
-            return;
-        }
-
-        GameAction normalSpell = GameAction.ActivateCard(
-            playerIndex,
-            spell.InstanceId,
-            zoneIndex);
-        if (IsLegal(normalSpell))
-            options.Add(new ActionOption("Activate", normalSpell));
+        GameAction action = actions[0];
+        if (selectedCard.Definition.Category == CardCategory.Monster)
+            ShowMonsterEffectConfirmation(action);
+        else
+            Submit(action);
     }
 
-    private void AddTrapSetOption(
-        CardInstance trap,
-        List<ActionOption> options)
+    private void ShowTargetSelection(List<GameAction> actions)
     {
-        int playerIndex = state.InteractionPlayerIndex;
-        int zoneIndex = FindPreferredSpellTrapZone(state.Players[playerIndex]);
-        if (zoneIndex < 0)
-            return;
+        SetPanelVisible(false);
+        CloseEnergyPanel();
+        ClearDetailRuntime();
+        detailPanel.SetActive(true);
 
-        GameAction action = GameAction.SetTrap(
-            playerIndex,
-            trap.InstanceId,
-            zoneIndex);
-        if (IsLegal(action))
-            options.Add(new ActionOption("Set Trap", action));
-    }
-
-    private void AddTrapResponseOption(
-        CardInstance trap,
-        List<ActionOption> options)
-    {
-        if (trap.Definition.Category != CardCategory.Trap ||
-            trap.Zone != CardZone.SpellTrapZone ||
-            !trap.IsFaceDown)
+        pendingTargetActions.AddRange(actions);
+        List<long> targetIds = new List<long>();
+        for (int index = 0; index < actions.Count; index++)
         {
-            return;
+            long targetId = actions[index].TargetInstanceId;
+            if (targetId != 0 && !targetIds.Contains(targetId))
+                targetIds.Add(targetId);
         }
 
-        int playerIndex = state.InteractionPlayerIndex;
-        long targetId = 0;
-        ChainState chain = state.ActiveChain;
-        if (chain.Links.Count == 0 && chain.PendingAttack != null)
-            targetId = chain.PendingAttack.AttackerInstanceId;
-
-        GameAction action = GameAction.ActivateCard(
-            playerIndex,
-            trap.InstanceId,
-            targetInstanceId: targetId);
-        if (IsLegal(action))
-            options.Add(new ActionOption("Activate Trap", action));
-    }
-
-    private static int FindPreferredSpellTrapZone(PlayerState player)
-    {
-        int[] preferredZones = { 1, 2, 0 };
-        foreach (int zoneIndex in preferredZones)
+        for (int index = 0; index < targetIds.Count; index++)
         {
-            if (zoneIndex >= 0 &&
-                zoneIndex < player.SpellTrapZones.Count &&
-                player.SpellTrapZones[zoneIndex] == null)
-            {
-                return zoneIndex;
-            }
-        }
-        return -1;
-    }
-
-    private static EffectDefinition FindOpenActivationEffect(
-        CardInstance card)
-    {
-        for (int index = 0; index < card.Definition.Effects.Count; index++)
-        {
-            EffectDefinition effect = card.Definition.Effects[index];
-            if (effect.Trigger == EffectTriggerType.ManualActivation &&
-                effect.ActivationWindow ==
-                    EffectActivationWindow.OpenGameState)
-            {
-                return effect;
-            }
-        }
-        return null;
-    }
-
-    private void AddMonsterEffectOption(
-        CardInstance monster,
-        List<ActionOption> options)
-    {
-        GameAction action = GameAction.ActivateCard(
-            state.InteractionPlayerIndex,
-            monster.InstanceId);
-        if (IsLegal(action))
-            options.Add(new ActionOption("Activate Effect", action));
-    }
-
-    private void AddFieldMonsterOptions(
-        CardInstance monster,
-        List<ActionOption> options)
-    {
-        BattlePosition opposite = monster.BattlePosition == BattlePosition.Attack
-            ? BattlePosition.Defense
-            : BattlePosition.Attack;
-        GameAction changePosition = GameAction.ChangeBattlePosition(
-            state.CurrentPlayerIndex,
-            monster.InstanceId,
-            opposite);
-        if (IsLegal(changePosition))
-        {
-            options.Add(new ActionOption(
-                opposite == BattlePosition.Attack ? "To ATK" : "To DEF",
-                changePosition));
-        }
-
-        PlayerState opponent = state.Players[1 - state.CurrentPlayerIndex];
-        bool foundTarget = false;
-        for (int index = 0; index < opponent.MonsterZones.Count; index++)
-        {
-            CardInstance target = opponent.MonsterZones[index];
+            CardInstance target = state.FindCard(targetIds[index]);
             if (target == null)
                 continue;
 
-            GameAction attack = GameAction.Attack(
-                state.CurrentPlayerIndex,
-                monster.InstanceId,
-                target.InstanceId);
-            if (IsLegal(attack))
-            {
-                options.Add(new ActionOption(
-                    "Attack Z" + (index + 1),
-                    attack));
-                foundTarget = true;
-            }
+            Image highlight = CreateTargetCard(
+                target,
+                index,
+                targetIds.Count);
+            targetHighlights[target.InstanceId] = highlight;
         }
 
-        if (!foundTarget)
+        targetConfirmButton = AddPanelButton(
+            detailButtonArea,
+            detailButtons,
+            "OK",
+            ConfirmTargetActivation);
+        AddPanelButton(
+            detailButtonArea,
+            detailButtons,
+            "Cancel",
+            CancelCardWorkflow);
+        LayoutPanelButtons(detailButtons);
+        UpdateTargetSelectionVisuals();
+    }
+
+    private void ToggleTarget(long instanceId)
+    {
+        selectedTargetInstanceId = selectedTargetInstanceId == instanceId
+            ? 0
+            : instanceId;
+        UpdateTargetSelectionVisuals();
+    }
+
+    private void UpdateTargetSelectionVisuals()
+    {
+        detailText.text = "Select 1 target for " +
+            selectedCard.Definition.CardName + "\nSelected " +
+            (selectedTargetInstanceId == 0 ? "0/1" : "1/1");
+
+        foreach (KeyValuePair<long, Image> pair in targetHighlights)
         {
-            GameAction directAttack = GameAction.Attack(
-                state.CurrentPlayerIndex,
-                monster.InstanceId);
-            if (IsLegal(directAttack))
-                options.Add(new ActionOption("Direct Attack", directAttack));
+            pair.Value.color = pair.Key == selectedTargetInstanceId
+                ? new Color32(224, 174, 48, 245)
+                : new Color32(22, 77, 139, 235);
+        }
+
+        if (targetConfirmButton != null)
+            targetConfirmButton.interactable = selectedTargetInstanceId != 0;
+    }
+
+    private void ConfirmTargetActivation()
+    {
+        if (selectedTargetInstanceId == 0)
+            return;
+
+        for (int index = 0; index < pendingTargetActions.Count; index++)
+        {
+            GameAction action = pendingTargetActions[index];
+            if (action.TargetInstanceId == selectedTargetInstanceId)
+            {
+                Submit(action);
+                return;
+            }
         }
     }
 
-    private bool HasAnyLegalEnergyAllocation(CardInstance monster)
+    private static bool ContainsActionType(
+        IReadOnlyList<GameAction> actions,
+        GameActionType type)
     {
-        PlayerState player = state.Players[state.CurrentPlayerIndex];
-        for (int amount = 1; amount <= player.AvailableEnergy; amount++)
-        {
-            if (IsLegal(GameAction.AllocateEnergy(
-                state.CurrentPlayerIndex,
-                monster.InstanceId,
-                amount)))
-            {
-                return true;
-            }
-        }
+        return FindAction(actions, type) != null;
+    }
 
-        return false;
+    private static GameAction FindAction(
+        IReadOnlyList<GameAction> actions,
+        GameActionType type)
+    {
+        for (int index = 0; index < actions.Count; index++)
+        {
+            if (actions[index].Type == type)
+                return actions[index];
+        }
+        return null;
     }
 
     private void BeginSummon()
@@ -669,7 +580,7 @@ public sealed class DuelCardInteractionController : MonoBehaviour
              zoneIndex++)
         {
             CardInstance monster = player.MonsterZones[zoneIndex];
-            if (monster == null)
+            if (monster == null || !IsLegalTributeCandidate(monster.InstanceId))
                 continue;
 
             Image highlight = CreateTributeCard(monster, zoneIndex);
@@ -703,6 +614,9 @@ public sealed class DuelCardInteractionController : MonoBehaviour
             selectedTributes.Sort((left, right) =>
                 FindMonsterZoneIndex(player, left).CompareTo(
                     FindMonsterZoneIndex(player, right)));
+
+            if (!CanCompleteSelectedTributes())
+                selectedTributes.Remove(instanceId);
         }
 
         UpdateTributeSelectionVisuals();
@@ -723,7 +637,16 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         }
 
         if (tributeConfirmButton != null)
-            tributeConfirmButton.interactable = selectedTributes.Count == required;
+        {
+            tributeConfirmButton.interactable =
+                selectedTributes.Count == required &&
+                (FindLegalSummon(
+                     BattlePosition.Attack,
+                     selectedTributes) != null ||
+                 FindLegalSummon(
+                     BattlePosition.Defense,
+                     selectedTributes) != null);
+        }
     }
 
     private void ShowSummonPositionChoices()
@@ -733,8 +656,7 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         ClearButtons();
         SetPanelVisible(true);
 
-        GameAction attackSummon = FindPreferredSummon(
-            selectedCard,
+        GameAction attackSummon = FindLegalSummon(
             BattlePosition.Attack,
             selectedTributes);
         if (attackSummon != null)
@@ -744,8 +666,7 @@ public sealed class DuelCardInteractionController : MonoBehaviour
                 () => SubmitSummon(BattlePosition.Attack));
         }
 
-        GameAction defenseSummon = FindPreferredSummon(
-            selectedCard,
+        GameAction defenseSummon = FindLegalSummon(
             BattlePosition.Defense,
             selectedTributes);
         if (defenseSummon != null)
@@ -764,8 +685,7 @@ public sealed class DuelCardInteractionController : MonoBehaviour
 
     private void SubmitSummon(BattlePosition position)
     {
-        GameAction action = FindPreferredSummon(
-            selectedCard,
+        GameAction action = FindLegalSummon(
             position,
             selectedTributes);
         if (action == null)
@@ -781,7 +701,7 @@ public sealed class DuelCardInteractionController : MonoBehaviour
     {
         SetPanelVisible(false);
         CloseDetailPanel();
-        ClearRuntimeObjects(energyButtons);
+        ClearEnergyRuntime();
         energyPanel.SetActive(true);
 
         PlayerState player = state.Players[state.CurrentPlayerIndex];
@@ -789,32 +709,57 @@ public sealed class DuelCardInteractionController : MonoBehaviour
             selectedCard.Definition.CardName +
             "\nAvailable Energy: " + player.AvailableEnergy;
 
-        for (int amount = 1; amount <= player.AvailableEnergy; amount++)
+        List<GameAction> cardActions = GetLegalActionsForSource(selectedCard);
+        for (int index = 0; index < cardActions.Count; index++)
         {
-            GameAction action = GameAction.AllocateEnergy(
-                state.CurrentPlayerIndex,
-                selectedCard.InstanceId,
-                amount);
-            if (!IsLegal(action))
+            GameAction action = cardActions[index];
+            if (action.Type != GameActionType.AllocateEnergy)
                 continue;
 
-            int selectedAmount = amount;
-            AddPanelButton(
-                energyButtonArea,
-                energyButtons,
-                selectedAmount.ToString(),
-                () => Submit(GameAction.AllocateEnergy(
-                    state.CurrentPlayerIndex,
-                    selectedCard.InstanceId,
-                    selectedAmount)));
+            GameAction selectableAction = action;
+            Button amountButton = AddPanelButton(
+                energyAmountButtonArea,
+                energyAmountButtons,
+                action.Amount.ToString(),
+                () => SelectEnergyAmount(selectableAction));
+            energyAmountButtonViews[action.Amount] = amountButton;
         }
 
+        energyConfirmButton = AddPanelButton(
+            energyFooterButtonArea,
+            energyFooterButtons,
+            "OK",
+            ConfirmEnergyAllocation);
+        energyConfirmButton.interactable = false;
         AddPanelButton(
-            energyButtonArea,
-            energyButtons,
+            energyFooterButtonArea,
+            energyFooterButtons,
             "Cancel",
             CancelEnergyAllocation);
-        LayoutPanelButtons(energyButtons);
+        LayoutPanelButtons(energyAmountButtons);
+        LayoutPanelButtons(energyFooterButtons);
+    }
+
+    private void SelectEnergyAmount(GameAction action)
+    {
+        selectedEnergyAction = action;
+        foreach (KeyValuePair<int, Button> pair in energyAmountButtonViews)
+        {
+            SetButtonColor(
+                pair.Value,
+                pair.Key == action.Amount
+                    ? new Color32(224, 174, 48, 245)
+                    : new Color32(22, 77, 139, 245));
+        }
+
+        if (energyConfirmButton != null)
+            energyConfirmButton.interactable = true;
+    }
+
+    private void ConfirmEnergyAllocation()
+    {
+        if (selectedEnergyAction != null)
+            Submit(selectedEnergyAction);
     }
 
     private void CancelEnergyAllocation()
@@ -845,11 +790,6 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         Debug.LogWarning(
             "Card UI action rejected: " + result.ErrorMessage,
             this);
-    }
-
-    private bool IsLegal(GameAction action)
-    {
-        return string.IsNullOrEmpty(GameRules.ValidateAction(state, action));
     }
 
     private string GetNoActionReason(CardInstance card)
@@ -883,14 +823,6 @@ public sealed class DuelCardInteractionController : MonoBehaviour
             card.Definition.AttackEnergyRequirement;
     }
 
-    private static long[] ToArray(IReadOnlyList<long> values)
-    {
-        long[] result = new long[values.Count];
-        for (int index = 0; index < values.Count; index++)
-            result[index] = values[index];
-        return result;
-    }
-
     private static int FindMonsterZoneIndex(
         PlayerState player,
         long instanceId)
@@ -904,52 +836,92 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         return -1;
     }
 
-    private static List<long[]> BuildTributeChoices(
-        PlayerState player,
-        int requiredCount)
+    private GameAction FindLegalSummon(
+        BattlePosition position,
+        IReadOnlyList<long> tributes)
     {
-        List<long> available = new List<long>();
-        for (int index = 0; index < player.MonsterZones.Count; index++)
+        List<GameAction> actions = GetLegalActionsForSource(selectedCard);
+        for (int index = 0; index < actions.Count; index++)
         {
-            CardInstance monster = player.MonsterZones[index];
-            if (monster != null)
-                available.Add(monster.InstanceId);
+            GameAction action = actions[index];
+            if (action.Type == GameActionType.SummonMonster &&
+                action.BattlePosition == position &&
+                HaveSameIds(action.TributeInstanceIds, tributes))
+            {
+                return action;
+            }
         }
-
-        List<long[]> results = new List<long[]>();
-        AddTributeChoices(
-            available,
-            requiredCount,
-            0,
-            new List<long>(),
-            results);
-        return results;
+        return null;
     }
 
-    private static void AddTributeChoices(
-        IReadOnlyList<long> available,
-        int requiredCount,
-        int startIndex,
-        List<long> current,
-        List<long[]> results)
+    private bool IsLegalTributeCandidate(long instanceId)
     {
-        if (current.Count == requiredCount)
+        List<GameAction> actions = GetLegalActionsForSource(selectedCard);
+        for (int actionIndex = 0; actionIndex < actions.Count; actionIndex++)
         {
-            results.Add(current.ToArray());
-            return;
-        }
+            GameAction action = actions[actionIndex];
+            if (action.Type != GameActionType.SummonMonster)
+                continue;
 
-        for (int index = startIndex; index < available.Count; index++)
-        {
-            current.Add(available[index]);
-            AddTributeChoices(
-                available,
-                requiredCount,
-                index + 1,
-                current,
-                results);
-            current.RemoveAt(current.Count - 1);
+            for (int tributeIndex = 0;
+                 tributeIndex < action.TributeInstanceIds.Count;
+                 tributeIndex++)
+            {
+                if (action.TributeInstanceIds[tributeIndex] == instanceId)
+                    return true;
+            }
         }
+        return false;
+    }
+
+    private bool CanCompleteSelectedTributes()
+    {
+        List<GameAction> actions = GetLegalActionsForSource(selectedCard);
+        for (int actionIndex = 0; actionIndex < actions.Count; actionIndex++)
+        {
+            GameAction action = actions[actionIndex];
+            if (action.Type == GameActionType.SummonMonster &&
+                ContainsAllIds(
+                    action.TributeInstanceIds,
+                    selectedTributes))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static bool ContainsAllIds(
+        IReadOnlyList<long> available,
+        IReadOnlyList<long> selected)
+    {
+        for (int selectedIndex = 0;
+             selectedIndex < selected.Count;
+             selectedIndex++)
+        {
+            bool found = false;
+            for (int availableIndex = 0;
+                 availableIndex < available.Count;
+                 availableIndex++)
+            {
+                if (selected[selectedIndex] == available[availableIndex])
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+                return false;
+        }
+        return true;
+    }
+
+    private static bool HaveSameIds(
+        IReadOnlyList<long> left,
+        IReadOnlyList<long> right)
+    {
+        return left.Count == right.Count && ContainsAllIds(left, right);
     }
 
     private void ShowMonsterEffectConfirmation(GameAction action)
@@ -1083,18 +1055,15 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         detailText.text = "This card can respond to the current event.";
         CreateCardInformation(card);
 
-        foreach (GameAction action in actions)
-        {
-            GameAction response = action;
-            Button activateButton = AddPanelButton(
-                detailButtonArea,
-                detailButtons,
-                "ACTIVATE EFFECT",
-                () => Submit(response));
-            SetButtonColor(
-                activateButton,
-                new Color32(19, 85, 151, 250));
-        }
+        List<GameAction> responseActions = actions;
+        Button activateButton = AddPanelButton(
+            detailButtonArea,
+            detailButtons,
+            "ACTIVATE EFFECT",
+            () => BeginActivation(responseActions));
+        SetButtonColor(
+            activateButton,
+            new Color32(19, 85, 151, 250));
         AddPanelButton(
             detailButtonArea,
             detailButtons,
@@ -1258,14 +1227,22 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         energyText.fontSize = 30f;
         energyText.alignment = TextAlignmentOptions.Center;
 
-        energyButtonArea = CreateRuntimeArea(
+        energyAmountButtonArea = CreateRuntimeArea(
             panel,
-            "RuntimeEnergyButtons",
+            "RuntimeEnergyAmountButtons",
             new Vector2(0f, 0f),
             new Vector2(1f, 0f),
             new Vector2(0.5f, 0f),
-            new Vector2(-50f, 210f),
-            new Vector2(0f, 28f));
+            new Vector2(-50f, 150f),
+            new Vector2(0f, 112f));
+        energyFooterButtonArea = CreateRuntimeArea(
+            panel,
+            "RuntimeEnergyFooterButtons",
+            new Vector2(0f, 0f),
+            new Vector2(1f, 0f),
+            new Vector2(0.5f, 0f),
+            new Vector2(-50f, 72f),
+            new Vector2(0f, 24f));
         energyPanel.SetActive(false);
     }
 
@@ -1323,6 +1300,57 @@ public sealed class DuelCardInteractionController : MonoBehaviour
             "Z" + (zoneIndex + 1),
             26f);
         RectTransform labelRect = zoneLabel.rectTransform;
+        labelRect.anchorMin = new Vector2(0f, 0f);
+        labelRect.anchorMax = new Vector2(1f, 0f);
+        labelRect.pivot = new Vector2(0.5f, 0f);
+        labelRect.anchoredPosition = new Vector2(0f, 4f);
+        labelRect.sizeDelta = new Vector2(-10f, 42f);
+
+        detailCards.Add(slotObject);
+        return background;
+    }
+
+    private Image CreateTargetCard(
+        CardInstance target,
+        int index,
+        int count)
+    {
+        GameObject slotObject = new GameObject(
+            "TargetChoice_" + target.InstanceId,
+            typeof(RectTransform),
+            typeof(CanvasRenderer),
+            typeof(Image),
+            typeof(Button));
+        slotObject.layer = detailCardArea.gameObject.layer;
+        RectTransform slot = slotObject.GetComponent<RectTransform>();
+        slot.SetParent(detailCardArea, false);
+        slot.anchorMin = new Vector2((float)index / count, 0f);
+        slot.anchorMax = new Vector2((float)(index + 1) / count, 1f);
+        slot.offsetMin = new Vector2(12f, 10f);
+        slot.offsetMax = new Vector2(-12f, -10f);
+
+        Image background = slotObject.GetComponent<Image>();
+        background.color = new Color32(22, 77, 139, 235);
+        Button button = slotObject.GetComponent<Button>();
+        button.targetGraphic = background;
+        long instanceId = target.InstanceId;
+        button.onClick.AddListener(() => ToggleTarget(instanceId));
+
+        CreateCardPreview(target, slot, new Vector2(0f, 22f), 0.68f);
+
+        int zoneIndex = FindMonsterZoneIndex(
+            state.Players[target.OwnerPlayerIndex],
+            target.InstanceId);
+        string ownerLabel = target.OwnerPlayerIndex ==
+            state.InteractionPlayerIndex
+            ? "Your"
+            : "Opponent";
+        TMP_Text label = CreatePanelLabel(
+            slot,
+            "TargetLabel",
+            ownerLabel + " Z" + (zoneIndex + 1),
+            24f);
+        RectTransform labelRect = label.rectTransform;
         labelRect.anchorMin = new Vector2(0f, 0f);
         labelRect.anchorMax = new Vector2(1f, 0f);
         labelRect.pivot = new Vector2(0.5f, 0f);
@@ -1460,7 +1488,11 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         ClearRuntimeObjects(detailCards);
         ClearRuntimeObjects(detailButtons);
         tributeHighlights.Clear();
+        targetHighlights.Clear();
+        pendingTargetActions.Clear();
+        selectedTargetInstanceId = 0;
         tributeConfirmButton = null;
+        targetConfirmButton = null;
     }
 
     private static void ClearRuntimeObjects(List<GameObject> objects)
@@ -1482,9 +1514,18 @@ public sealed class DuelCardInteractionController : MonoBehaviour
 
     private void CloseEnergyPanel()
     {
-        ClearRuntimeObjects(energyButtons);
+        ClearEnergyRuntime();
         if (energyPanel != null)
             energyPanel.SetActive(false);
+    }
+
+    private void ClearEnergyRuntime()
+    {
+        ClearRuntimeObjects(energyAmountButtons);
+        ClearRuntimeObjects(energyFooterButtons);
+        energyAmountButtonViews.Clear();
+        selectedEnergyAction = null;
+        energyConfirmButton = null;
     }
 
     private void CreateButtonArea(Transform parent)
