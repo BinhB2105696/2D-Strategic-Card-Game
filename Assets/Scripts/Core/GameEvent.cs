@@ -15,6 +15,7 @@ public enum GameEventType
     MonsterSummoned,
     EnergySpent,
     EnergyAllocated,
+    AllocatedEnergyRemoved,
     BattlePositionChanged,
     AttackDeclared,
     MonsterDamaged,
@@ -36,6 +37,10 @@ public enum GameEventType
     FieldMaintenancePaid,
     EffectResolved,
     CardSentToGraveyard,
+    CardAddedToHand,
+    DeckShuffled,
+    TriggeredEffectOffered,
+    TriggeredEffectDeclined,
     MatchEnded
 }
 
@@ -222,6 +227,74 @@ public sealed class GameEvent
             0,
             amount,
             TurnPhase.Main);
+    }
+
+    public static GameEvent AllocatedEnergyRemoved(
+        int playerIndex,
+        long instanceId,
+        int amount,
+        TurnPhase phase)
+    {
+        return new GameEvent(
+            GameEventType.AllocatedEnergyRemoved,
+            playerIndex,
+            instanceId,
+            0,
+            amount,
+            phase);
+    }
+
+    public static GameEvent CardAddedToHand(
+        int playerIndex,
+        long instanceId,
+        TurnPhase phase)
+    {
+        return new GameEvent(
+            GameEventType.CardAddedToHand,
+            playerIndex,
+            instanceId,
+            0,
+            1,
+            phase);
+    }
+
+    public static GameEvent DeckShuffled(int playerIndex, TurnPhase phase)
+    {
+        return new GameEvent(
+            GameEventType.DeckShuffled,
+            playerIndex,
+            0,
+            0,
+            0,
+            phase);
+    }
+
+    public static GameEvent TriggeredEffectOffered(
+        int playerIndex,
+        long sourceInstanceId,
+        TurnPhase phase)
+    {
+        return new GameEvent(
+            GameEventType.TriggeredEffectOffered,
+            playerIndex,
+            sourceInstanceId,
+            0,
+            0,
+            phase);
+    }
+
+    public static GameEvent TriggeredEffectDeclined(
+        int playerIndex,
+        long sourceInstanceId,
+        TurnPhase phase)
+    {
+        return new GameEvent(
+            GameEventType.TriggeredEffectDeclined,
+            playerIndex,
+            sourceInstanceId,
+            0,
+            0,
+            phase);
     }
 
     public static GameEvent BattlePositionChanged(

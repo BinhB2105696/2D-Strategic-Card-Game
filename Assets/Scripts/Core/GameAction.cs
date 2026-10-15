@@ -15,16 +15,23 @@ public enum GameActionType
     ActivateCard,
     SetTrap,
     PassResponse,
-    EnterEndPhase
+    EnterEndPhase,
+    ResolveTriggeredEffect,
+    DeclineTriggeredEffect
 }
 
 [Serializable]
 public sealed class GameAction
 {
+    private readonly long[] targetInstanceIds;
+
     public GameActionType Type { get; }
     public int PlayerIndex { get; }
     public long SourceInstanceId { get; }
-    public long TargetInstanceId { get; }
+    public long TargetInstanceId => targetInstanceIds.Length > 0
+        ? targetInstanceIds[0]
+        : 0;
+    public IReadOnlyList<long> TargetInstanceIds => targetInstanceIds;
     public int ZoneIndex { get; }
     public int Amount { get; }
     public BattlePosition BattlePosition { get; }
@@ -38,12 +45,17 @@ public sealed class GameAction
         int zoneIndex = -1,
         int amount = 0,
         BattlePosition battlePosition = BattlePosition.None,
-        long[] tributeInstanceIds = null)
+        long[] tributeInstanceIds = null,
+        long[] targetInstanceIds = null)
     {
         Type = type;
         PlayerIndex = playerIndex;
         SourceInstanceId = sourceInstanceId;
-        TargetInstanceId = targetInstanceId;
+        this.targetInstanceIds = targetInstanceIds != null
+            ? (long[])targetInstanceIds.Clone()
+            : targetInstanceId == 0
+                ? new long[0]
+                : new[] { targetInstanceId };
         ZoneIndex = zoneIndex;
         Amount = amount;
         BattlePosition = battlePosition;
@@ -163,6 +175,20 @@ public sealed class GameAction
             zoneIndex);
     }
 
+    public static GameAction ActivateCardWithTargets(
+        int playerIndex,
+        long cardInstanceId,
+        int zoneIndex,
+        params long[] targetInstanceIds)
+    {
+        return new GameAction(
+            GameActionType.ActivateCard,
+            playerIndex,
+            cardInstanceId,
+            zoneIndex: zoneIndex,
+            targetInstanceIds: targetInstanceIds);
+    }
+
     public static GameAction SetTrap(
         int playerIndex,
         long cardInstanceId,
@@ -180,6 +206,28 @@ public sealed class GameAction
         return new GameAction(
             GameActionType.PassResponse,
             playerIndex);
+    }
+
+    public static GameAction ResolveTriggeredEffect(
+        int playerIndex,
+        long sourceInstanceId,
+        long selectedInstanceId)
+    {
+        return new GameAction(
+            GameActionType.ResolveTriggeredEffect,
+            playerIndex,
+            sourceInstanceId,
+            selectedInstanceId);
+    }
+
+    public static GameAction DeclineTriggeredEffect(
+        int playerIndex,
+        long sourceInstanceId)
+    {
+        return new GameAction(
+            GameActionType.DeclineTriggeredEffect,
+            playerIndex,
+            sourceInstanceId);
     }
 
     public override string ToString()

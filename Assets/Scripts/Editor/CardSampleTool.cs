@@ -34,6 +34,26 @@ public static class CardSampleTool
         ResolutionFolder + "/Increase_Defense_Until_End_Of_Turn.asset";
     private const string RestoreHealthPath =
         ResolutionFolder + "/Restore_Monster_Health.asset";
+    private const string PermanentDefensePath =
+        ResolutionFolder + "/Increase_Defense_Permanently.asset";
+    private const string TriggerAttackPath =
+        ResolutionFolder + "/Increase_Attack_By_Trigger_Value.asset";
+    private const string EnergyHealthPath =
+        ResolutionFolder + "/Restore_Health_Per_Removed_Energy.asset";
+    private const string ProtectAttackedMonsterPath =
+        ResolutionFolder + "/Protect_Attacked_Monster.asset";
+    private const string TransferAttackPath =
+        ResolutionFolder + "/Transfer_Attack_Until_End_Of_Turn.asset";
+    private const string SkipDrawPath =
+        ResolutionFolder + "/Skip_Next_Opponent_Draw.asset";
+    private const string SkipBattlePath =
+        ResolutionFolder + "/Skip_Current_Battle_Phase.asset";
+    private const string SearchBasicPath =
+        ResolutionFolder + "/Search_Basic_Monster_From_Deck.asset";
+    private const string RecoverBasicPath =
+        ResolutionFolder + "/Recover_Basic_Monster_From_Graveyard.asset";
+    private const string ModifyAttackPerEnergyPath =
+        ModifierFolder + "/Modify_Attack_Per_Target_Energy.asset";
 
     [MenuItem("Card Game/Sample Cards/Create Missing Sample Cards")]
     public static void CreateMissingSampleCards()
@@ -214,8 +234,9 @@ public static class CardSampleTool
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         Debug.Log(
-            "Playable demo card configuration finished. The fixed deck now " +
-            "has 10 card designs and 3 copies of each design.");
+            "Playable demo card configuration finished. The fixed 30-card " +
+            "deck now favors Basic Monsters and keeps every card at 3 copies " +
+            "or fewer.");
     }
 
     [MenuItem("Card Game/Sample Cards/Prepare Fixed Playable Demo Deck")]
@@ -544,6 +565,7 @@ public static class CardSampleTool
 
     private static void ConfigurePlayableSpellTrapSamplesInternal()
     {
+        EnsureRequestedCardsExist();
         PayEnergyCostAsset payEnergy = CreateComponent<PayEnergyCostAsset>(
             PayEnergyPath);
         OwnMonsterTargetAsset ownMonster =
@@ -568,6 +590,9 @@ public static class CardSampleTool
         RestoreMonsterHealthResolutionAsset restoreHealth =
             CreateComponent<RestoreMonsterHealthResolutionAsset>(
                 RestoreHealthPath);
+        IncreaseDefensePermanentlyResolutionAsset permanentDefense =
+            CreateComponent<IncreaseDefensePermanentlyResolutionAsset>(
+                PermanentDefensePath);
 
         EnsureTideSpriteExists();
 
@@ -579,9 +604,12 @@ public static class CardSampleTool
             payEnergy,
             CreateComponent<DrawCardsResolutionAsset>(DrawCardsPath),
             increaseAttack,
-            increaseDefense,
+            permanentDefense,
             restoreHealth);
         ConfigureQuickStrike(payEnergy, ownMonster, increaseAttack);
+        ConfigureRequestedCards(
+            ownMonster,
+            CreateComponent<OpponentMonsterTargetAsset>(OpponentMonsterPath));
     }
 
     private static void ConfigureIronBlade(
@@ -732,7 +760,7 @@ public static class CardSampleTool
         PayEnergyCostAsset payEnergy,
         DrawCardsResolutionAsset drawCards,
         IncreaseAttackUntilEndOfTurnResolutionAsset increaseAttack,
-        IncreaseDefenseUntilEndOfTurnResolutionAsset increaseDefense,
+        IncreaseDefensePermanentlyResolutionAsset permanentDefense,
         RestoreMonsterHealthResolutionAsset restoreHealth)
     {
         ConfigureSingleActivatedCard(
@@ -745,12 +773,12 @@ public static class CardSampleTool
             300);
         ConfigureSingleActivatedCard(
             "sample_stone_guardian",
-            "Pay 1 Energy: This card gains 300 DEF until the end of this turn.",
+            "Pay 1 Energy: This card gains 500 DEF.",
             "effect_stone_guardian_fortify",
             payEnergy,
             1,
-            increaseDefense,
-            300);
+            permanentDefense,
+            500);
         ConfigureSingleActivatedCard(
             "sample_sky_sage",
             "Pay 2 Energy: Draw 1 card.",
@@ -835,6 +863,361 @@ public static class CardSampleTool
         SetComponentSlot(effect, "costs", payEnergy, energyCost);
         SetComponentSlot(effect, "resolution", resolution, amount);
         SaveCard(serializedCard, card);
+    }
+
+    private static void EnsureRequestedCardsExist()
+    {
+        int created = 0;
+        int skipped = 0;
+        CreateCardIfMissing(
+            MonstersFolder + "/Legendary_Fighter.asset",
+            "legendary_fighter",
+            card => ConfigureMonsterBase(
+                card,
+                "legendary_fighter",
+                "Legendary Fighter",
+                "When summoned, gains ATK equal to the original ATK of its " +
+                "3 tributes. When it destroys a monster by battle, remove all " +
+                "Energy from this card; it gains 500 HP for each Energy removed.",
+                MonsterAttribute.Metal,
+                MonsterRank.Ultimate,
+                MonsterType.Warrior,
+                3000,
+                1000,
+                2500,
+                2),
+            ref created,
+            ref skipped);
+        CreateCardIfMissing(
+            MonstersFolder + "/Dawnwing_Fairy.asset",
+            "dawnwing_fairy",
+            card => ConfigureMonsterBase(
+                card,
+                "dawnwing_fairy",
+                "Dawnwing Fairy",
+                "When this card is summoned: You can add 1 Basic Monster from " +
+                "your Deck to your hand, except Dawnwing Fairy, then shuffle.",
+                MonsterAttribute.Wind,
+                MonsterRank.Basic,
+                MonsterType.Fairy,
+                1000,
+                800,
+                800,
+                1),
+            ref created,
+            ref skipped);
+        CreateCardIfMissing(
+            MonstersFolder + "/Gravebound_Imp.asset",
+            "gravebound_imp",
+            card => ConfigureMonsterBase(
+                card,
+                "gravebound_imp",
+                "Gravebound Imp",
+                "When this card is destroyed by battle: You can add 1 Basic " +
+                "Monster from your Graveyard to your hand.",
+                MonsterAttribute.Wood,
+                MonsterRank.Basic,
+                MonsterType.Fiend,
+                1100,
+                900,
+                600,
+                1),
+            ref created,
+            ref skipped);
+        CreateSimpleSpell(
+            SpellsFolder + "/Energy_Venom.asset",
+            "energy_venom",
+            "Energy Venom",
+            SpellType.Equip,
+            "Equip only to an opponent's monster. It loses 300 ATK for each " +
+            "Energy allocated to it.",
+            ref created,
+            ref skipped);
+        CreateSimpleSpell(
+            SpellsFolder + "/Power_Transfer.asset",
+            "power_transfer",
+            "Power Transfer",
+            SpellType.Normal,
+            "Choose 2 different monsters you control in order. The first " +
+            "loses all its ATK until the end of this turn, then the second " +
+            "gains that amount until the end of this turn.",
+            ref created,
+            ref skipped);
+        CreateSimpleSpell(
+            SpellsFolder + "/Temporal_Lock.asset",
+            "temporal_lock",
+            "Temporal Lock",
+            SpellType.Normal,
+            "Skip your opponent's next Draw Step, and skip your Battle Phase " +
+            "this turn.",
+            ref created,
+            ref skipped);
+        CreateCardIfMissing(
+            TrapsFolder + "/Guardian_Shift.asset",
+            "guardian_shift",
+            card =>
+            {
+                SetCommonData(
+                    card,
+                    "guardian_shift",
+                    "Guardian Shift",
+                    CardCategory.Trap,
+                    "When an opponent's monster attacks a monster you control: " +
+                    "That monster gains 1000 DEF. If it is in Attack Position, " +
+                    "change it to Defense Position, then remove all its Energy.");
+                SetEnum(card, "trapType", TrapType.Normal);
+            },
+            ref created,
+            ref skipped);
+    }
+
+    private static void CreateSimpleSpell(
+        string path,
+        string id,
+        string name,
+        SpellType type,
+        string text,
+        ref int created,
+        ref int skipped)
+    {
+        CreateCardIfMissing(
+            path,
+            id,
+            card =>
+            {
+                SetCommonData(card, id, name, CardCategory.Spell, text);
+                SetEnum(card, "spellType", type);
+            },
+            ref created,
+            ref skipped);
+    }
+
+    private static void ConfigureMonsterBase(
+        SerializedObject card,
+        string id,
+        string name,
+        string text,
+        MonsterAttribute attribute,
+        MonsterRank rank,
+        MonsterType type,
+        int health,
+        int attack,
+        int defense,
+        int attackEnergy)
+    {
+        SetCommonData(card, id, name, CardCategory.Monster, text);
+        SetEnum(card, "monsterAttribute", attribute);
+        SetEnum(card, "monsterRank", rank);
+        SetEnum(card, "monsterType", type);
+        SetInt(card, "baseHealth", health);
+        SetInt(card, "baseAttack", attack);
+        SetInt(card, "baseDefense", defense);
+        SetInt(card, "attackEnergyRequirement", attackEnergy);
+    }
+
+    private static void ConfigureRequestedCards(
+        OwnMonsterTargetAsset ownMonster,
+        OpponentMonsterTargetAsset opponentMonster)
+    {
+        ConfigureLegendaryFighter();
+        ConfigureEnergyVenom(opponentMonster);
+        ConfigureGuardianShift(ownMonster);
+        ConfigurePowerTransfer(ownMonster);
+        ConfigureTemporalLock();
+        ConfigureDawnwingFairy();
+        ConfigureGraveboundImp();
+    }
+
+    private static void ConfigureLegendaryFighter()
+    {
+        CardData card = FindCardById("legendary_fighter");
+        if (card == null)
+            return;
+        SerializedObject serialized = new SerializedObject(card);
+        SerializedProperty effects = ResetEffects(serialized, 2);
+        SerializedProperty summon = effects.GetArrayElementAtIndex(0);
+        ConfigureEffectHeader(
+            summon,
+            "effect_legendary_fighter_tribute_power",
+            EffectKind.Activated,
+            EffectTriggerType.OnSummoned,
+            EffectPhaseMask.Main,
+            EffectTurnScope.YourTurn,
+            EffectActivationWindow.OpenGameState);
+        SetComponentSlot(
+            summon,
+            "resolution",
+            CreateComponent<IncreaseAttackByTriggerValueResolutionAsset>(
+                TriggerAttackPath),
+            1);
+
+        SerializedProperty victory = effects.GetArrayElementAtIndex(1);
+        ConfigureEffectHeader(
+            victory,
+            "effect_legendary_fighter_victory_recovery",
+            EffectKind.Activated,
+            EffectTriggerType.OnBattleDestroyedMonster,
+            EffectPhaseMask.Battle,
+            EffectTurnScope.YourTurn,
+            EffectActivationWindow.OpenGameState);
+        SetComponentSlot(
+            victory,
+            "resolution",
+            CreateComponent<RestoreHealthPerRemovedEnergyResolutionAsset>(
+                EnergyHealthPath),
+            500);
+        SaveCard(serialized, card);
+    }
+
+    private static void ConfigureEnergyVenom(
+        OpponentMonsterTargetAsset opponentMonster)
+    {
+        CardData card = FindCardById("energy_venom");
+        if (card == null)
+            return;
+        SerializedObject serialized = new SerializedObject(card);
+        SerializedProperty effect = ResetEffects(serialized, 1)
+            .GetArrayElementAtIndex(0);
+        ConfigureEffectHeader(
+            effect,
+            "effect_energy_venom_equip",
+            EffectKind.Continuous,
+            EffectTriggerType.ManualActivation,
+            EffectPhaseMask.Main,
+            EffectTurnScope.YourTurn,
+            EffectActivationWindow.OpenGameState);
+        SetComponentSlot(effect, "targets", opponentMonster, 1);
+        SetComponentSlot(
+            effect,
+            "continuousModifiers",
+            CreateComponent<ModifyAttackPerTargetEnergyContinuousAsset>(
+                ModifyAttackPerEnergyPath),
+            -300);
+        SaveCard(serialized, card);
+    }
+
+    private static void ConfigureGuardianShift(OwnMonsterTargetAsset ownMonster)
+    {
+        CardData card = FindCardById("guardian_shift");
+        if (card == null)
+            return;
+        SerializedObject serialized = new SerializedObject(card);
+        SerializedProperty effect = ResetEffects(serialized, 1)
+            .GetArrayElementAtIndex(0);
+        ConfigureEffectHeader(
+            effect,
+            "effect_guardian_shift_protect",
+            EffectKind.Activated,
+            EffectTriggerType.OnAttackDeclared,
+            EffectPhaseMask.Battle,
+            EffectTurnScope.OpponentTurn,
+            EffectActivationWindow.ResponseToAttackDeclaration);
+        SetComponentSlot(effect, "targets", ownMonster, 1);
+        SetComponentSlot(
+            effect,
+            "resolution",
+            CreateComponent<ProtectAttackedMonsterResolutionAsset>(
+                ProtectAttackedMonsterPath),
+            1000);
+        SaveCard(serialized, card);
+    }
+
+    private static void ConfigurePowerTransfer(OwnMonsterTargetAsset ownMonster)
+    {
+        CardData card = FindCardById("power_transfer");
+        if (card == null)
+            return;
+        SerializedObject serialized = new SerializedObject(card);
+        SerializedProperty effect = ResetEffects(serialized, 1)
+            .GetArrayElementAtIndex(0);
+        ConfigureEffectHeader(
+            effect,
+            "effect_power_transfer",
+            EffectKind.Activated,
+            EffectTriggerType.ManualActivation,
+            EffectPhaseMask.Main,
+            EffectTurnScope.YourTurn,
+            EffectActivationWindow.OpenGameState);
+        SetComponentSlot(effect, "targets", ownMonster, 2);
+        SetComponentSlot(
+            effect,
+            "resolution",
+            CreateComponent<TransferAttackUntilEndOfTurnResolutionAsset>(
+                TransferAttackPath),
+            1);
+        SaveCard(serialized, card);
+    }
+
+    private static void ConfigureTemporalLock()
+    {
+        CardData card = FindCardById("temporal_lock");
+        if (card == null)
+            return;
+        SerializedObject serialized = new SerializedObject(card);
+        SerializedProperty effect = ResetEffects(serialized, 1)
+            .GetArrayElementAtIndex(0);
+        ConfigureEffectHeader(
+            effect,
+            "effect_temporal_lock",
+            EffectKind.Activated,
+            EffectTriggerType.ManualActivation,
+            EffectPhaseMask.Main,
+            EffectTurnScope.YourTurn,
+            EffectActivationWindow.OpenGameState);
+        SetComponentSlots(
+            effect,
+            "resolution",
+            new UnityEngine.Object[]
+            {
+                CreateComponent<SkipNextOpponentDrawResolutionAsset>(SkipDrawPath),
+                CreateComponent<SkipCurrentBattlePhaseResolutionAsset>(SkipBattlePath)
+            },
+            new[] { 1, 1 });
+        SaveCard(serialized, card);
+    }
+
+    private static void ConfigureDawnwingFairy()
+    {
+        ConfigureTriggeredMonsterSelection(
+            "dawnwing_fairy",
+            "effect_dawnwing_fairy_search",
+            EffectTriggerType.OnSummoned,
+            CreateComponent<SearchBasicMonsterFromDeckResolutionAsset>(
+                SearchBasicPath));
+    }
+
+    private static void ConfigureGraveboundImp()
+    {
+        ConfigureTriggeredMonsterSelection(
+            "gravebound_imp",
+            "effect_gravebound_imp_recover",
+            EffectTriggerType.OnDestroyed,
+            CreateComponent<RecoverBasicMonsterFromGraveyardResolutionAsset>(
+                RecoverBasicPath));
+    }
+
+    private static void ConfigureTriggeredMonsterSelection(
+        string cardId,
+        string effectId,
+        EffectTriggerType trigger,
+        EffectResolutionAsset resolution)
+    {
+        CardData card = FindCardById(cardId);
+        if (card == null)
+            return;
+        SerializedObject serialized = new SerializedObject(card);
+        SerializedProperty effect = ResetEffects(serialized, 1)
+            .GetArrayElementAtIndex(0);
+        ConfigureEffectHeader(
+            effect,
+            effectId,
+            EffectKind.Activated,
+            trigger,
+            EffectPhaseMask.Any,
+            EffectTurnScope.EitherTurn,
+            EffectActivationWindow.OpenGameState);
+        SetComponentSlot(effect, "resolution", resolution, 1);
+        SaveCard(serialized, card);
     }
 
     private static void EnsureTideSpriteExists()

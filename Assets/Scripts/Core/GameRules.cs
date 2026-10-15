@@ -45,9 +45,15 @@ public static class GameRules
             if (state.ActiveChain.Links.Count == 0 &&
                 state.ActiveChain.PendingAttack != null)
             {
+                long responseTarget = effect.TargetType ==
+                    EffectTargetType.OwnMonster
+                    ? state.ActiveChain.PendingAttack.TargetInstanceId
+                    : state.ActiveChain.PendingAttack.AttackerInstanceId;
+                if (responseTarget == 0)
+                    continue;
                 AddResponseIfLegal(
                     card.InstanceId,
-                    state.ActiveChain.PendingAttack.AttackerInstanceId);
+                    responseTarget);
                 continue;
             }
 
@@ -129,6 +135,12 @@ public static class GameRules
             case GameActionType.PassResponse:
                 return PassResponse(state, action);
 
+            case GameActionType.ResolveTriggeredEffect:
+                return ResolveTriggeredEffect(state, action);
+
+            case GameActionType.DeclineTriggeredEffect:
+                return DeclineTriggeredEffect(state, action);
+
             default:
                 return ActionResult.Failure("Unknown game action type.");
         }
@@ -166,6 +178,13 @@ public static class GameRules
             action.Type != GameActionType.PassResponse)
         {
             return "Only a legal response or Pass is allowed while a response window is open.";
+        }
+
+        if (state.HasPendingTriggeredEffect &&
+            action.Type != GameActionType.ResolveTriggeredEffect &&
+            action.Type != GameActionType.DeclineTriggeredEffect)
+        {
+            return "Resolve or decline the pending triggered effect first.";
         }
 
         switch (action.Type)
@@ -225,6 +244,12 @@ public static class GameRules
                 return state.HasOpenResponseWindow
                     ? string.Empty
                     : "There is no response window to pass.";
+
+            case GameActionType.ResolveTriggeredEffect:
+                return ValidateTriggeredEffectSelection(state, action);
+
+            case GameActionType.DeclineTriggeredEffect:
+                return ValidateTriggeredEffectDecline(state, action);
 
             default:
                 return "Unknown game action type.";
@@ -444,9 +469,12 @@ public static class GameRules
         CardInstance monster = player.FindCardInHand(action.SourceInstanceId);
         List<GameEvent> events = new List<GameEvent>();
 
+        int tributeBaseAttack = 0;
         foreach (long tributeId in action.TributeInstanceIds)
         {
             int tributeZoneIndex = player.FindMonsterZoneIndex(tributeId);
+            tributeBaseAttack += player.MonsterZones[tributeZoneIndex]
+                .Definition.BaseAttack;
             CardInstance tribute = SendMonsterToGraveyard(
                 state,
                 player,
@@ -471,6 +499,12 @@ public static class GameRules
             player.PlayerIndex,
             monster.InstanceId,
             action.ZoneIndex));
+        ResolveTriggeredEffects(
+            state,
+            monster,
+            EffectTriggerType.OnSummoned,
+            events,
+            tributeBaseAttack);
         return ActionResult.Success(events);
     }
 
@@ -509,15 +543,16 @@ public static class GameRules
         CardInstance monster = player.MonsterZones[zoneIndex];
         player.TrySpendEnergy(action.Amount);
         monster.AllocateEnergy(action.Amount);
-
-        return ActionResult.Success(new[]
+        List<GameEvent> events = new List<GameEvent>
         {
             GameEvent.EnergySpent(player.PlayerIndex, action.Amount),
             GameEvent.EnergyAllocated(
                 player.PlayerIndex,
                 monster.InstanceId,
                 action.Amount)
-        });
+        };
+        RefreshEquipModifiersForTarget(state, monster, events);
+        return ActionResult.Success(events);
     }
 
     private static string ValidatePositionChange(
@@ -736,11 +771,13 @@ public static class GameRules
             state.ActiveChain.WindowType == ResponseWindowType.AttackDeclaration &&
             effect.ActivationWindow ==
                 EffectActivationWindow.ResponseToAttackDeclaration &&
-            (state.ActiveChain.PendingAttack == null ||
-             targets.Count != 1 ||
-             targets[0] != state.ActiveChain.PendingAttack.AttackerInstanceId))
+            !IsLegalAttackResponseTarget(
+                state,
+                action.PlayerIndex,
+                effect,
+                targets))
         {
-            return "This Trap must target the attacking Monster.";
+            return "This Trap must target the correct Monster in the pending attack.";
         }
 
         return string.Empty;
@@ -1081,6 +1118,17 @@ public static class GameRules
                 defenderOwner.PlayerIndex,
                 defender.InstanceId));
 
+            ResolveTriggeredEffects(
+                state,
+                attacker,
+                EffectTriggerType.OnBattleDestroyedMonster,
+                events);
+            ResolveTriggeredEffects(
+                state,
+                defender,
+                EffectTriggerType.OnDestroyed,
+                events);
+
             if (destructionPenalty > 0)
             {
                 defenderOwner.TakeDamage(destructionPenalty);
@@ -1118,6 +1166,10 @@ public static class GameRules
                     state,
                     source,
                     link,
+                    events);
+                RefreshEquipModifiersForEffectContext(
+                    state,
+                    context,
                     events);
             }
 
@@ -1383,8 +1435,11 @@ public static class GameRules
         for (int index = 0; index < card.Definition.Effects.Count; index++)
         {
             EffectDefinition effect = card.Definition.Effects[index];
-            if (effect.ActivationWindow == window &&
-                effect.Trigger != EffectTriggerType.EndPhase)
+            bool triggerMatches = chain == null
+                ? effect.Trigger == EffectTriggerType.ManualActivation
+                : effect.Trigger == EffectTriggerType.OnAttackDeclared ||
+                  effect.Trigger == EffectTriggerType.OnSpellTrapActivated;
+            if (effect.ActivationWindow == window && triggerMatches)
                 return effect;
         }
         return null;
@@ -1407,9 +1462,275 @@ public static class GameRules
 
     private static IReadOnlyList<long> ActionTargets(GameAction action)
     {
-        return action.TargetInstanceId == 0
-            ? new long[0]
-            : new[] { action.TargetInstanceId };
+        return action.TargetInstanceIds;
+    }
+
+    private static string ValidateTriggeredEffectSelection(
+        GameState state,
+        GameAction action)
+    {
+        PendingTriggeredEffect pending = state.PendingTriggeredEffect;
+        if (pending == null)
+            return "There is no triggered effect waiting for a selection.";
+        if (action.PlayerIndex != pending.PlayerIndex ||
+            action.SourceInstanceId != pending.SourceInstanceId)
+        {
+            return "This selection does not belong to the pending effect.";
+        }
+        return pending.ContainsCandidate(action.TargetInstanceId)
+            ? string.Empty
+            : "The selected card is not eligible for this effect.";
+    }
+
+    private static string ValidateTriggeredEffectDecline(
+        GameState state,
+        GameAction action)
+    {
+        PendingTriggeredEffect pending = state.PendingTriggeredEffect;
+        if (pending == null)
+            return "There is no triggered effect to decline.";
+        return action.PlayerIndex == pending.PlayerIndex &&
+               action.SourceInstanceId == pending.SourceInstanceId
+            ? string.Empty
+            : "This decline does not belong to the pending effect.";
+    }
+
+    private static ActionResult ResolveTriggeredEffect(
+        GameState state,
+        GameAction action)
+    {
+        PendingTriggeredEffect pending = state.PendingTriggeredEffect;
+        PlayerState player = state.Players[pending.PlayerIndex];
+        CardInstance source = state.FindCard(pending.SourceInstanceId);
+        List<GameEvent> events = new List<GameEvent>();
+
+        if (ContainsOperation(
+                pending.Effect,
+                EffectOperationType.SearchBasicMonsterFromDeck))
+        {
+            CardInstance selected = player.MoveDeckCardToHand(
+                action.TargetInstanceId);
+            if (selected != null)
+            {
+                events.Add(GameEvent.CardAddedToHand(
+                    player.PlayerIndex,
+                    selected.InstanceId,
+                    state.CurrentPhase));
+                state.Random.Shuffle(player.MutableDeck);
+                events.Add(GameEvent.DeckShuffled(
+                    player.PlayerIndex,
+                    state.CurrentPhase));
+            }
+        }
+        else if (ContainsOperation(
+                     pending.Effect,
+                     EffectOperationType.RecoverBasicMonsterFromGraveyard))
+        {
+            CardInstance selected = player.MoveGraveyardCardToHand(
+                action.TargetInstanceId);
+            if (selected != null)
+            {
+                events.Add(GameEvent.CardAddedToHand(
+                    player.PlayerIndex,
+                    selected.InstanceId,
+                    state.CurrentPhase));
+            }
+        }
+
+        if (source != null)
+            state.RecordEffectUse(pending.Effect, player.PlayerIndex, source);
+        events.Add(GameEvent.EffectResolved(
+            player.PlayerIndex,
+            pending.SourceInstanceId,
+            state.CurrentPhase));
+        state.CloseTriggeredEffect();
+        return ActionResult.Success(events);
+    }
+
+    private static ActionResult DeclineTriggeredEffect(
+        GameState state,
+        GameAction action)
+    {
+        List<GameEvent> events = new List<GameEvent>
+        {
+            GameEvent.TriggeredEffectDeclined(
+                action.PlayerIndex,
+                action.SourceInstanceId,
+                state.CurrentPhase)
+        };
+        state.CloseTriggeredEffect();
+        return ActionResult.Success(events);
+    }
+
+    private static void ResolveTriggeredEffects(
+        GameState state,
+        CardInstance source,
+        EffectTriggerType trigger,
+        List<GameEvent> events,
+        int triggerValue = 0)
+    {
+        if (source == null)
+            return;
+
+        for (int index = 0; index < source.Definition.Effects.Count; index++)
+        {
+            EffectDefinition effect = source.Definition.Effects[index];
+            if (effect.Trigger != trigger ||
+                !state.CanUseEffect(effect, source.OwnerPlayerIndex, source))
+            {
+                continue;
+            }
+
+            List<long> candidates = BuildTriggeredEffectCandidates(
+                state,
+                source,
+                effect);
+            bool isOptionalSelection = ContainsOperation(
+                    effect,
+                    EffectOperationType.SearchBasicMonsterFromDeck) ||
+                ContainsOperation(
+                    effect,
+                    EffectOperationType.RecoverBasicMonsterFromGraveyard);
+            if (isOptionalSelection)
+            {
+                if (candidates.Count == 0 || state.HasPendingTriggeredEffect)
+                    continue;
+                state.OpenTriggeredEffect(new PendingTriggeredEffect(
+                    source.OwnerPlayerIndex,
+                    source.InstanceId,
+                    effect,
+                    candidates));
+                events.Add(GameEvent.TriggeredEffectOffered(
+                    source.OwnerPlayerIndex,
+                    source.InstanceId,
+                    state.CurrentPhase));
+                continue;
+            }
+
+            EffectContext context = new EffectContext(
+                state,
+                source.OwnerPlayerIndex,
+                source.InstanceId,
+                triggerValue: triggerValue);
+            new DefinitionCardEffect(effect).Resolve(context, events);
+            state.RecordEffectUse(
+                effect,
+                source.OwnerPlayerIndex,
+                source);
+            RefreshEquipModifiersForEffectContext(state, context, events);
+        }
+    }
+
+    private static List<long> BuildTriggeredEffectCandidates(
+        GameState state,
+        CardInstance source,
+        EffectDefinition effect)
+    {
+        List<long> candidates = new List<long>();
+        HashSet<string> includedCardIds = new HashSet<string>();
+        PlayerState owner = state.Players[source.OwnerPlayerIndex];
+        IReadOnlyList<CardInstance> pool;
+
+        if (ContainsOperation(
+                effect,
+                EffectOperationType.SearchBasicMonsterFromDeck))
+        {
+            pool = owner.Deck;
+        }
+        else if (ContainsOperation(
+                     effect,
+                     EffectOperationType.RecoverBasicMonsterFromGraveyard))
+        {
+            pool = owner.Graveyard;
+        }
+        else
+        {
+            return candidates;
+        }
+
+        for (int index = 0; index < pool.Count; index++)
+        {
+            CardInstance card = pool[index];
+            if (!card.Definition.IsMonster ||
+                card.Definition.MonsterRank != MonsterRank.Basic)
+            {
+                continue;
+            }
+            if (effect.Operations.Count > 0 &&
+                effect.Operations[0].Type ==
+                    EffectOperationType.SearchBasicMonsterFromDeck &&
+                card.Definition.CardId == source.Definition.CardId)
+            {
+                continue;
+            }
+            if (includedCardIds.Add(card.Definition.CardId))
+                candidates.Add(card.InstanceId);
+        }
+        return candidates;
+    }
+
+    private static bool IsLegalAttackResponseTarget(
+        GameState state,
+        int activatingPlayerIndex,
+        EffectDefinition effect,
+        IReadOnlyList<long> targets)
+    {
+        PendingAttack attack = state.ActiveChain.PendingAttack;
+        if (attack == null || targets.Count != 1)
+            return false;
+        if (effect.TargetType == EffectTargetType.OwnMonster)
+        {
+            return attack.TargetInstanceId != 0 &&
+                targets[0] == attack.TargetInstanceId &&
+                state.Players[activatingPlayerIndex]
+                    .FindMonsterZoneIndex(targets[0]) >= 0;
+        }
+        return effect.TargetType == EffectTargetType.OpponentMonster &&
+            targets[0] == attack.AttackerInstanceId;
+    }
+
+    private static void RefreshEquipModifiersForEffectContext(
+        GameState state,
+        EffectContext context,
+        List<GameEvent> events)
+    {
+        CardInstance source = state.FindCard(context.SourceInstanceId);
+        if (source != null && source.Zone == CardZone.MonsterZone)
+            RefreshEquipModifiersForTarget(state, source, events);
+        for (int index = 0; index < context.TargetInstanceIds.Count; index++)
+        {
+            CardInstance target = state.FindCard(context.TargetInstanceIds[index]);
+            if (target != null && target.Zone == CardZone.MonsterZone)
+                RefreshEquipModifiersForTarget(state, target, events);
+        }
+    }
+
+    private static void RefreshEquipModifiersForTarget(
+        GameState state,
+        CardInstance target,
+        List<GameEvent> events)
+    {
+        for (int playerIndex = 0; playerIndex < state.Players.Count; playerIndex++)
+        {
+            PlayerState player = state.Players[playerIndex];
+            for (int zoneIndex = 0;
+                 zoneIndex < player.SpellTrapZones.Count;
+                 zoneIndex++)
+            {
+                CardInstance equip = player.SpellTrapZones[zoneIndex];
+                if (equip == null ||
+                    equip.EquippedTargetInstanceId != target.InstanceId)
+                {
+                    continue;
+                }
+
+                EffectDefinition effect = FindManualActivationEffect(equip);
+                if (effect == null || effect.ContinuousModifiers.Count == 0)
+                    continue;
+                state.RemovePersistentModifiersFromSource(equip.InstanceId);
+                ApplyModifierSet(state, equip, target, effect, events);
+            }
+        }
     }
 
     private static bool IsAllowedTurn(

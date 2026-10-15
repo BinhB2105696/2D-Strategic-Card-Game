@@ -36,6 +36,10 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         new Dictionary<long, Image>();
     private readonly Dictionary<long, Image> targetHighlights =
         new Dictionary<long, Image>();
+    private readonly Dictionary<long, TMP_Text> targetSelectionLabels =
+        new Dictionary<long, TMP_Text>();
+    private readonly Dictionary<long, string> targetSelectionBaseLabels =
+        new Dictionary<long, string>();
     private readonly List<GameAction> pendingTargetActions =
         new List<GameAction>();
     private GameObject energyPanel;
@@ -51,7 +55,7 @@ public sealed class DuelCardInteractionController : MonoBehaviour
     private readonly Dictionary<long, GameObject> cardObjects =
         new Dictionary<long, GameObject>();
     private readonly List<long> selectedTributes = new List<long>();
-    private long selectedTargetInstanceId;
+    private readonly List<long> selectedTargetInstanceIds = new List<long>();
     private CardInstance selectedCard;
     private Button tributeConfirmButton;
     private Button targetConfirmButton;
@@ -225,6 +229,50 @@ public sealed class DuelCardInteractionController : MonoBehaviour
             "NO / PASS",
             () => Submit(passAction));
         SetButtonColor(passButton, new Color32(142, 31, 31, 250));
+        LayoutPanelButtons(detailButtons);
+    }
+
+    public void ShowTriggeredEffectPrompt()
+    {
+        if (state == null || !state.HasPendingTriggeredEffect || state.IsFinished)
+            return;
+
+        ClearSelectionWindows();
+        PendingTriggeredEffect pending = state.PendingTriggeredEffect;
+        IReadOnlyList<GameAction> legalActions = GameRules.GetLegalActions(
+            state,
+            pending.PlayerIndex);
+        List<GameAction> choices = FindActions(
+            legalActions,
+            GameActionType.ResolveTriggeredEffect);
+        GameAction decline = FindAction(
+            legalActions,
+            GameActionType.DeclineTriggeredEffect);
+        if (choices.Count == 0 || decline == null)
+            return;
+
+        selectedCard = state.FindCard(pending.SourceInstanceId);
+        ClearDetailRuntime();
+        detailPanel.SetActive(true);
+        detailText.text = "Activate the effect of \"" +
+            (selectedCard != null
+                ? selectedCard.Definition.CardName
+                : "this card") +
+            "\"?\nChoose 1 eligible card.";
+
+        CreateTriggeredCandidateScroller(choices);
+        pendingTargetActions.AddRange(choices);
+        targetConfirmButton = AddPanelButton(
+            detailButtonArea,
+            detailButtons,
+            "OK",
+            ConfirmTargetActivation);
+        targetConfirmButton.interactable = false;
+        AddPanelButton(
+            detailButtonArea,
+            detailButtons,
+            "SKIP",
+            () => Submit(decline));
         LayoutPanelButtons(detailButtons);
     }
 
@@ -437,7 +485,7 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         List<GameAction> targetedActions = new List<GameAction>();
         for (int index = 0; index < actions.Count; index++)
         {
-            if (actions[index].TargetInstanceId != 0)
+            if (actions[index].TargetInstanceIds.Count > 0)
                 targetedActions.Add(actions[index]);
         }
 
@@ -465,9 +513,14 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         List<long> targetIds = new List<long>();
         for (int index = 0; index < actions.Count; index++)
         {
-            long targetId = actions[index].TargetInstanceId;
-            if (targetId != 0 && !targetIds.Contains(targetId))
-                targetIds.Add(targetId);
+            for (int targetIndex = 0;
+                 targetIndex < actions[index].TargetInstanceIds.Count;
+                 targetIndex++)
+            {
+                long targetId = actions[index].TargetInstanceIds[targetIndex];
+                if (targetId != 0 && !targetIds.Contains(targetId))
+                    targetIds.Add(targetId);
+            }
         }
 
         for (int index = 0; index < targetIds.Count; index++)
@@ -499,43 +552,89 @@ public sealed class DuelCardInteractionController : MonoBehaviour
 
     private void ToggleTarget(long instanceId)
     {
-        selectedTargetInstanceId = selectedTargetInstanceId == instanceId
-            ? 0
-            : instanceId;
+        if (selectedTargetInstanceIds.Contains(instanceId))
+        {
+            selectedTargetInstanceIds.Remove(instanceId);
+        }
+        else
+        {
+            int required = GetRequiredTargetCount();
+            if (selectedTargetInstanceIds.Count < required)
+                selectedTargetInstanceIds.Add(instanceId);
+        }
         UpdateTargetSelectionVisuals();
     }
 
     private void UpdateTargetSelectionVisuals()
     {
-        detailText.text = "Select 1 target for " +
-            selectedCard.Definition.CardName + "\nSelected " +
-            (selectedTargetInstanceId == 0 ? "0/1" : "1/1");
+        int required = GetRequiredTargetCount();
+        detailText.text = "Select " + required + " target(s) for " +
+            selectedCard.Definition.CardName +
+            (required > 1 ? "\nSelection order matters." : string.Empty) +
+            "\nSelected " + selectedTargetInstanceIds.Count + "/" + required;
 
         foreach (KeyValuePair<long, Image> pair in targetHighlights)
         {
-            pair.Value.color = pair.Key == selectedTargetInstanceId
+            pair.Value.color = selectedTargetInstanceIds.Contains(pair.Key)
                 ? new Color32(224, 174, 48, 245)
                 : new Color32(22, 77, 139, 235);
+            if (targetSelectionLabels.TryGetValue(
+                    pair.Key,
+                    out TMP_Text label) &&
+                targetSelectionBaseLabels.TryGetValue(
+                    pair.Key,
+                    out string baseLabel))
+            {
+                int order = selectedTargetInstanceIds.IndexOf(pair.Key);
+                label.text = required > 1 && order >= 0
+                    ? baseLabel + "  [" + (order + 1) + "]"
+                    : baseLabel;
+            }
         }
 
         if (targetConfirmButton != null)
-            targetConfirmButton.interactable = selectedTargetInstanceId != 0;
+            targetConfirmButton.interactable =
+                selectedTargetInstanceIds.Count == required;
     }
 
     private void ConfirmTargetActivation()
     {
-        if (selectedTargetInstanceId == 0)
+        int required = GetRequiredTargetCount();
+        if (selectedTargetInstanceIds.Count != required)
             return;
 
         for (int index = 0; index < pendingTargetActions.Count; index++)
         {
             GameAction action = pendingTargetActions[index];
-            if (action.TargetInstanceId == selectedTargetInstanceId)
+            if (HaveSameOrderedIds(
+                    action.TargetInstanceIds,
+                    selectedTargetInstanceIds))
             {
                 Submit(action);
                 return;
             }
         }
+    }
+
+    private int GetRequiredTargetCount()
+    {
+        return pendingTargetActions.Count == 0
+            ? 1
+            : pendingTargetActions[0].TargetInstanceIds.Count;
+    }
+
+    private static bool HaveSameOrderedIds(
+        IReadOnlyList<long> left,
+        IReadOnlyList<long> right)
+    {
+        if (left.Count != right.Count)
+            return false;
+        for (int index = 0; index < left.Count; index++)
+        {
+            if (left[index] != right[index])
+                return false;
+        }
+        return true;
     }
 
     private static bool ContainsActionType(
@@ -1078,10 +1177,19 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         Vector2 position,
         float scale)
     {
-        if (!cardObjects.TryGetValue(card.InstanceId, out GameObject sourceCard))
+        GameObject preview;
+        if (cardObjects.TryGetValue(
+                card.InstanceId,
+                out GameObject sourceCard))
+        {
+            preview = Instantiate(sourceCard, parent);
+        }
+        else
+        {
+            preview = board.CreateRuntimeCardPreview(card, parent);
+        }
+        if (preview == null)
             return;
-
-        GameObject preview = Instantiate(sourceCard, parent);
         preview.name = "InformationPreview_" + card.InstanceId;
         Button previewButton = preview.GetComponent<Button>();
         if (previewButton != null)
@@ -1102,6 +1210,105 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         previewRect.sizeDelta = new Vector2(250f, 350f);
         previewRect.localScale = Vector3.one * scale;
         previewRect.localRotation = Quaternion.identity;
+    }
+
+    private void CreateTriggeredCandidateScroller(
+        IReadOnlyList<GameAction> choices)
+    {
+        GameObject scrollObject = new GameObject(
+            "TriggeredCandidateScroll",
+            typeof(RectTransform),
+            typeof(CanvasRenderer),
+            typeof(Image),
+            typeof(Mask),
+            typeof(ScrollRect));
+        scrollObject.layer = detailCardArea.gameObject.layer;
+        RectTransform scrollRect = scrollObject.GetComponent<RectTransform>();
+        scrollRect.SetParent(detailCardArea, false);
+        scrollRect.anchorMin = Vector2.zero;
+        scrollRect.anchorMax = Vector2.one;
+        scrollRect.offsetMin = new Vector2(4f, 4f);
+        scrollRect.offsetMax = new Vector2(-4f, -4f);
+        Image scrollBackground = scrollObject.GetComponent<Image>();
+        scrollBackground.color = new Color32(5, 24, 41, 220);
+        scrollObject.GetComponent<Mask>().showMaskGraphic = true;
+
+        GameObject contentObject = new GameObject(
+            "Content",
+            typeof(RectTransform),
+            typeof(HorizontalLayoutGroup),
+            typeof(ContentSizeFitter));
+        contentObject.layer = scrollObject.layer;
+        RectTransform content = contentObject.GetComponent<RectTransform>();
+        content.SetParent(scrollRect, false);
+        content.anchorMin = new Vector2(0f, 0f);
+        content.anchorMax = new Vector2(0f, 1f);
+        content.pivot = new Vector2(0f, 0.5f);
+        content.anchoredPosition = Vector2.zero;
+        content.sizeDelta = Vector2.zero;
+        HorizontalLayoutGroup layout =
+            contentObject.GetComponent<HorizontalLayoutGroup>();
+        layout.padding = new RectOffset(12, 12, 10, 10);
+        layout.spacing = 12f;
+        layout.childAlignment = TextAnchor.MiddleLeft;
+        layout.childControlWidth = false;
+        layout.childControlHeight = true;
+        layout.childForceExpandWidth = false;
+        layout.childForceExpandHeight = true;
+        ContentSizeFitter fitter =
+            contentObject.GetComponent<ContentSizeFitter>();
+        fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+        fitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+        ScrollRect scroll = scrollObject.GetComponent<ScrollRect>();
+        scroll.viewport = scrollRect;
+        scroll.content = content;
+        scroll.horizontal = true;
+        scroll.vertical = false;
+        scroll.movementType = ScrollRect.MovementType.Clamped;
+        scroll.scrollSensitivity = 30f;
+        detailCards.Add(scrollObject);
+
+        for (int index = 0; index < choices.Count; index++)
+        {
+            CardInstance candidate = state.FindCard(
+                choices[index].TargetInstanceId);
+            if (candidate == null)
+                continue;
+
+            GameObject choiceObject = new GameObject(
+                "TriggeredChoice_" + candidate.InstanceId,
+                typeof(RectTransform),
+                typeof(CanvasRenderer),
+                typeof(Image),
+                typeof(Button),
+                typeof(LayoutElement));
+            choiceObject.layer = contentObject.layer;
+            RectTransform choice = choiceObject.GetComponent<RectTransform>();
+            choice.SetParent(content, false);
+            LayoutElement element = choiceObject.GetComponent<LayoutElement>();
+            element.preferredWidth = 225f;
+            element.minWidth = 225f;
+            Image background = choiceObject.GetComponent<Image>();
+            background.color = new Color32(22, 77, 139, 235);
+            Button button = choiceObject.GetComponent<Button>();
+            button.targetGraphic = background;
+            long candidateId = candidate.InstanceId;
+            button.onClick.AddListener(() => ToggleTarget(candidateId));
+            CreateCardPreview(candidate, choice, new Vector2(0f, 20f), 0.60f);
+            TMP_Text label = CreatePanelLabel(
+                choice,
+                "CandidateName",
+                candidate.Definition.CardName,
+                22f);
+            RectTransform labelRect = label.rectTransform;
+            labelRect.anchorMin = new Vector2(0f, 0f);
+            labelRect.anchorMax = new Vector2(1f, 0f);
+            labelRect.pivot = new Vector2(0.5f, 0f);
+            labelRect.anchoredPosition = new Vector2(0f, 2f);
+            labelRect.sizeDelta = new Vector2(-8f, 48f);
+            targetHighlights[candidateId] = background;
+        }
     }
 
     private static string BuildFullCardInformation(CardInstance card)
@@ -1356,6 +1563,8 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         labelRect.pivot = new Vector2(0.5f, 0f);
         labelRect.anchoredPosition = new Vector2(0f, 4f);
         labelRect.sizeDelta = new Vector2(-10f, 42f);
+        targetSelectionLabels[target.InstanceId] = label;
+        targetSelectionBaseLabels[target.InstanceId] = label.text;
 
         detailCards.Add(slotObject);
         return background;
@@ -1489,8 +1698,10 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         ClearRuntimeObjects(detailButtons);
         tributeHighlights.Clear();
         targetHighlights.Clear();
+        targetSelectionLabels.Clear();
+        targetSelectionBaseLabels.Clear();
         pendingTargetActions.Clear();
-        selectedTargetInstanceId = 0;
+        selectedTargetInstanceIds.Clear();
         tributeConfirmButton = null;
         targetConfirmButton = null;
     }

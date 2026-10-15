@@ -114,9 +114,15 @@ public sealed class EffectDefinitionTargetRule : IEffectTargetRule
             return effect.TargetCount == 0;
         }
 
+        HashSet<long> uniqueTargets = new HashSet<long>();
         for (int index = 0; index < context.TargetInstanceIds.Count; index++)
         {
             long targetId = context.TargetInstanceIds[index];
+            if (!uniqueTargets.Add(targetId))
+            {
+                failureReason = "The same card cannot be selected more than once.";
+                return false;
+            }
             int ownerIndex = effect.TargetType == EffectTargetType.OwnMonster
                 ? context.ActivatingPlayerIndex
                 : 1 - context.ActivatingPlayerIndex;
@@ -196,12 +202,207 @@ public sealed class DefinitionCardEffect : ICardEffect
                 case EffectOperationType.NegatePreviousChainLink:
                     ResolveNegation(context, events);
                     break;
+
+                case EffectOperationType.IncreaseDefensePermanently:
+                    ResolvePermanentDefenseIncrease(
+                        context,
+                        operation.Amount,
+                        events);
+                    break;
+
+                case EffectOperationType.IncreaseAttackByTriggerValue:
+                    ResolvePermanentAttackIncrease(
+                        context,
+                        context.TriggerValue,
+                        events);
+                    break;
+
+                case EffectOperationType.RestoreHealthPerRemovedAllocatedEnergy:
+                    ResolveEnergyConversion(
+                        context,
+                        operation.Amount,
+                        events);
+                    break;
+
+                case EffectOperationType.ProtectAttackedMonster:
+                    ResolveAttackProtection(
+                        context,
+                        operation.Amount,
+                        events);
+                    break;
+
+                case EffectOperationType.TransferAttackUntilEndOfTurn:
+                    ResolveAttackTransfer(context, events);
+                    break;
+
+                case EffectOperationType.SkipCurrentBattlePhase:
+                    context.ActivatingPlayer.ScheduleBattlePhaseSkip(
+                        context.State.TurnNumber);
+                    break;
             }
         }
 
         events.Add(GameEvent.EffectResolved(
             context.ActivatingPlayerIndex,
             context.SourceInstanceId,
+            context.State.CurrentPhase));
+    }
+
+    private static void ResolvePermanentDefenseIncrease(
+        EffectContext context,
+        int amount,
+        List<GameEvent> events)
+    {
+        CardInstance target = FindEffectMonster(context);
+        if (target == null)
+            return;
+
+        int increase = System.Math.Max(0, amount);
+        context.State.ApplyStatModifier(
+            context.SourceInstanceId,
+            target,
+            0,
+            increase);
+        events.Add(GameEvent.MonsterDefenseModified(
+            target.OwnerPlayerIndex,
+            target.InstanceId,
+            increase,
+            context.State.CurrentPhase));
+    }
+
+    private static void ResolvePermanentAttackIncrease(
+        EffectContext context,
+        int amount,
+        List<GameEvent> events)
+    {
+        CardInstance target = FindEffectMonster(context);
+        if (target == null)
+            return;
+
+        int increase = System.Math.Max(0, amount);
+        context.State.ApplyStatModifier(
+            context.SourceInstanceId,
+            target,
+            increase,
+            0);
+        events.Add(GameEvent.MonsterAttackModified(
+            target.OwnerPlayerIndex,
+            target.InstanceId,
+            increase,
+            context.State.CurrentPhase));
+    }
+
+    private static void ResolveEnergyConversion(
+        EffectContext context,
+        int healthPerEnergy,
+        List<GameEvent> events)
+    {
+        CardInstance target = FindEffectMonster(context);
+        if (target == null)
+            return;
+
+        int removed = target.RemoveAllocatedEnergy(target.AllocatedEnergy);
+        if (removed <= 0)
+            return;
+
+        events.Add(GameEvent.AllocatedEnergyRemoved(
+            target.OwnerPlayerIndex,
+            target.InstanceId,
+            removed,
+            context.State.CurrentPhase));
+        int restored = removed * System.Math.Max(0, healthPerEnergy);
+        target.RestoreHealth(restored);
+        events.Add(GameEvent.MonsterHealthModified(
+            target.OwnerPlayerIndex,
+            target.InstanceId,
+            restored,
+            context.State.CurrentPhase));
+    }
+
+    private static void ResolveAttackProtection(
+        EffectContext context,
+        int defenseIncrease,
+        List<GameEvent> events)
+    {
+        CardInstance target = FindEffectMonster(context);
+        if (target == null)
+            return;
+
+        int increase = System.Math.Max(0, defenseIncrease);
+        context.State.ApplyStatModifier(
+            target.InstanceId,
+            target,
+            0,
+            increase);
+        events.Add(GameEvent.MonsterDefenseModified(
+            target.OwnerPlayerIndex,
+            target.InstanceId,
+            increase,
+            context.State.CurrentPhase));
+
+        if (target.BattlePosition == BattlePosition.Attack)
+        {
+            target.SetBattlePosition(BattlePosition.Defense);
+            events.Add(GameEvent.BattlePositionChanged(
+                target.OwnerPlayerIndex,
+                target.InstanceId,
+                BattlePosition.Defense));
+
+            int removed = target.RemoveAllocatedEnergy(target.AllocatedEnergy);
+            if (removed > 0)
+            {
+                events.Add(GameEvent.AllocatedEnergyRemoved(
+                    target.OwnerPlayerIndex,
+                    target.InstanceId,
+                    removed,
+                    context.State.CurrentPhase));
+            }
+        }
+    }
+
+    private static void ResolveAttackTransfer(
+        EffectContext context,
+        List<GameEvent> events)
+    {
+        if (context.TargetInstanceIds.Count != 2)
+            return;
+
+        CardInstance donor = context.State.FindCard(
+            context.TargetInstanceIds[0]);
+        CardInstance receiver = context.State.FindCard(
+            context.TargetInstanceIds[1]);
+        if (donor == null || receiver == null ||
+            donor.Zone != CardZone.MonsterZone ||
+            receiver.Zone != CardZone.MonsterZone)
+        {
+            return;
+        }
+
+        int transferred = donor.CurrentAttack;
+        if (transferred <= 0)
+            return;
+
+        context.State.ApplyStatModifier(
+            context.SourceInstanceId,
+            donor,
+            -transferred,
+            0,
+            context.State.TurnNumber);
+        context.State.ApplyStatModifier(
+            context.SourceInstanceId,
+            receiver,
+            transferred,
+            0,
+            context.State.TurnNumber);
+        events.Add(GameEvent.MonsterAttackModified(
+            donor.OwnerPlayerIndex,
+            donor.InstanceId,
+            -transferred,
+            context.State.CurrentPhase));
+        events.Add(GameEvent.MonsterAttackModified(
+            receiver.OwnerPlayerIndex,
+            receiver.InstanceId,
+            transferred,
             context.State.CurrentPhase));
     }
 

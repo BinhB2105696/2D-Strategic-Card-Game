@@ -9,7 +9,8 @@ public enum EffectTriggerType
     StandbyPhase,
     OnSpellTrapActivated,
     OnAttackDeclared,
-    EndPhase
+    EndPhase,
+    OnBattleDestroyedMonster
 }
 
 public enum EffectConditionType
@@ -42,7 +43,15 @@ public enum EffectOperationType
     IncreaseAttackUntilEndOfTurn,
     IncreaseDefenseUntilEndOfTurn,
     RestoreMonsterHealth,
-    NegatePreviousChainLink
+    NegatePreviousChainLink,
+    IncreaseDefensePermanently,
+    IncreaseAttackByTriggerValue,
+    RestoreHealthPerRemovedAllocatedEnergy,
+    ProtectAttackedMonster,
+    TransferAttackUntilEndOfTurn,
+    SkipCurrentBattlePhase,
+    SearchBasicMonsterFromDeck,
+    RecoverBasicMonsterFromGraveyard
 }
 
 [Serializable]

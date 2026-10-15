@@ -9,16 +9,36 @@ public static class DuelBoardReadOnlyDemoBootstrap
 {
     private static readonly string[] CardPaths =
     {
-        "Assets/Data/Cards/Monsters/Fire_Dragon.asset",
         "Assets/Data/Cards/Monsters/Sample_Stone_Guardian.asset",
-        "Assets/Data/Cards/Monsters/Sample_Sky_Sage.asset",
+        "Assets/Data/Cards/Monsters/Sample_Stone_Guardian.asset",
+        "Assets/Data/Cards/Monsters/Sample_Stone_Guardian.asset",
         "Assets/Data/Cards/Monsters/Sample_Tide_Sprite.asset",
+        "Assets/Data/Cards/Monsters/Sample_Tide_Sprite.asset",
+        "Assets/Data/Cards/Monsters/Sample_Tide_Sprite.asset",
+        "Assets/Data/Cards/Monsters/Dawnwing_Fairy.asset",
+        "Assets/Data/Cards/Monsters/Dawnwing_Fairy.asset",
+        "Assets/Data/Cards/Monsters/Dawnwing_Fairy.asset",
+        "Assets/Data/Cards/Monsters/Gravebound_Imp.asset",
+        "Assets/Data/Cards/Monsters/Gravebound_Imp.asset",
+        "Assets/Data/Cards/Monsters/Gravebound_Imp.asset",
+        "Assets/Data/Cards/Monsters/Fire_Dragon.asset",
+        "Assets/Data/Cards/Monsters/Fire_Dragon.asset",
+        "Assets/Data/Cards/Monsters/Sample_Sky_Sage.asset",
+        "Assets/Data/Cards/Monsters/Legendary_Fighter.asset",
         "Assets/Data/Cards/Spells/Sample_Arcane_Insight.asset",
+        "Assets/Data/Cards/Spells/Sample_Arcane_Insight.asset",
+        "Assets/Data/Cards/Spells/Sample_Quick_Strike.asset",
         "Assets/Data/Cards/Spells/Sample_Quick_Strike.asset",
         "Assets/Data/Cards/Spells/Sample_Iron_Blade.asset",
         "Assets/Data/Cards/Spells/Test_Field_Spell.asset",
+        "Assets/Data/Cards/Spells/Energy_Venom.asset",
+        "Assets/Data/Cards/Spells/Power_Transfer.asset",
+        "Assets/Data/Cards/Spells/Power_Transfer.asset",
+        "Assets/Data/Cards/Spells/Temporal_Lock.asset",
         "Assets/Data/Cards/Traps/Sample_Ambush.asset",
-        "Assets/Data/Cards/Traps/Sample_Divine_Reversal.asset"
+        "Assets/Data/Cards/Traps/Sample_Ambush.asset",
+        "Assets/Data/Cards/Traps/Sample_Divine_Reversal.asset",
+        "Assets/Data/Cards/Traps/Guardian_Shift.asset"
     };
 
     private static bool isPreparingDeck;
@@ -63,8 +83,7 @@ public static class DuelBoardReadOnlyDemoBootstrap
                 return;
             }
 
-            for (int copy = 0; copy < 3; copy++)
-                cards.Add(card);
+            cards.Add(card);
         }
 
         DuelBoardReadOnlyDemo demo = canvas.GetComponent<DuelBoardReadOnlyDemo>();

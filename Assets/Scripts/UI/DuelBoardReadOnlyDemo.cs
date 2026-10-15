@@ -183,6 +183,8 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
             cardInteraction?.ShowMatchResult(state);
         else if (state.HasOpenResponseWindow)
             cardInteraction?.ShowResponsePrompt();
+        else if (state.HasPendingTriggeredEffect)
+            cardInteraction?.ShowTriggeredEffectPrompt();
     }
 
     private void RenderPlayer(
@@ -368,6 +370,31 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         view.SetCardData(cardData);
         view.SetFaceDown(faceDown);
         cardInteraction?.BindCard(instance, card, allowInteraction);
+    }
+
+    public GameObject CreateRuntimeCardPreview(
+        CardInstance instance,
+        Transform parent)
+    {
+        if (instance == null || parent == null ||
+            !cardsById.TryGetValue(
+                instance.Definition.CardId,
+                out CardData cardData))
+        {
+            return null;
+        }
+
+        GameObject prefab = cardData.Category == CardCategory.Monster
+            ? monsterCardPrefab
+            : spellTrapCardPrefab;
+        GameObject card = Instantiate(prefab, parent);
+        CardView view = card.GetComponent<CardView>();
+        if (view != null)
+        {
+            view.SetCardData(cardData);
+            view.SetFaceDown(false);
+        }
+        return card;
     }
 
     private static void ConfigureRuntimeSorting(

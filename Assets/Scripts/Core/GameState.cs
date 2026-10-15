@@ -21,10 +21,14 @@ public sealed class GameState
     public bool IsFinished { get; private set; }
     public int WinnerPlayerIndex { get; private set; }
     public ChainState ActiveChain { get; private set; }
+    public PendingTriggeredEffect PendingTriggeredEffect { get; private set; }
     public bool HasOpenResponseWindow => ActiveChain != null;
+    public bool HasPendingTriggeredEffect => PendingTriggeredEffect != null;
     public int InteractionPlayerIndex => ActiveChain != null
         ? ActiveChain.PriorityPlayerIndex
-        : CurrentPlayerIndex;
+        : PendingTriggeredEffect != null
+            ? PendingTriggeredEffect.PlayerIndex
+            : CurrentPlayerIndex;
 
     private GameState(GameConfig config, uint seed)
     {
@@ -111,6 +115,17 @@ public sealed class GameState
     internal void CloseChain()
     {
         ActiveChain = null;
+    }
+
+    internal void OpenTriggeredEffect(PendingTriggeredEffect pending)
+    {
+        PendingTriggeredEffect = pending ??
+            throw new ArgumentNullException(nameof(pending));
+    }
+
+    internal void CloseTriggeredEffect()
+    {
+        PendingTriggeredEffect = null;
     }
 
     internal CardInstance FindCard(long instanceId)

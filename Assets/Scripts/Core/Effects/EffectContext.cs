@@ -10,6 +10,7 @@ public sealed class EffectContext
     public int ActivatingPlayerIndex { get; }
     public long SourceInstanceId { get; }
     public IReadOnlyList<long> TargetInstanceIds { get; }
+    public int TriggerValue { get; }
 
     public PlayerState ActivatingPlayer =>
         State.Players[ActivatingPlayerIndex];
@@ -21,7 +22,8 @@ public sealed class EffectContext
         GameState state,
         int activatingPlayerIndex,
         long sourceInstanceId,
-        IReadOnlyList<long> targetInstanceIds = null)
+        IReadOnlyList<long> targetInstanceIds = null,
+        int triggerValue = 0)
     {
         State = state ?? throw new ArgumentNullException(nameof(state));
 
@@ -35,6 +37,7 @@ public sealed class EffectContext
         ActivatingPlayerIndex = activatingPlayerIndex;
         SourceInstanceId = sourceInstanceId;
         TargetInstanceIds = CopyTargets(targetInstanceIds);
+        TriggerValue = triggerValue;
     }
 
     private static IReadOnlyList<long> CopyTargets(

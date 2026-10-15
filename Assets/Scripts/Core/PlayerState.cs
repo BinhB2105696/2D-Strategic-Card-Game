@@ -83,6 +83,31 @@ public sealed class PlayerState
         return drawnCount;
     }
 
+    internal CardInstance MoveDeckCardToHand(long instanceId)
+    {
+        CardInstance card = deck.Find(item => item.InstanceId == instanceId);
+        if (card == null)
+            return null;
+
+        deck.Remove(card);
+        card.MoveToZone(CardZone.Hand, false);
+        hand.Add(card);
+        return card;
+    }
+
+    internal CardInstance MoveGraveyardCardToHand(long instanceId)
+    {
+        CardInstance card = graveyard.Find(item => item.InstanceId == instanceId);
+        if (card == null)
+            return null;
+
+        graveyard.Remove(card);
+        card.ResetHealthToBase();
+        card.MoveToZone(CardZone.Hand, false);
+        hand.Add(card);
+        return card;
+    }
+
     public void ResetAvailableEnergy()
     {
         AvailableEnergy = MaxEnergy;

@@ -36,6 +36,30 @@ internal static class LegalActionEnumerator
             return actions;
         }
 
+        if (state.HasPendingTriggeredEffect)
+        {
+            PendingTriggeredEffect pending = state.PendingTriggeredEffect;
+            for (int index = 0;
+                 index < pending.CandidateInstanceIds.Count;
+                 index++)
+            {
+                AddIfLegal(
+                    state,
+                    actions,
+                    GameAction.ResolveTriggeredEffect(
+                        playerIndex,
+                        pending.SourceInstanceId,
+                        pending.CandidateInstanceIds[index]));
+            }
+            AddIfLegal(
+                state,
+                actions,
+                GameAction.DeclineTriggeredEffect(
+                    playerIndex,
+                    pending.SourceInstanceId));
+            return actions;
+        }
+
         if (playerIndex != state.CurrentPlayerIndex)
             return actions;
 
@@ -195,7 +219,7 @@ internal static class LegalActionEnumerator
         List<GameAction> actions)
     {
         EffectDefinition effect = FindOpenActivationEffect(card);
-        if (effect == null || effect.TargetCount > 1)
+        if (effect == null)
             return;
 
         int zoneIndex = -1;
@@ -230,23 +254,25 @@ internal static class LegalActionEnumerator
             return;
 
         PlayerState targetOwner = state.Players[targetOwnerIndex];
+        List<long> candidates = new List<long>();
         for (int targetZone = 0;
              targetZone < targetOwner.MonsterZones.Count;
              targetZone++)
         {
             CardInstance target = targetOwner.MonsterZones[targetZone];
-            if (target == null)
-                continue;
-
-            AddIfLegal(
-                state,
-                actions,
-                GameAction.ActivateCard(
-                    playerIndex,
-                    card.InstanceId,
-                    zoneIndex,
-                    target.InstanceId));
+            if (target != null)
+                candidates.Add(target.InstanceId);
         }
+
+        AddTargetPermutations(
+            state,
+            actions,
+            playerIndex,
+            card.InstanceId,
+            zoneIndex,
+            candidates,
+            effect.TargetCount,
+            new List<long>());
     }
 
     private static void AddTrapSetAction(
@@ -322,13 +348,55 @@ internal static class LegalActionEnumerator
             EffectDefinition effect = card.Definition.Effects[index];
             if (effect.ActivationWindow ==
                     EffectActivationWindow.OpenGameState &&
-                effect.Trigger != EffectTriggerType.EndPhase)
+                effect.Trigger == EffectTriggerType.ManualActivation)
             {
                 return effect;
             }
         }
 
         return null;
+    }
+
+    private static void AddTargetPermutations(
+        GameState state,
+        List<GameAction> actions,
+        int playerIndex,
+        long sourceInstanceId,
+        int zoneIndex,
+        IReadOnlyList<long> candidates,
+        int requiredCount,
+        List<long> selected)
+    {
+        if (selected.Count == requiredCount)
+        {
+            AddIfLegal(
+                state,
+                actions,
+                GameAction.ActivateCardWithTargets(
+                    playerIndex,
+                    sourceInstanceId,
+                    zoneIndex,
+                    selected.ToArray()));
+            return;
+        }
+
+        for (int index = 0; index < candidates.Count; index++)
+        {
+            long candidate = candidates[index];
+            if (selected.Contains(candidate))
+                continue;
+            selected.Add(candidate);
+            AddTargetPermutations(
+                state,
+                actions,
+                playerIndex,
+                sourceInstanceId,
+                zoneIndex,
+                candidates,
+                requiredCount,
+                selected);
+            selected.RemoveAt(selected.Count - 1);
+        }
     }
 
     private static int FindPreferredSpellTrapZone(PlayerState player)

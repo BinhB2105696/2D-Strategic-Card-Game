@@ -177,6 +177,12 @@ public sealed class CardInstance
         CurrentHealth = checked(CurrentHealth + amount);
     }
 
+    public void ResetHealthToBase()
+    {
+        if (Definition.IsMonster)
+            CurrentHealth = Definition.BaseHealth;
+    }
+
     public void ModifyAttack(int amount)
     {
         attackAdjustment += amount;
