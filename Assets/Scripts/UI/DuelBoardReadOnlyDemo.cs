@@ -21,9 +21,17 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
     private readonly List<GameObject> displayedCards = new List<GameObject>();
     private GameSession session;
     private DuelCardInteractionController cardInteraction;
+    private DuelEasyBotController easyBotController;
     private TMP_FontAsset runtimeFont;
 
     public GameSession Session => session;
+    public bool IsEasyBotEnabled =>
+        easyBotController != null && easyBotController.IsEnabled;
+    public int ViewingPlayerIndex => IsEasyBotEnabled
+        ? easyBotController.HumanPlayerIndex
+        : session != null
+            ? session.State.InteractionPlayerIndex
+            : 0;
 
     public void Configure(CardData[] cards, GameObject monsterPrefab, GameObject spellTrapPrefab)
     {
@@ -51,6 +59,17 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
             cardInteraction.Initialize(this);
 
             session = GameSession.Create(config, seed, deck, deck);
+
+            easyBotController = GetComponent<DuelEasyBotController>();
+            if (easyBotController == null)
+                easyBotController = gameObject.AddComponent<DuelEasyBotController>();
+            easyBotController.Initialize(this, new EasyBot());
+
+            DuelHudPrototypeController hudController =
+                GetComponentInChildren<DuelHudPrototypeController>(true);
+            if (hudController != null)
+                hudController.ConfigureEasyBot(easyBotController);
+
             if (!ResolveAutomaticTurnStart())
                 return;
             Debug.Log(
@@ -109,6 +128,17 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         return result;
     }
 
+    public bool IsAutomatedPlayer(int playerIndex)
+    {
+        return easyBotController != null &&
+            easyBotController.ControlsPlayer(playerIndex);
+    }
+
+    public void CloseCardWindows()
+    {
+        cardInteraction?.CloseAllCardWindows();
+    }
+
     private bool ApplyAutomaticAction(GameAction action)
     {
         ActionResult result = session.TryApply(action);
@@ -159,10 +189,27 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
 
         cardInteraction?.BeginRender(state);
 
-        PlayerState activePlayer = state.Players[state.InteractionPlayerIndex];
-        PlayerState opponent = state.Players[1 - state.InteractionPlayerIndex];
-        RenderPlayer(activePlayer, board, hud, "Player", true);
-        RenderPlayer(opponent, board, hud, "Opp", false);
+        int viewingPlayerIndex = IsEasyBotEnabled
+            ? easyBotController.HumanPlayerIndex
+            : state.InteractionPlayerIndex;
+        bool humanMayInteract =
+            !IsAutomatedPlayer(state.InteractionPlayerIndex);
+        PlayerState activePlayer = state.Players[viewingPlayerIndex];
+        PlayerState opponent = state.Players[1 - viewingPlayerIndex];
+        RenderPlayer(
+            activePlayer,
+            board,
+            hud,
+            "Player",
+            true,
+            humanMayInteract);
+        RenderPlayer(
+            opponent,
+            board,
+            hud,
+            "Opp",
+            false,
+            humanMayInteract);
 
         string phase = state.CurrentPhase + " Phase";
         SetText(hud, "TurnPhaseHUD/TurnText", "Turn " + state.TurnNumber);
@@ -181,9 +228,9 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
 
         if (state.IsFinished)
             cardInteraction?.ShowMatchResult(state);
-        else if (state.HasOpenResponseWindow)
+        else if (state.HasOpenResponseWindow && humanMayInteract)
             cardInteraction?.ShowResponsePrompt();
-        else if (state.HasPendingTriggeredEffect)
+        else if (state.HasPendingTriggeredEffect && humanMayInteract)
             cardInteraction?.ShowTriggeredEffectPrompt();
     }
 
@@ -192,7 +239,8 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         Transform board,
         Transform hud,
         string side,
-        bool isLocalPlayer)
+        bool showHand,
+        bool allowAnyInteraction)
     {
         SetText(hud, side + "_HUD/LpText", "LP:" + player.Health);
         SetText(hud, side + "_EnergyWidget/ValueText",
@@ -202,19 +250,31 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         SetText(board, side + "_PileColumn/" + side + "_GraveyardZone/CountText",
             player.Graveyard.Count.ToString());
 
-        RenderHand(player.Hand, board, side, isLocalPlayer);
+        RenderHand(
+            player.Hand,
+            board,
+            side,
+            showHand,
+            allowAnyInteraction);
         RenderZones(player.MonsterZones, board, side + "_MonsterRow",
-            side + "_MonsterZone_", true, isLocalPlayer, !isLocalPlayer);
+            side + "_MonsterZone_", true, showHand, !showHand,
+            allowAnyInteraction);
         RenderZones(player.SpellTrapZones, board, side + "_SpellTrapRow",
-            side + "_SpellTrapZone_", false, isLocalPlayer, !isLocalPlayer);
-        RenderFieldSpell(player.FieldSpell, board, side, isLocalPlayer);
+            side + "_SpellTrapZone_", false, showHand, !showHand,
+            allowAnyInteraction);
+        RenderFieldSpell(
+            player.FieldSpell,
+            board,
+            side,
+            allowAnyInteraction);
     }
 
     private void RenderHand(
         IReadOnlyList<CardInstance> hand,
         Transform board,
         string side,
-        bool isLocalPlayer)
+        bool showHand,
+        bool allowAnyInteraction)
     {
         Transform content = board.Find(side + "_HandArea/HandContent");
         Transform template = content != null
@@ -230,7 +290,7 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
             content.GetComponent<DuelHandLayoutController>();
         if (handLayout == null)
             handLayout = content.gameObject.AddComponent<DuelHandLayoutController>();
-        handLayout.BeginLayout(isLocalPlayer);
+        handLayout.BeginLayout(showHand);
 
         for (int i = 0; i < hand.Count; i++)
         {
@@ -247,8 +307,8 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
                 slot.transform,
                 HandCardScale,
                 false,
-                !isLocalPlayer,
-                isLocalPlayer);
+                !showHand,
+                allowAnyInteraction && showHand);
             handLayout.AddSlot(slot.GetComponent<RectTransform>());
             slot.SetActive(true);
         }
@@ -263,7 +323,8 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         string zonePrefix,
         bool monsterRow,
         bool ownerCanInteract,
-        bool mirrorZoneOrder)
+        bool mirrorZoneOrder,
+        bool allowAnyInteraction)
     {
         for (int i = 0; i < cards.Count; i++)
         {
@@ -308,7 +369,8 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
                 1f,
                 defense,
                 cards[i].IsFaceDown,
-                ownerCanInteract || !cards[i].IsFaceDown);
+                allowAnyInteraction &&
+                (ownerCanInteract || !cards[i].IsFaceDown));
         }
     }
 
@@ -316,7 +378,7 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         CardInstance fieldSpell,
         Transform board,
         string side,
-        bool ownerCanInteract)
+        bool allowAnyInteraction)
     {
         if (fieldSpell == null)
             return;
@@ -335,7 +397,7 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
             1f,
             false,
             false,
-            true);
+            allowAnyInteraction);
     }
 
     private void CreateCard(

@@ -205,6 +205,8 @@ public sealed class GameState
     {
         IsFinished = true;
         WinnerPlayerIndex = winnerPlayerIndex;
+        ActiveChain = null;
+        PendingTriggeredEffect = null;
     }
 
     internal bool CanUseEffect(

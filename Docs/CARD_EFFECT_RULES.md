@@ -80,13 +80,14 @@ operations live in the component slots and are validated separately.
 `Max Uses = 0` means unlimited. Otherwise Count By selects per-instance or
 per-card-ID counting, and Reset selects per-turn or per-match counting.
 
-Only Manual Activation in Main Phase, Available Energy cost, no target, and
-Draw Cards are executable through the current Normal Spell action. Skip Next
-Opponent Draw resolves in the reusable effect pipeline and is smoke-tested
-across turns, but no Trap activation action uses it yet. Continuous modifiers,
-response windows, other triggers/conditions/targets, and multi-effect
-activation have authoring slots but are not executable yet. Unsupported
-combinations must be rejected clearly until implemented.
+The executable slice now includes Manual Activation, targeted and ordered
+multi-target effects, Available Energy costs, persistent/temporary stat
+modifiers, Equip and Field lifetime, Set Normal/Counter Traps, attack and
+activation response windows, Speed 1/2/3 LIFO chains, and selected OnSummoned,
+OnDestroyed, and OnBattleDestroyedMonster triggers. Optional search/recovery
+triggers expose a pending choice and use the seeded match RNG when the Deck is
+shuffled. Unsupported activation sources or effect combinations must still be
+rejected clearly rather than treated as playable.
 
 ## 4. First implementation slice
 
@@ -108,4 +109,5 @@ Equip Spells that remain in a shared Spell/Trap Zone, and Field Spells that use
 a dedicated Field Zone.
 
 Trap setting, response windows, Speed 2/3 chains, Equip duration, and Field
-Spell ownership should follow after the Normal Spell path is verified.
+Spell ownership described above are now connected through the same validated
+action/effect pipeline. Future components must continue using that boundary.

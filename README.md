@@ -305,7 +305,7 @@ This structure may change as implementation progresses.
 - [x] Equip/Field Spell, Normal/Counter Trap, targeting, and simple chain foundation
 - [x] Playable board UI and core local hot-seat match
 - [x] Fixed 30-card playable sample deck with a three-copy limit
-- [ ] Easy Bot
+- [ ] Easy Bot (implemented; Play Mode acceptance pending)
 - [ ] Normal Bot
 - [ ] Headless bot-vs-bot simulation and evaluation metrics
 - [ ] Gameplay balancing and testing
@@ -329,17 +329,22 @@ This document is intended to be updated whenever important gameplay, architectur
 
 The repository and Unity project use Unity 2022.3.62f3 LTS.
 
-As of 10 October 2026, the local hot-seat match supports the Monster combat
+As of 15 October 2026, the local hot-seat match supports the Monster combat
 loop plus playable Normal and Equip Spells, one Field Spell per player, Set
-Normal/Counter Traps, targeted effects, legal-response filtering, and a simple
-Speed 1/2/3 last-in-first-out chain. Response prompts are skipped when a player
-has no legal response. A fixed 30-card sample deck contains ten card designs at
-three copies each, and Edit Mode prepares or repairs its required sample data
-before Play Mode. The student has entered Play Mode and reported the current
-match mechanics and action sequence working as a checkpoint.
+Normal/Counter Traps, targeted and triggered effects, legal-response
+filtering, and a simple Speed 1/2/3 last-in-first-out chain. Response prompts
+are skipped when a player has no legal response. The fixed 30-card sample deck
+contains 17 card designs with no more than three copies of one design. Edit
+Mode prepares or repairs its required sample data before Play Mode.
 
-This remains a prototype card set and needs focused regression for every
-Spell/Trap and multi-link chain case. Easy/Normal bots, simulation metrics,
+The core now exposes one complete legal-action list for the UI and bots. An
+initial deterministic Easy Bot selects only from that list and submits every
+choice through the same GameSession/GameRules path as a human. Runtime Duel
+Settings can switch Player 2 between Easy Bot and local hot-seat control. This
+bot integration has compiled successfully and awaits the student's Play Mode
+acceptance pass before the roadmap checkbox is completed.
+
+Focused all-category/multi-link regression, Normal Bot, simulation metrics,
 the networking feasibility spike and online PvP, platform builds, and
 event-driven animation remain incomplete.
 

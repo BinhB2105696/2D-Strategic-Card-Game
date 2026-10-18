@@ -1,6 +1,6 @@
 # PROJECT CONTEXT
 
-> Last updated: 9 October 2026
+> Last updated: 15 October 2026
 >
 > Status tags:
 > - **[CONFIRMED]**: implement as written unless the user changes it.
@@ -427,11 +427,23 @@ Completed or explored:
   players with none, so UI prompts only appear when an actual response can be
   submitted. Counter Trap negation marks the preceding activation as negated
   without introducing direct Monster destruction.
-- The fixed playable demo deck contains 30 cards: ten current designs at three
-  copies each. Validation rejects missing cards, empty effect definitions,
-  invalid deck size, or more than three copies. An Edit Mode bootstrap repairs
-  the sample setup before Play instead of requiring a remembered manual menu
-  command.
+- The fixed playable demo deck contains 30 cards across 17 designs, with Basic
+  Monsters prioritized at three copies and higher-rank/Spell/Trap cards using
+  smaller copy counts where appropriate. Validation rejects missing cards,
+  empty effect definitions, invalid deck size, or more than three copies. An
+  Edit Mode bootstrap repairs the sample setup before Play instead of requiring
+  a remembered manual menu command.
+- The shared `GetLegalActions` view now covers current Main/Battle/End choices,
+  exact tribute and ordered target selections, response priority/Pass, and
+  optional triggered-effect choices. Every enumerated action is checked by
+  `ValidateAction()` before it reaches UI, bot, or future simulator consumers.
+- `IBot` now receives an immutable `BotGameStateView` snapshot and the shared
+  legal-action list. The view omits the opponent's Hand identities and masks
+  face-down opponent cards. The first deterministic Easy Bot scores that list
+  and submits its selected action through `GameSession`; a runtime Duel
+  Settings toggle assigns Player 2 to the bot while keeping Player 1's
+  perspective and hidden opponent hand. Compilation is verified; student Play
+  Mode acceptance is still required before marking Easy Bot complete.
 - The portrait board uses a 1080x1920 Canvas, SafeAreaRoot, separate
   Board/HUD/Overlay layers, four 3-slot rows, and zones with independent
   Border, HitArea, CardAnchor, and Highlight children. Deck, Graveyard, Field,
@@ -457,14 +469,14 @@ Completed or explored:
 
 Known next gaps:
 
-1. Run a focused Play-mode regression for the new all-category slice: Equip
-   targets and cleanup, Field replacement/maintenance, Trap set-turn lockout,
-   attack responses, Counter Trap negation, two-or-more-link LIFO resolution,
-   insufficient Energy, full zones, and the match-result overlay.
-2. Promote the existing response-action enumeration into a shared complete
-   legal-action view for human UI, Easy/Normal bots, and headless simulation.
-   Add deterministic state hashes/replay loading before networking depends on
-   the action stream.
+1. Run a focused Play-mode acceptance pass for Human vs Easy Bot together with
+   the all-category edge cases: Equip cleanup, Field replacement/maintenance,
+   Trap set-turn lockout, attack responses, Counter Trap negation,
+   two-or-more-link LIFO resolution, insufficient Energy, full zones, pending
+   triggers at match end, and the match-result overlay.
+2. After that acceptance pass, implement Normal Bot heuristic scoring and a
+   headless bot-vs-bot runner with the metrics in section 12. Add deterministic
+   state hashes/replay loading before networking depends on the action stream.
 3. Perform the short networking feasibility spike described in section 13
    while the deterministic action boundary is still small. Do not install or
    commit a networking stack until the result and tradeoffs are discussed.
@@ -497,6 +509,11 @@ Verified checkpoints:
   lifetime, filtered response windows, and simple LIFO chain resolution are
   connected to the local UI. Focused edge-case regression and the networking
   feasibility decision still remain before Step 5 is complete.
+- Step 6 bot foundation: **Easy Bot implemented; Play Mode acceptance pending**.
+  It consumes an immutable state view plus shared legal actions, submits through
+  GameSession, pauses for human response priority, and can be toggled at runtime
+  without changing the saved scene. Normal Bot and headless metrics have not
+  started.
 
 | Step | Target | Content | Verification |
 |---|---|---|---|
@@ -511,13 +528,14 @@ Verified checkpoints:
 | 9 | 25 Nov-early Dec | Feature freeze, final experiments, report, defense preparation | Final build and thesis materials |
 
 If schedule slips, reduce extra cards, polish, Hard Bot, and ML before compromising Tier 1 stability.
-As of 10 October, the core Step 4 local-play slice is working ahead of its dated
-target and the executable card-flow portion of Step 5 has an initial Play Mode
-acceptance pass. The immediate critical path is a focused all-category/chain
-regression, followed by the shared complete legal-action view needed by bots,
-simulation, replay/state-hash checks, and networking. Do not substitute more
-isolated card scripts or smoke tests for those integration milestones. Tests
-remain verification for each finished slice.
+As of 15 October, the core Step 4 local-play slice and the expanded executable
+card-flow portion of Step 5 have initial Play Mode acceptance. The complete
+legal-action view and first Easy Bot are implemented, with Human-vs-Bot Play
+Mode acceptance still pending. The immediate critical path is that focused
+integration pass, then Normal Bot, headless metrics, replay/state-hash checks,
+and the networking feasibility decision. Do not substitute more isolated card
+scripts or smoke tests for those integration milestones. Tests remain
+verification for each finished slice.
 
 ## 17. Change Management
 

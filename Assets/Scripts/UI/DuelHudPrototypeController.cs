@@ -37,6 +37,9 @@ public class DuelHudPrototypeController : MonoBehaviour
     [SerializeField] private Button confirmationCancelButton;
 
     private PendingConfirmation pendingConfirmation;
+    private DuelEasyBotController easyBotController;
+    private Button easyBotToggleButton;
+    private TMP_Text easyBotToggleText;
 
     private void Awake()
     {
@@ -87,6 +90,14 @@ public class DuelHudPrototypeController : MonoBehaviour
         confirmationCancelButton = newConfirmationCancelButton;
     }
 
+    public void ConfigureEasyBot(DuelEasyBotController controller)
+    {
+        easyBotController = controller;
+        if (easyBotToggleButton == null)
+            CreateEasyBotToggle();
+        RefreshEasyBotToggle();
+    }
+
     private void BindButtons()
     {
         AddListener(phaseMenuButton, TogglePhaseChoices);
@@ -132,6 +143,10 @@ public class DuelHudPrototypeController : MonoBehaviour
 
     public void RefreshPhaseControls(GameState state)
     {
+        DuelBoardReadOnlyDemo board =
+            GetComponentInParent<DuelBoardReadOnlyDemo>();
+        bool humanMayUsePhaseControls = board == null ||
+            !board.IsAutomatedPlayer(state.InteractionPlayerIndex);
         GameAction enterBattle = FindLegalAction(
             state,
             GameActionType.AdvancePhase);
@@ -144,16 +159,19 @@ public class DuelHudPrototypeController : MonoBehaviour
         bool canEnterBattle = enterBattle != null &&
             state.CurrentPhase == TurnPhase.Main;
         bool canEndTurn = enterEnd != null || endTurn != null;
-        bool mayOpenPhaseMenu = canEnterBattle || canEndTurn;
+        bool mayOpenPhaseMenu = humanMayUsePhaseControls &&
+            (canEnterBattle || canEndTurn);
 
         if (phaseMenuButton != null)
             phaseMenuButton.interactable = mayOpenPhaseMenu;
 
         if (battlePhaseButton != null)
-            battlePhaseButton.interactable = canEnterBattle;
+            battlePhaseButton.interactable =
+                humanMayUsePhaseControls && canEnterBattle;
 
         if (endPhaseButton != null)
-            endPhaseButton.interactable = canEndTurn;
+            endPhaseButton.interactable =
+                humanMayUsePhaseControls && canEndTurn;
 
         if (!mayOpenPhaseMenu)
             SetPhaseChoicesVisible(false);
@@ -161,7 +179,8 @@ public class DuelHudPrototypeController : MonoBehaviour
 
     private void RequestBattlePhase()
     {
-        if (!TryGetDuel(out _, out GameState state) ||
+        if (!TryGetDuel(out DuelBoardReadOnlyDemo board, out GameState state) ||
+            board.IsAutomatedPlayer(state.InteractionPlayerIndex) ||
             FindLegalAction(state, GameActionType.AdvancePhase) == null)
             return;
 
@@ -172,7 +191,8 @@ public class DuelHudPrototypeController : MonoBehaviour
 
     private void RequestEndTurn()
     {
-        if (!TryGetDuel(out _, out GameState state) ||
+        if (!TryGetDuel(out DuelBoardReadOnlyDemo board, out GameState state) ||
+            board.IsAutomatedPlayer(state.InteractionPlayerIndex) ||
             (FindLegalAction(state, GameActionType.EnterEndPhase) == null &&
              FindLegalAction(state, GameActionType.EndTurn) == null))
             return;
@@ -385,5 +405,51 @@ public class DuelHudPrototypeController : MonoBehaviour
             ? board.GetComponent<DuelCardInteractionController>()
             : null;
         cardInteraction?.CloseAllCardWindows();
+    }
+
+    private void CreateEasyBotToggle()
+    {
+        if (duelSettingsContent == null || surrenderButton == null)
+            return;
+
+        GameObject toggleObject = Instantiate(
+            surrenderButton.gameObject,
+            duelSettingsContent.transform);
+        toggleObject.name = "EasyBotToggleButton_Runtime";
+        easyBotToggleButton = toggleObject.GetComponent<Button>();
+        easyBotToggleButton.onClick.RemoveAllListeners();
+        easyBotToggleButton.onClick.AddListener(ToggleEasyBot);
+
+        RectTransform toggleRect =
+            toggleObject.GetComponent<RectTransform>();
+        toggleRect.anchoredPosition = new Vector2(0f, 120f);
+
+        Image background = toggleObject.GetComponent<Image>();
+        if (background != null)
+            background.color = new Color32(22, 77, 139, 245);
+
+        easyBotToggleText =
+            toggleObject.GetComponentInChildren<TMP_Text>(true);
+    }
+
+    private void ToggleEasyBot()
+    {
+        if (easyBotController == null)
+            return;
+
+        easyBotController.SetEnabled(!easyBotController.IsEnabled);
+        RefreshEasyBotToggle();
+        SetSettingsVisible(false);
+    }
+
+    private void RefreshEasyBotToggle()
+    {
+        if (easyBotToggleText == null)
+            return;
+
+        easyBotToggleText.text = easyBotController != null &&
+            easyBotController.IsEnabled
+            ? "Easy Bot (Player 2): ON"
+            : "Easy Bot (Player 2): OFF";
     }
 }

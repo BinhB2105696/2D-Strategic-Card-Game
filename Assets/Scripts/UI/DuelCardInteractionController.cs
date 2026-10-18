@@ -315,6 +315,9 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         List<GameAction> activationActions = FindActions(
             cardActions,
             GameActionType.ActivateCard);
+        List<GameAction> attackActions = FindActions(
+            cardActions,
+            GameActionType.Attack);
         int specialActionCount = 0;
 
         if (ContainsActionType(cardActions, GameActionType.SummonMonster))
@@ -346,6 +349,40 @@ public sealed class DuelCardInteractionController : MonoBehaviour
                 BuildActivationLabel(selectedCard),
                 () => BeginActivation(actions));
             specialActionCount++;
+        }
+
+        if (attackActions.Count > 0)
+        {
+            List<GameAction> targetedAttacks = new List<GameAction>();
+            GameAction directAttack = null;
+            for (int index = 0; index < attackActions.Count; index++)
+            {
+                if (attackActions[index].TargetInstanceIds.Count == 0)
+                    directAttack = attackActions[index];
+                else
+                    targetedAttacks.Add(attackActions[index]);
+            }
+
+            if (targetedAttacks.Count > 0)
+            {
+                List<GameAction> actions = targetedAttacks;
+                AddPanelButton(
+                    detailButtonArea,
+                    detailButtons,
+                    "Attack",
+                    () => ShowTargetSelection(actions));
+                specialActionCount++;
+            }
+            else if (directAttack != null)
+            {
+                GameAction action = directAttack;
+                AddPanelButton(
+                    detailButtonArea,
+                    detailButtons,
+                    "Direct Attack",
+                    () => Submit(action));
+                specialActionCount++;
+            }
         }
 
         foreach (ActionOption option in options)
@@ -419,7 +456,8 @@ public sealed class DuelCardInteractionController : MonoBehaviour
             GameAction action = cardActions[index];
             if (action.Type == GameActionType.SummonMonster ||
                 action.Type == GameActionType.AllocateEnergy ||
-                action.Type == GameActionType.ActivateCard)
+                action.Type == GameActionType.ActivateCard ||
+                action.Type == GameActionType.Attack)
                 continue;
 
             options.Add(new ActionOption(
@@ -439,13 +477,6 @@ public sealed class DuelCardInteractionController : MonoBehaviour
                 return action.BattlePosition == BattlePosition.Attack
                     ? "To ATK"
                     : "To DEF";
-            case GameActionType.Attack:
-                return action.TargetInstanceId == 0
-                    ? "Direct Attack"
-                    : "Attack Z" +
-                      (FindMonsterZoneIndex(
-                          state.Players[1 - action.PlayerIndex],
-                          action.TargetInstanceId) + 1);
             default:
                 return action.Type.ToString();
         }
@@ -523,6 +554,8 @@ public sealed class DuelCardInteractionController : MonoBehaviour
             }
         }
 
+        targetIds.Sort(CompareTargetScreenOrder);
+
         for (int index = 0; index < targetIds.Count; index++)
         {
             CardInstance target = state.FindCard(targetIds[index]);
@@ -568,10 +601,7 @@ public sealed class DuelCardInteractionController : MonoBehaviour
     private void UpdateTargetSelectionVisuals()
     {
         int required = GetRequiredTargetCount();
-        detailText.text = "Select " + required + " target(s) for " +
-            selectedCard.Definition.CardName +
-            (required > 1 ? "\nSelection order matters." : string.Empty) +
-            "\nSelected " + selectedTargetInstanceIds.Count + "/" + required;
+        detailText.text = BuildTargetSelectionPrompt(required);
 
         foreach (KeyValuePair<long, Image> pair in targetHighlights)
         {
@@ -621,6 +651,47 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         return pendingTargetActions.Count == 0
             ? 1
             : pendingTargetActions[0].TargetInstanceIds.Count;
+    }
+
+    private string BuildTargetSelectionPrompt(int required)
+    {
+        GameActionType actionType = pendingTargetActions.Count > 0
+            ? pendingTargetActions[0].Type
+            : GameActionType.ActivateCard;
+        string heading = actionType == GameActionType.Attack
+            ? "Choose a Monster to attack with " +
+              selectedCard.Definition.CardName + "."
+            : "Select " + required +
+              (required == 1 ? " target for " : " targets for ") +
+              selectedCard.Definition.CardName + ".";
+        return heading +
+            (required > 1 ? "\nSelection order matters." : string.Empty) +
+            "\nSelected " + selectedTargetInstanceIds.Count + "/" + required;
+    }
+
+    private int CompareTargetScreenOrder(long leftId, long rightId)
+    {
+        CardInstance left = state.FindCard(leftId);
+        CardInstance right = state.FindCard(rightId);
+        return GetScreenZoneIndex(left).CompareTo(
+            GetScreenZoneIndex(right));
+    }
+
+    private int GetScreenZoneIndex(CardInstance card)
+    {
+        if (card == null)
+            return int.MaxValue;
+
+        PlayerState owner = state.Players[card.OwnerPlayerIndex];
+        int zoneIndex = FindMonsterZoneIndex(owner, card.InstanceId);
+        if (zoneIndex < 0)
+            return int.MaxValue;
+
+        bool isOpponentFromCurrentView =
+            card.OwnerPlayerIndex != board.ViewingPlayerIndex;
+        return isOpponentFromCurrentView
+            ? owner.MonsterZones.Count - 1 - zoneIndex
+            : zoneIndex;
     }
 
     private static bool HaveSameOrderedIds(
@@ -1504,8 +1575,8 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         TMP_Text zoneLabel = CreatePanelLabel(
             slot,
             "ZoneLabel",
-            "Z" + (zoneIndex + 1),
-            26f);
+            "Your " + GetZonePositionName(zoneIndex),
+            24f);
         RectTransform labelRect = zoneLabel.rectTransform;
         labelRect.anchorMin = new Vector2(0f, 0f);
         labelRect.anchorMax = new Vector2(1f, 0f);
@@ -1545,17 +1616,15 @@ public sealed class DuelCardInteractionController : MonoBehaviour
 
         CreateCardPreview(target, slot, new Vector2(0f, 22f), 0.68f);
 
-        int zoneIndex = FindMonsterZoneIndex(
-            state.Players[target.OwnerPlayerIndex],
-            target.InstanceId);
         string ownerLabel = target.OwnerPlayerIndex ==
-            state.InteractionPlayerIndex
+            board.ViewingPlayerIndex
             ? "Your"
             : "Opponent";
         TMP_Text label = CreatePanelLabel(
             slot,
             "TargetLabel",
-            ownerLabel + " Z" + (zoneIndex + 1),
+            ownerLabel + " " +
+            GetZonePositionName(GetScreenZoneIndex(target)),
             24f);
         RectTransform labelRect = label.rectTransform;
         labelRect.anchorMin = new Vector2(0f, 0f);
@@ -1568,6 +1637,21 @@ public sealed class DuelCardInteractionController : MonoBehaviour
 
         detailCards.Add(slotObject);
         return background;
+    }
+
+    private static string GetZonePositionName(int screenZoneIndex)
+    {
+        switch (screenZoneIndex)
+        {
+            case 0:
+                return "Left";
+            case 1:
+                return "Middle";
+            case 2:
+                return "Right";
+            default:
+                return "Zone";
+        }
     }
 
     private Button AddPanelButton(
