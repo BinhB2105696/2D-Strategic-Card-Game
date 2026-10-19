@@ -24,6 +24,7 @@ The project is planned to include:
 
 - **PvE mode** against multi-tiered bots with different decision-making approaches.
 - **Online PvP mode** for two players.
+- A compact Deck Builder and local/guest profile for selecting playable decks.
 - A modular card system that can be extended with additional cards and effects.
 - A turn-based combat system with strategic resource management.
 - Multiple strategic deck/archetype styles.
@@ -306,8 +307,11 @@ This structure may change as implementation progresses.
 - [x] Playable board UI and core local hot-seat match
 - [x] Fixed 30-card playable sample deck with a three-copy limit
 - [x] Easy Bot and Human-vs-Bot Play Mode flow
+- [x] Visible Auto duel, portrait background/avatars, and Deck/Graveyard card presentation
+- [ ] Event-driven functional duel animation and compact duel log
 - [ ] Normal Bot
-- [ ] Headless bot-vs-bot simulation and evaluation metrics
+- [ ] Headless bot-vs-bot simulation, replay/state hashes, and evaluation metrics
+- [ ] Guest profile, Main Menu, and Deck Builder MVP with local deck saves
 - [ ] Gameplay balancing and testing
 - [ ] Online PvP and player identity/accounts
 - [ ] Android build
@@ -329,7 +333,7 @@ This document is intended to be updated whenever important gameplay, architectur
 
 The repository and Unity project use Unity 2022.3.62f3 LTS.
 
-As of 18 October 2026, the local hot-seat match supports the Monster combat
+As of 19 October 2026, the local hot-seat match supports the Monster combat
 loop plus playable Normal and Equip Spells, one Field Spell per player, Set
 Normal/Counter Traps, targeted and triggered effects, legal-response
 filtering, and a simple Speed 1/2/3 last-in-first-out chain. Response prompts
@@ -347,9 +351,11 @@ sides play while the board remains visible. The runtime board also uses the
 selected portrait background and avatars, shows a card back while each Deck is
 nonempty, and shows the latest Graveyard card face-up.
 
-Focused all-category/multi-link regression, Normal Bot, simulation metrics,
-the networking feasibility spike and online PvP, platform builds, and
-event-driven animation remain incomplete.
+Focused all-category/multi-link regression, readable event-driven animation,
+the duel log, Normal Bot, simulation metrics, the small product shell and Deck
+Builder, the networking feasibility spike and online PvP, and platform builds
+remain incomplete. The revised scope and animation preparation are in
+`Docs/PROJECT_CONTEXT.md` and `Docs/DUEL_PRESENTATION_PLAN.md`.
 
 The December thesis schedule and dated milestones are in
 `Docs/PROJECT_CONTEXT.md`. The dated `Docs/HANDOFF_2026-10-07.md` records the

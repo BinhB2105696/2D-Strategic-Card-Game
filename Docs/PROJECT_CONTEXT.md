@@ -1,6 +1,6 @@
 # PROJECT CONTEXT
 
-> Last updated: 15 October 2026
+> Last updated: 19 October 2026
 >
 > Status tags:
 > - **[CONFIRMED]**: implement as written unless the user changes it.
@@ -31,14 +31,19 @@ The registered description promises:
 
 The registration does **not** require exactly three bot difficulties. Current priorities are:
 
-1. Stable complete game and rules.
-2. Easy Bot and Normal Bot.
-3. Online PvP and Android/Windows builds.
-4. Headless bot-vs-bot simulation and thesis metrics.
-5. Hard Bot using advanced search if time permits.
-6. Machine learning/self-play only if the core product is already stable.
+1. Stable complete game, rules, and a readable event-driven duel presentation.
+2. Easy Bot and Normal Bot, plus deterministic replay/simulation support.
+3. A small product shell: local/guest profile, Main Menu, PvE/PvP entry points,
+   and a Deck Builder MVP.
+4. Online PvP and Android/Windows builds.
+5. Headless bot-vs-bot simulation and thesis metrics.
+6. Hard Bot using advanced search if time permits.
+7. Machine learning/self-play only if the core product is already stable.
 
-Deck Building is postponed until the project has enough cards to justify it.
+The project now has enough card designs to justify a limited Deck Builder MVP.
+It is a product-completeness requirement, not permission to build a collection,
+crafting, gacha, or elaborate deck-management system before the duel, bots,
+networking, and builds are stable.
 
 ## 3. AI Assistant Rules
 
@@ -100,24 +105,41 @@ After each development step, report:
 
 ## 5. Scope Priority
 
-### Tier 1: must be stable
+### Tier 1A: thesis-critical and must be stable
 
 - Complete playable card game with correct core rules and functional UI.
+- Event-driven duel presentation with enough animation and feedback that a
+  viewer can follow draw, summon/set/activate, attack, damage, destruction,
+  Energy, phase/turn, and chain resolution without reading the Console.
 - Easy rule-based bot.
 - Normal heuristic bot.
 - Online 1v1 PvP with player identity/account support.
 - Android build, then Windows build.
-- Headless bot-vs-bot simulation and metrics for thesis evaluation.
+- Deterministic replay/state-hash support, headless bot-vs-bot simulation, and
+  metrics for thesis evaluation.
+
+### Tier 1B: product-completeness MVP
+
+- Local/guest profile and a simple entry/login screen; do not build a custom
+  password backend.
+- Main Menu routes to Deck Building, PvE, and PvP.
+- Deck Builder MVP: browse cards, inspect card details, add/remove cards,
+  enforce deck size and copy limits, save/select a small number of local decks,
+  and provide at least two usable preset decks.
+- Tier 1B work may proceed in a separate UI slice, but it must yield to Tier 1A
+  correctness, online feasibility, and platform-build risks.
 
 ### Tier 2: build if Tier 1 is stable
 
 - Hard Bot using Minimax/Alpha-Beta or another suitable advanced algorithm.
-- More cards and decks, balancing, visual polish, and audio.
+- More cards and decks, balancing, richer VFX, cosmetic animation, and audio
+  beyond the functional feedback required by Tier 1A.
 
 ### Tier 3: only if time remains
 
-- Deck Building.
 - Machine learning/self-play experiments.
+- Expanded account/profile, collection, filtering, crafting, reward, or gacha
+  systems beyond the Deck Builder MVP.
 
 Higher-tier work must not destabilize a lower tier.
 
@@ -310,16 +332,42 @@ Rules:
 9. Given the same initial state, seed, and ordered actions, the result must be deterministic.
 10. Save/replay formats must include a schema version. Do not use asset paths as permanent IDs.
 11. Start effects with a small set of concrete types and generalize only after repeated patterns appear.
+12. The presentation consumes accepted `ActionResult.Events` in order. Visual
+    timing, camera movement, and sound must not alter rules, RNG, or action order.
+    Pause human and bot input while a blocking presentation sequence plays.
 
 This preparation supports headless simulation, Android/Windows, replay, save/load, and PvP without implementing all of them immediately.
+
+### Duel presentation MVP
+
+The functional animation slice must show action causality: card movement for
+draw, summon, Set, and activation; a visible attack source and target; HP/LP and
+Energy changes; destruction/Graveyard movement; phase/turn transitions; and
+the order in which chain links resolve. A compact duel log remains readable
+when animations are skipped. It should share the same accepted-event stream as
+the animation queue. Start with one generic animation per event family rather
+than individual effects for each card. See `Docs/DUEL_PRESENTATION_PLAN.md`.
+
+### Product shell and persistence MVP
+
+Start with a guest/local profile and local deck storage. The Main Menu exposes
+Deck Building, PvE, and PvP; an unavailable online mode must say so clearly.
+Deck Building validates the configured 30–40 card limit and three-copy limit,
+saves/selects 2–3 local decks, and includes at least two preset decks. Keep
+stable `cardId` references in saves; add a version field and reject or migrate
+unknown IDs. Account recovery/cloud sync is a separate online-scope decision.
 
 ## 12. Bots and Evaluation
 
 - `IBot` receives a safe game-state view and chooses a legal `GameAction`.
 - Easy Bot: fixed rules.
-- Normal Bot: heuristic scoring and short-term action evaluation.
+- Normal Bot: heuristic scoring and short-term evaluation of candidate legal
+  actions using a safe cloned state; define a small number of tunable weights.
 - Hard Bot: limited-depth search such as Minimax/Alpha-Beta **[OPTIONAL AFTER TIER 1]**.
-- ML/self-play: optional experiment only.
+- ML/self-play: optional experiment only, after Normal Bot and the headless
+  simulator are reproducible. Train on compact state/action features, not
+  rendered frames. On the 8 GB development machine, keep heavy training out of
+  the Unity Editor process and use offline or remote runs if attempted.
 
 The headless simulator must run matches without UI and record at least:
 
@@ -329,8 +377,11 @@ The headless simulator must run matches without UI and record at least:
 - Energy spent, allocated, and unused.
 - Decision time per move.
 - Invalid-action or timeout count.
+- Rules/configuration version and final-state hash for reproducibility.
 
-CSV output will support thesis tables and charts.
+CSV output will support thesis tables and charts. A replay record should also
+capture schema version, seed, deck IDs, first player, ordered accepted actions,
+and state hashes. Do not let animation playback drive the simulator clock.
 
 ## 13. PvP and Networking
 
@@ -474,21 +525,22 @@ Completed or explored:
 
 Known next gaps:
 
-1. Run a focused Play-mode acceptance pass for the new background/avatar,
-   Deck/Graveyard presentation, visible Auto duel, and the remaining
-   all-category edge cases: Equip cleanup, Field replacement/maintenance,
+1. Run a focused Play-mode acceptance pass for the newly assigned Monster
+   artwork and remaining all-category edge cases: Equip cleanup, Field replacement/maintenance,
    Trap set-turn lockout, attack responses, Counter Trap negation,
    two-or-more-link LIFO resolution, insufficient Energy, full zones, pending
    triggers at match end, and the match-result overlay.
-2. After that acceptance pass, implement Normal Bot heuristic scoring and a
-   headless bot-vs-bot runner with the metrics in section 12. Add deterministic
-   state hashes/replay loading before networking depends on the action stream.
-3. Perform the short networking feasibility spike described in section 13
-   while the deterministic action boundary is still small. Do not install or
-   commit a networking stack until the result and tradeoffs are discussed.
-4. Queue accepted GameEvents for readable visual sequencing and essential
-   feedback. Optional visual polish remains below bots, simulation, online PvP,
-   and Android/Windows build stability.
+2. Build the accepted-GameEvent presentation queue, compact duel log, and
+   functional animation slice in section 11. Check Android portrait readability
+   and obtain an early Android development build; keep the existing scene layout
+   under the student's visual review.
+3. Implement Normal Bot heuristic scoring and a headless bot-vs-bot runner with
+   the metrics in section 12. Add deterministic state hashes/replay loading
+   before networking depends on the action stream.
+4. Deliver the small guest profile/Main Menu/Deck Builder MVP in section 11,
+   while performing the short networking feasibility spike from section 13.
+   Do not install or commit a networking stack until the result and tradeoffs
+   are discussed.
 
 ## 16. Roadmap
 
@@ -527,22 +579,26 @@ Verified checkpoints:
 | 1 | ~6 Oct | CardData/CardView gaps, IDs, icon, derived values, 5-8 test cards, functional card prefabs | Multiple card categories display correctly in Play Mode |
 | 2 | ~13 Oct | Pure CardDefinition/core boundary, GameConfig, CardInstance, PlayerState, GameState, DeckData, shuffle/draw/hand | Two players initialize without UI and state prints correctly |
 | 3 | ~20 Oct | Turn phases, Energy, serializable GameActions, legal-action/apply path, summon/allocation/position | Scripted turn sequence produces correct deterministic state |
-| 4 | ~27 Oct | Combat, Graveyard, destruction penalty, win check, board UI, hot-seat | Full local match reaches a winner |
-| 5 | ~3 Nov | Spell/Trap/effects/simple chain, initial decks, short networking feasibility spike | Complete local match with all categories; networking choice confirmed |
-| 6 | ~10 Nov | Easy/Normal bots, headless simulator, CSV metrics | Human-vs-bot and bot-vs-bot batches work |
+| 4 | ~27 Oct | Complete local duel acceptance, event queue, functional animation and duel log; early Android development build | Full local match reaches a winner and each key action is visually understandable |
+| 5 | ~3 Nov | All-category edge pass, Normal Bot/headless runner foundation, replay/state hash, networking feasibility spike | Complete local match with all categories; bot batches start; networking choice discussed |
+| 6 | ~10 Nov | Normal Bot metrics, guest profile/Main Menu/PvE entry, Deck Builder MVP and local deck saves | Human-vs-bot, batch metrics, and selection of a valid saved deck work |
 | 7 | ~17 Nov | Online host-authoritative PvP and account flow using approved solution | Android/Windows devices complete an online match |
-| 8 | ~24 Nov | Android build first, Windows build, bug fixing/balancing; Hard Bot if Tier 1 is stable | Stable builds and thesis experiment data |
+| 8 | ~24 Nov | Android build first, Windows build, regression/balancing; Hard Bot only if Tier 1A is stable | Stable builds and thesis experiment data |
 | 9 | 25 Nov-early Dec | Feature freeze, final experiments, report, defense preparation | Final build and thesis materials |
 
-If schedule slips, reduce extra cards, polish, Hard Bot, and ML before compromising Tier 1 stability.
-As of 18 October, the core Step 4 local-play slice and the expanded executable
+If schedule slips, reduce extra cards, cosmetic polish, Hard Bot, and ML first.
+Discuss any change to the Tier 1A/1B commitments with the student; do not
+silently remove them. As of 19 October, the core Step 4 local-play slice and the expanded executable
 card-flow portion of Step 5 have initial Play Mode acceptance. The complete
 legal-action view and first Easy Bot have Human-vs-Bot Play Mode acceptance.
-The immediate critical path is the remaining all-category integration pass,
-then Normal Bot, headless metrics, replay/state-hash checks, and the networking
-feasibility decision. Do not substitute more isolated card scripts or smoke
-tests for those integration milestones. Tests remain verification for each
-finished slice.
+The latest checkpoint adds approved background/avatars, Deck/Graveyard visual
+cards, Auto bot-vs-bot presentation, and Monster artwork. The student has
+confirmed the background and Auto flow in Play Mode; the latest Monster artwork
+still needs an in-Editor visual acceptance pass. The immediate critical path is
+the remaining all-category integration pass and functional duel presentation,
+then Normal Bot, headless metrics, replay/state-hash checks, product-shell MVP,
+and the networking decision. Do not substitute more isolated card scripts or
+smoke tests for those milestones. Tests verify each finished slice.
 
 ## 17. Change Management
 
