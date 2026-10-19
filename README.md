@@ -305,7 +305,7 @@ This structure may change as implementation progresses.
 - [x] Equip/Field Spell, Normal/Counter Trap, targeting, and simple chain foundation
 - [x] Playable board UI and core local hot-seat match
 - [x] Fixed 30-card playable sample deck with a three-copy limit
-- [ ] Easy Bot (implemented; Play Mode acceptance pending)
+- [x] Easy Bot and Human-vs-Bot Play Mode flow
 - [ ] Normal Bot
 - [ ] Headless bot-vs-bot simulation and evaluation metrics
 - [ ] Gameplay balancing and testing
@@ -329,7 +329,7 @@ This document is intended to be updated whenever important gameplay, architectur
 
 The repository and Unity project use Unity 2022.3.62f3 LTS.
 
-As of 15 October 2026, the local hot-seat match supports the Monster combat
+As of 18 October 2026, the local hot-seat match supports the Monster combat
 loop plus playable Normal and Equip Spells, one Field Spell per player, Set
 Normal/Counter Traps, targeted and triggered effects, legal-response
 filtering, and a simple Speed 1/2/3 last-in-first-out chain. Response prompts
@@ -340,9 +340,12 @@ Mode prepares or repairs its required sample data before Play Mode.
 The core now exposes one complete legal-action list for the UI and bots. An
 initial deterministic Easy Bot selects only from that list and submits every
 choice through the same GameSession/GameRules path as a human. Runtime Duel
-Settings can switch Player 2 between Easy Bot and local hot-seat control. This
-bot integration has compiled successfully and awaits the student's Play Mode
-acceptance pass before the roadmap checkbox is completed.
+Settings can switch Player 2 between Easy Bot and local hot-seat control. The
+student has accepted the Human-vs-Easy-Bot flow in Play Mode. A compact Auto
+button can additionally hand Player 1 to the same legal-action bot so both
+sides play while the board remains visible. The runtime board also uses the
+selected portrait background and avatars, shows a card back while each Deck is
+nonempty, and shows the latest Graveyard card face-up.
 
 Focused all-category/multi-link regression, Normal Bot, simulation metrics,
 the networking feasibility spike and online PvP, platform builds, and

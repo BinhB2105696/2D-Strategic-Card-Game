@@ -12,8 +12,10 @@ public sealed class DuelEasyBotController : MonoBehaviour
     private IBot bot;
     private float nextDecisionTime;
     private bool wasWaitingForBot;
+    private int waitingPlayerIndex = -1;
 
     public bool IsEnabled { get; private set; }
+    public bool IsAutoPlayerEnabled { get; private set; }
     public int BotPlayerIndex { get; private set; } = DefaultBotPlayerIndex;
     public int HumanPlayerIndex => 1 - BotPlayerIndex;
     public string BotDisplayName => bot != null ? bot.DisplayName : "Easy Bot";
@@ -27,7 +29,9 @@ public sealed class DuelEasyBotController : MonoBehaviour
         bot = controlledBot;
         BotPlayerIndex = botPlayerIndex;
         IsEnabled = false;
+        IsAutoPlayerEnabled = false;
         wasWaitingForBot = false;
+        waitingPlayerIndex = -1;
     }
 
     public void SetEnabled(bool enabled)
@@ -36,7 +40,10 @@ public sealed class DuelEasyBotController : MonoBehaviour
             return;
 
         IsEnabled = enabled;
+        if (!enabled)
+            IsAutoPlayerEnabled = false;
         wasWaitingForBot = false;
+        waitingPlayerIndex = -1;
         nextDecisionTime = Time.unscaledTime + DecisionDelaySeconds;
         board?.CloseCardWindows();
         board?.RefreshBoard();
@@ -49,25 +56,53 @@ public sealed class DuelEasyBotController : MonoBehaviour
 
     public bool ControlsPlayer(int playerIndex)
     {
-        return IsEnabled && playerIndex == BotPlayerIndex;
+        return (IsEnabled && playerIndex == BotPlayerIndex) ||
+            (IsAutoPlayerEnabled && playerIndex == HumanPlayerIndex);
+    }
+
+    public void SetAutoPlayerEnabled(bool enabled)
+    {
+        if (IsAutoPlayerEnabled == enabled && (!enabled || IsEnabled))
+            return;
+
+        IsAutoPlayerEnabled = enabled;
+        if (enabled)
+            IsEnabled = true;
+
+        wasWaitingForBot = false;
+        waitingPlayerIndex = -1;
+        nextDecisionTime = Time.unscaledTime + DecisionDelaySeconds;
+        board?.CloseCardWindows();
+        board?.RefreshBoard();
+        Debug.Log(
+            enabled
+                ? BotDisplayName +
+                  " now controls both players in Auto mode."
+                : BotDisplayName +
+                  " stopped controlling Player 1; Player 2 remains enabled.",
+            this);
     }
 
     private void Update()
     {
-        if (!IsEnabled || board == null || board.Session == null)
+        if ((!IsEnabled && !IsAutoPlayerEnabled) ||
+            board == null || board.Session == null)
             return;
 
         GameState state = board.Session.State;
-        if (state.IsFinished ||
-            state.InteractionPlayerIndex != BotPlayerIndex)
+        int controlledPlayerIndex = state.InteractionPlayerIndex;
+        if (state.IsFinished || !ControlsPlayer(controlledPlayerIndex))
         {
             wasWaitingForBot = false;
+            waitingPlayerIndex = -1;
             return;
         }
 
-        if (!wasWaitingForBot)
+        if (!wasWaitingForBot ||
+            waitingPlayerIndex != controlledPlayerIndex)
         {
             wasWaitingForBot = true;
+            waitingPlayerIndex = controlledPlayerIndex;
             nextDecisionTime = Time.unscaledTime + DecisionDelaySeconds;
             return;
         }
@@ -75,30 +110,31 @@ public sealed class DuelEasyBotController : MonoBehaviour
         if (Time.unscaledTime < nextDecisionTime)
             return;
 
-        TakeOneDecision(state);
+        TakeOneDecision(state, controlledPlayerIndex);
         nextDecisionTime = Time.unscaledTime + DecisionDelaySeconds;
     }
 
-    private void TakeOneDecision(GameState state)
+    private void TakeOneDecision(GameState state, int playerIndex)
     {
         IReadOnlyList<GameAction> legalActions = GameRules.GetLegalActions(
             state,
-            BotPlayerIndex);
+            playerIndex);
         if (legalActions.Count == 0)
         {
             Debug.LogError(
-                BotDisplayName + " reached a decision state with no legal " +
+                BotDisplayName + " (Player " + (playerIndex + 1) +
+                ") reached a decision state with no legal " +
                 "actions: Turn " + state.TurnNumber + ", " +
                 state.CurrentPhase + ".",
                 this);
-            IsEnabled = false;
+            DisableAllAutomation();
             board.RefreshBoard();
             return;
         }
 
         BotGameStateView view = BotGameStateView.Create(
             state,
-            BotPlayerIndex);
+            playerIndex);
         GameAction action = bot.ChooseAction(view, legalActions);
         if (action == null ||
             !ContainsReference(legalActions, action))
@@ -107,7 +143,7 @@ public sealed class DuelEasyBotController : MonoBehaviour
                 BotDisplayName + " did not return an action from the legal " +
                 "action list.",
                 this);
-            IsEnabled = false;
+            DisableAllAutomation();
             board.RefreshBoard();
             return;
         }
@@ -119,13 +155,14 @@ public sealed class DuelEasyBotController : MonoBehaviour
                 BotDisplayName + " action was rejected: " +
                 result.ErrorMessage,
                 this);
-            IsEnabled = false;
+            DisableAllAutomation();
             board.RefreshBoard();
             return;
         }
 
         Debug.Log(
-            BotDisplayName + " accepted action: " +
+            BotDisplayName + " (Player " + (playerIndex + 1) +
+            ") accepted action: " +
             DescribeAction(view, action) +
             " (" + result.Events.Count + " event(s)).",
             this);
@@ -143,6 +180,14 @@ public sealed class DuelEasyBotController : MonoBehaviour
         }
 
         board.RefreshBoard();
+    }
+
+    private void DisableAllAutomation()
+    {
+        IsEnabled = false;
+        IsAutoPlayerEnabled = false;
+        wasWaitingForBot = false;
+        waitingPlayerIndex = -1;
     }
 
     private static bool ContainsReference(

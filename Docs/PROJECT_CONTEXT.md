@@ -442,14 +442,19 @@ Completed or explored:
   face-down opponent cards. The first deterministic Easy Bot scores that list
   and submits its selected action through `GameSession`; a runtime Duel
   Settings toggle assigns Player 2 to the bot while keeping Player 1's
-  perspective and hidden opponent hand. Compilation is verified; student Play
-  Mode acceptance is still required before marking Easy Bot complete.
+  perspective and hidden opponent hand. The student accepted the Easy Bot in
+  Play Mode on 18 October. A separate compact Auto control can temporarily
+  assign Player 1 to the same bot as well, enabling a visible bot-vs-bot duel
+  without bypassing `GameSession` or `GameRules`.
 - The portrait board uses a 1080x1920 Canvas, SafeAreaRoot, separate
   Board/HUD/Overlay layers, four 3-slot rows, and zones with independent
   Border, HitArea, CardAnchor, and Highlight children. Deck, Graveyard, Field,
   Hand, HUD, turn/phase, LP, Energy, and live card state are presented from the
   active player's perspective. Opponent Monster and Spell/Trap Zone indices are
   mirrored for the rotated perspective without changing logical zone indices.
+  Runtime presentation now applies the selected 1080x1920 battlefield image
+  and player avatars. A nonempty Deck displays the shared card back; each
+  Graveyard displays its latest card face-up and updates after state changes.
 - The local hot-seat UI now submits validated GameActions for phase changes,
   basic and tribute summons, Energy allocation, position changes, attacks, and
   the existing Normal Spell flow. Tribute selection, adaptive hand layout,
@@ -469,8 +474,9 @@ Completed or explored:
 
 Known next gaps:
 
-1. Run a focused Play-mode acceptance pass for Human vs Easy Bot together with
-   the all-category edge cases: Equip cleanup, Field replacement/maintenance,
+1. Run a focused Play-mode acceptance pass for the new background/avatar,
+   Deck/Graveyard presentation, visible Auto duel, and the remaining
+   all-category edge cases: Equip cleanup, Field replacement/maintenance,
    Trap set-turn lockout, attack responses, Counter Trap negation,
    two-or-more-link LIFO resolution, insufficient Energy, full zones, pending
    triggers at match end, and the match-result overlay.
@@ -509,10 +515,11 @@ Verified checkpoints:
   lifetime, filtered response windows, and simple LIFO chain resolution are
   connected to the local UI. Focused edge-case regression and the networking
   feasibility decision still remain before Step 5 is complete.
-- Step 6 bot foundation: **Easy Bot implemented; Play Mode acceptance pending**.
+- Step 6 bot foundation: **Easy Bot implemented and accepted in Play Mode**.
   It consumes an immutable state view plus shared legal actions, submits through
   GameSession, pauses for human response priority, and can be toggled at runtime
-  without changing the saved scene. Normal Bot and headless metrics have not
+  without changing the saved scene. The visible Auto control can assign both
+  players to it for presentation; Normal Bot and headless metrics have not
   started.
 
 | Step | Target | Content | Verification |
@@ -528,14 +535,14 @@ Verified checkpoints:
 | 9 | 25 Nov-early Dec | Feature freeze, final experiments, report, defense preparation | Final build and thesis materials |
 
 If schedule slips, reduce extra cards, polish, Hard Bot, and ML before compromising Tier 1 stability.
-As of 15 October, the core Step 4 local-play slice and the expanded executable
+As of 18 October, the core Step 4 local-play slice and the expanded executable
 card-flow portion of Step 5 have initial Play Mode acceptance. The complete
-legal-action view and first Easy Bot are implemented, with Human-vs-Bot Play
-Mode acceptance still pending. The immediate critical path is that focused
-integration pass, then Normal Bot, headless metrics, replay/state-hash checks,
-and the networking feasibility decision. Do not substitute more isolated card
-scripts or smoke tests for those integration milestones. Tests remain
-verification for each finished slice.
+legal-action view and first Easy Bot have Human-vs-Bot Play Mode acceptance.
+The immediate critical path is the remaining all-category integration pass,
+then Normal Bot, headless metrics, replay/state-hash checks, and the networking
+feasibility decision. Do not substitute more isolated card scripts or smoke
+tests for those integration milestones. Tests remain verification for each
+finished slice.
 
 ## 17. Change Management
 

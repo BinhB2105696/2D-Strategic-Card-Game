@@ -7,6 +7,15 @@ using UnityEngine.SceneManagement;
 [InitializeOnLoad]
 public static class DuelBoardReadOnlyDemoBootstrap
 {
+    private const string BoardBackgroundPath =
+        "Assets/Art/UI/Board/Background.png";
+    private const string PlayerOneAvatarPath =
+        "Assets/Art/UI/Avatars/Avt2_TheVagrant.png";
+    private const string PlayerTwoAvatarPath =
+        "Assets/Art/UI/Avatars/Avt1_TheVagabond.png";
+    private const string CardBackPath =
+        "Assets/Art/Cards/Backs/Card_Back_Default.png";
+
     private static readonly string[] CardPaths =
     {
         "Assets/Data/Cards/Monsters/Sample_Stone_Guardian.asset",
@@ -69,6 +78,13 @@ public static class DuelBoardReadOnlyDemoBootstrap
             "Assets/Prefabs/Card_Monster.prefab");
         GameObject spellTrapPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
             "Assets/Prefabs/Card_SpellTrap.prefab");
+        Sprite boardBackground = AssetDatabase.LoadAssetAtPath<Sprite>(
+            BoardBackgroundPath);
+        Sprite playerOneAvatar = AssetDatabase.LoadAssetAtPath<Sprite>(
+            PlayerOneAvatarPath);
+        Sprite playerTwoAvatar = AssetDatabase.LoadAssetAtPath<Sprite>(
+            PlayerTwoAvatarPath);
+        Sprite cardBack = AssetDatabase.LoadAssetAtPath<Sprite>(CardBackPath);
         List<CardData> cards = new List<CardData>(30);
         foreach (string cardPath in CardPaths)
         {
@@ -89,14 +105,20 @@ public static class DuelBoardReadOnlyDemoBootstrap
         DuelBoardReadOnlyDemo demo = canvas.GetComponent<DuelBoardReadOnlyDemo>();
         if (demo == null)
             demo = canvas.AddComponent<DuelBoardReadOnlyDemo>();
-        demo.Configure(cards.ToArray(), monsterPrefab, spellTrapPrefab);
+        demo.Configure(
+            cards.ToArray(),
+            monsterPrefab,
+            spellTrapPrefab,
+            boardBackground,
+            playerOneAvatar,
+            playerTwoAvatar,
+            cardBack);
     }
 
     private static void EnsurePlayableDeckInEditMode()
     {
         if (isPreparingDeck ||
-            EditorApplication.isPlayingOrWillChangePlaymode ||
-            IsPlayableDeckReady())
+            EditorApplication.isPlayingOrWillChangePlaymode)
         {
             return;
         }
@@ -104,10 +126,17 @@ public static class DuelBoardReadOnlyDemoBootstrap
         isPreparingDeck = true;
         try
         {
-            CardSampleTool.PrepareFixedPlayableDemoDeck();
-            Debug.Log(
-                "The fixed playable demo deck was prepared automatically. " +
-                "Play Mode is ready.");
+            if (!IsPlayableDeckReady())
+            {
+                CardSampleTool.PrepareFixedPlayableDemoDeck();
+                Debug.Log(
+                    "The fixed playable demo deck was prepared " +
+                    "automatically. Play Mode is ready.");
+            }
+            else
+            {
+                CardSampleTool.AssignMonsterArtwork();
+            }
         }
         finally
         {

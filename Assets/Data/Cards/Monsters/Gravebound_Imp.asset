@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: gravebound_imp
   cardName: Gravebound Imp
   category: 0
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 4efbb833d5e62c747b40368b6ad9cc82, type: 3}
   effectText: 'When this card is destroyed by battle: You can add 1 Basic Monster
     from your Graveyard to your hand.'
   monsterAttribute: 1

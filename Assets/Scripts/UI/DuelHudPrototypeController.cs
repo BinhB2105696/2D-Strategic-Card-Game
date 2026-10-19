@@ -40,6 +40,8 @@ public class DuelHudPrototypeController : MonoBehaviour
     private DuelEasyBotController easyBotController;
     private Button easyBotToggleButton;
     private TMP_Text easyBotToggleText;
+    private Button autoPlayButton;
+    private TMP_Text autoPlayText;
 
     private void Awake()
     {
@@ -95,7 +97,10 @@ public class DuelHudPrototypeController : MonoBehaviour
         easyBotController = controller;
         if (easyBotToggleButton == null)
             CreateEasyBotToggle();
+        if (autoPlayButton == null)
+            CreateAutoPlayToggle();
         RefreshEasyBotToggle();
+        RefreshAutoPlayToggle();
     }
 
     private void BindButtons()
@@ -175,6 +180,10 @@ public class DuelHudPrototypeController : MonoBehaviour
 
         if (!mayOpenPhaseMenu)
             SetPhaseChoicesVisible(false);
+
+        if (autoPlayButton != null)
+            autoPlayButton.interactable = !state.IsFinished;
+        RefreshAutoPlayToggle();
     }
 
     private void RequestBattlePhase()
@@ -439,6 +448,7 @@ public class DuelHudPrototypeController : MonoBehaviour
 
         easyBotController.SetEnabled(!easyBotController.IsEnabled);
         RefreshEasyBotToggle();
+        RefreshAutoPlayToggle();
         SetSettingsVisible(false);
     }
 
@@ -451,5 +461,101 @@ public class DuelHudPrototypeController : MonoBehaviour
             easyBotController.IsEnabled
             ? "Easy Bot (Player 2): ON"
             : "Easy Bot (Player 2): OFF";
+    }
+
+    private void CreateAutoPlayToggle()
+    {
+        Transform hudLayer = transform.parent;
+        RectTransform turnPhase = hudLayer != null
+            ? hudLayer.Find("TurnPhaseHUD") as RectTransform
+            : null;
+        if (hudLayer == null || turnPhase == null)
+            return;
+
+        GameObject buttonObject = new GameObject(
+            "AutoPlayButton_Runtime",
+            typeof(RectTransform),
+            typeof(CanvasRenderer),
+            typeof(Image),
+            typeof(Button),
+            typeof(Canvas),
+            typeof(GraphicRaycaster));
+        buttonObject.layer = hudLayer.gameObject.layer;
+        buttonObject.transform.SetParent(hudLayer, false);
+
+        RectTransform rect = buttonObject.GetComponent<RectTransform>();
+        rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(1f, 1f);
+        rect.sizeDelta = new Vector2(96f, 96f);
+        rect.anchoredPosition = turnPhase.anchoredPosition +
+            new Vector2(0f, -turnPhase.rect.height - 12f);
+
+        Image background = buttonObject.GetComponent<Image>();
+        background.color = new Color32(20, 72, 126, 240);
+
+        autoPlayButton = buttonObject.GetComponent<Button>();
+        autoPlayButton.targetGraphic = background;
+        autoPlayButton.onClick.AddListener(ToggleAutoPlay);
+
+        Canvas canvas = buttonObject.GetComponent<Canvas>();
+        canvas.overrideSorting = true;
+        canvas.sortingOrder = 20;
+
+        GameObject textObject = new GameObject(
+            "Label",
+            typeof(RectTransform),
+            typeof(CanvasRenderer),
+            typeof(TextMeshProUGUI));
+        textObject.layer = buttonObject.layer;
+        textObject.transform.SetParent(buttonObject.transform, false);
+        RectTransform textRect = textObject.GetComponent<RectTransform>();
+        textRect.anchorMin = Vector2.zero;
+        textRect.anchorMax = Vector2.one;
+        textRect.offsetMin = Vector2.zero;
+        textRect.offsetMax = Vector2.zero;
+
+        autoPlayText = textObject.GetComponent<TextMeshProUGUI>();
+        TMP_Text phaseLabel = phaseMenuButton != null
+            ? phaseMenuButton.GetComponentInChildren<TMP_Text>(true)
+            : null;
+        if (phaseLabel != null)
+            autoPlayText.font = phaseLabel.font;
+        autoPlayText.text = "Auto";
+        autoPlayText.fontSize = 28f;
+        autoPlayText.fontStyle = FontStyles.Bold;
+        autoPlayText.alignment = TextAlignmentOptions.Center;
+        autoPlayText.color = Color.white;
+        autoPlayText.raycastTarget = false;
+    }
+
+    private void ToggleAutoPlay()
+    {
+        if (easyBotController == null)
+            return;
+
+        easyBotController.SetAutoPlayerEnabled(
+            !easyBotController.IsAutoPlayerEnabled);
+        RefreshEasyBotToggle();
+        RefreshAutoPlayToggle();
+        SetPhaseChoicesVisible(false);
+        SetSettingsVisible(false);
+        CloseCardWindows();
+    }
+
+    private void RefreshAutoPlayToggle()
+    {
+        if (autoPlayButton == null)
+            return;
+
+        bool active = easyBotController != null &&
+            easyBotController.IsAutoPlayerEnabled;
+        Image background = autoPlayButton.targetGraphic as Image;
+        if (background != null)
+        {
+            background.color = active
+                ? new Color32(220, 157, 33, 250)
+                : new Color32(20, 72, 126, 240);
+        }
+        if (autoPlayText != null)
+            autoPlayText.text = "Auto";
     }
 }

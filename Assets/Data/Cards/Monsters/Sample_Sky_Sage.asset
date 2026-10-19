@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: sample_sky_sage
   cardName: Sky Sage
   category: 0
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 78fa0ecdb4eaaa34ab40a1de01c44a89, type: 3}
   effectText: 'Pay 2 Energy: Draw 1 card.'
   monsterAttribute: 5
   monsterRank: 2

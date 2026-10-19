@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: dawnwing_fairy
   cardName: Dawnwing Fairy
   category: 0
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 20ec276fc63148a4c807a7a7d5b86623, type: 3}
   effectText: 'When this card is summoned: You can add 1 Basic Monster from your
     Deck to your hand, except Dawnwing Fairy, then shuffle.'
   monsterAttribute: 5

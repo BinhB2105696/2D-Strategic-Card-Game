@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: sample_stone_guardian
   cardName: Stone Guardian
   category: 0
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: c43c40d144ff83241a904f15470fc904, type: 3}
   effectText: 'Pay 1 Energy: This card gains 500 DEF.'
   monsterAttribute: 4
   monsterRank: 0

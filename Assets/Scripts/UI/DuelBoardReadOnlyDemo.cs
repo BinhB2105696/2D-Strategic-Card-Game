@@ -15,6 +15,10 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
     [SerializeField] private CardData[] sampleCards;
     [SerializeField] private GameObject monsterCardPrefab;
     [SerializeField] private GameObject spellTrapCardPrefab;
+    [SerializeField] private Sprite boardBackgroundSprite;
+    [SerializeField] private Sprite playerOneAvatarSprite;
+    [SerializeField] private Sprite playerTwoAvatarSprite;
+    [SerializeField] private Sprite cardBackSprite;
 
     private readonly Dictionary<string, CardData> cardsById =
         new Dictionary<string, CardData>();
@@ -33,11 +37,22 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
             ? session.State.InteractionPlayerIndex
             : 0;
 
-    public void Configure(CardData[] cards, GameObject monsterPrefab, GameObject spellTrapPrefab)
+    public void Configure(
+        CardData[] cards,
+        GameObject monsterPrefab,
+        GameObject spellTrapPrefab,
+        Sprite boardBackground,
+        Sprite playerOneAvatar,
+        Sprite playerTwoAvatar,
+        Sprite cardBack)
     {
         sampleCards = cards;
         monsterCardPrefab = monsterPrefab;
         spellTrapCardPrefab = spellTrapPrefab;
+        boardBackgroundSprite = boardBackground;
+        playerOneAvatarSprite = playerOneAvatar;
+        playerTwoAvatarSprite = playerTwoAvatar;
+        cardBackSprite = cardBack;
     }
 
     private void Start()
@@ -179,6 +194,7 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         }
 
         ConfigureRuntimeSorting(board, hud, overlay);
+        ApplyBoardBackground();
         if (runtimeFont == null)
         {
             TMP_Text sampleText = hud.GetComponentInChildren<TMP_Text>(true);
@@ -249,6 +265,8 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
             player.Deck.Count.ToString());
         SetText(board, side + "_PileColumn/" + side + "_GraveyardZone/CountText",
             player.Graveyard.Count.ToString());
+        ApplyAvatar(hud, side, GetAvatar(player.PlayerIndex));
+        RenderDeckAndGraveyard(player, board, side);
 
         RenderHand(
             player.Hand,
@@ -267,6 +285,111 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
             board,
             side,
             allowAnyInteraction);
+    }
+
+    private void ApplyBoardBackground()
+    {
+        // Battlefield_Background is a sibling of SafeAreaRoot under the
+        // Field_Canvas, so it must be resolved from this component's root.
+        Transform target = transform.Find("Battlefield_Background");
+        Image image = target != null ? target.GetComponent<Image>() : null;
+        if (image == null || boardBackgroundSprite == null)
+            return;
+
+        image.sprite = boardBackgroundSprite;
+        image.color = Color.white;
+        image.preserveAspect = false;
+        image.raycastTarget = false;
+    }
+
+    private Sprite GetAvatar(int playerIndex)
+    {
+        return playerIndex == 0
+            ? playerOneAvatarSprite
+            : playerTwoAvatarSprite;
+    }
+
+    private static void ApplyAvatar(
+        Transform hud,
+        string side,
+        Sprite avatar)
+    {
+        Transform frame = hud.Find(side + "_HUD/AvatarFrame");
+        Image image = frame != null ? frame.GetComponent<Image>() : null;
+        if (image == null || avatar == null)
+            return;
+
+        image.sprite = avatar;
+        image.color = Color.white;
+        image.preserveAspect = true;
+        image.raycastTarget = false;
+
+        Transform placeholder = hud.Find(
+            side + "_HUD/AvatarPlaceholderText");
+        if (placeholder != null)
+            placeholder.gameObject.SetActive(false);
+    }
+
+    private void RenderDeckAndGraveyard(
+        PlayerState player,
+        Transform board,
+        string side)
+    {
+        Transform pileColumn = board.Find(side + "_PileColumn");
+        if (pileColumn == null)
+            return;
+
+        Transform deckZone = pileColumn.Find(side + "_DeckZone");
+        Transform deckAnchor = deckZone != null
+            ? deckZone.Find("CardAnchor")
+            : null;
+        if (player.Deck.Count > 0 && deckAnchor != null &&
+            cardBackSprite != null)
+        {
+            CreateDeckBack(deckAnchor);
+        }
+
+        Transform graveyardZone = pileColumn.Find(
+            side + "_GraveyardZone");
+        Transform graveyardAnchor = graveyardZone != null
+            ? graveyardZone.Find("CardAnchor")
+            : null;
+        if (player.Graveyard.Count > 0 && graveyardAnchor != null)
+        {
+            CardInstance latest =
+                player.Graveyard[player.Graveyard.Count - 1];
+            CreateCard(
+                latest,
+                graveyardAnchor,
+                1f,
+                false,
+                false,
+                false);
+        }
+    }
+
+    private void CreateDeckBack(Transform parent)
+    {
+        GameObject backObject = new GameObject(
+            "RuntimeDeckCardBack",
+            typeof(RectTransform),
+            typeof(CanvasRenderer),
+            typeof(Image));
+        backObject.layer = parent.gameObject.layer;
+        backObject.transform.SetParent(parent, false);
+        displayedCards.Add(backObject);
+
+        RectTransform rect = backObject.GetComponent<RectTransform>();
+        rect.anchorMin = rect.anchorMax = rect.pivot =
+            new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = Vector2.zero;
+        rect.sizeDelta = new Vector2(250f, 350f);
+
+        Image image = backObject.GetComponent<Image>();
+        image.sprite = cardBackSprite;
+        image.color = Color.white;
+        image.preserveAspect = true;
+        image.raycastTarget = false;
     }
 
     private void RenderHand(

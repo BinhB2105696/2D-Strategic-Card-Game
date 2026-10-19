@@ -9,6 +9,8 @@ public static class CardSampleTool
     private const string MonstersFolder = CardsRoot + "/Monsters";
     private const string SpellsFolder = CardsRoot + "/Spells";
     private const string TrapsFolder = CardsRoot + "/Traps";
+    private const string MonsterArtworkFolder =
+        "Assets/Art/Cards/Monsters";
     private const string ComponentsRoot = "Assets/Data/EffectComponents";
     private const string ConditionFolder = ComponentsRoot + "/Conditions";
     private const string CostFolder = ComponentsRoot + "/Costs";
@@ -243,7 +245,59 @@ public static class CardSampleTool
     public static void PrepareFixedPlayableDemoDeck()
     {
         ConfigurePlayableSpellTrapSamples();
+        AssignMonsterArtwork();
         ValidateAllCardData();
+    }
+
+    [MenuItem("Card Game/Sample Cards/Assign Monster Artwork")]
+    public static void AssignMonsterArtwork()
+    {
+        int assignedCount = 0;
+        int missingCount = 0;
+        AssignArtwork(
+            "sample_stone_guardian",
+            MonsterArtworkFolder + "/Stone_Guadian.png",
+            ref assignedCount,
+            ref missingCount);
+        AssignArtwork(
+            "sample_tide_sprite",
+            MonsterArtworkFolder + "/Tide_Sprite.png",
+            ref assignedCount,
+            ref missingCount);
+        AssignArtwork(
+            "dawnwing_fairy",
+            MonsterArtworkFolder + "/Dawnwing_Fairy.png",
+            ref assignedCount,
+            ref missingCount);
+        AssignArtwork(
+            "gravebound_imp",
+            MonsterArtworkFolder + "/Gravebound Imp.png",
+            ref assignedCount,
+            ref missingCount);
+        AssignArtwork(
+            "fire_dragon",
+            MonsterArtworkFolder + "/Fire_Dragon.png",
+            ref assignedCount,
+            ref missingCount);
+        AssignArtwork(
+            "sample_sky_sage",
+            MonsterArtworkFolder + "/Sky Sage.png",
+            ref assignedCount,
+            ref missingCount);
+        AssignArtwork(
+            "legendary_fighter",
+            MonsterArtworkFolder + "/Legendary Fighter.png",
+            ref assignedCount,
+            ref missingCount);
+
+        if (assignedCount > 0)
+        {
+            AssetDatabase.SaveAssets();
+            Debug.Log(
+                "Assigned artwork to " + assignedCount +
+                " Monster CardData asset(s). Missing pairs: " +
+                missingCount + ".");
+        }
     }
 
     [MenuItem("Card Game/Sample Cards/Validate All Card Data")]
@@ -395,6 +449,35 @@ public static class CardSampleTool
         }
 
         return null;
+    }
+
+    private static void AssignArtwork(
+        string cardId,
+        string artworkPath,
+        ref int assignedCount,
+        ref int missingCount)
+    {
+        CardData card = FindCardById(cardId);
+        Sprite artwork = AssetDatabase.LoadAssetAtPath<Sprite>(artworkPath);
+        if (card == null || artwork == null)
+        {
+            missingCount++;
+            Debug.LogWarning(
+                "Cannot assign Monster artwork: card '" + cardId +
+                "' or Sprite '" + artworkPath + "' is missing.");
+            return;
+        }
+
+        if (card.Artwork == artwork)
+            return;
+
+        SerializedObject serializedCard = new SerializedObject(card);
+        SerializedProperty artworkProperty =
+            serializedCard.FindProperty("artwork");
+        artworkProperty.objectReferenceValue = artwork;
+        serializedCard.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(card);
+        assignedCount++;
     }
 
     private static void SetCommonData(

@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: sample_tide_sprite
   cardName: Tide Sprite
   category: 0
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 7c3bd80ba40bad44faa6528192df7efd, type: 3}
   effectText: 'Pay 1 Energy: This card gains 300 HP.'
   monsterAttribute: 3
   monsterRank: 0
