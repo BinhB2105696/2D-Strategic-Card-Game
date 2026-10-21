@@ -219,6 +219,19 @@ public class DuelHudPrototypeController : MonoBehaviour
             "Surrender this duel?\nThis action will count as a loss.");
     }
 
+    public void ConfigureAppExit(AppDuelFlow flow)
+    {
+        if (flow == null || surrenderButton == null) return;
+        surrenderButton.onClick.RemoveListener(RequestSurrender);
+        surrenderButton.onClick.AddListener(() =>
+        {
+            SetSettingsVisible(false);
+            flow.RequestExit();
+        });
+        TMP_Text label = surrenderButton.GetComponentInChildren<TMP_Text>(true);
+        if (label != null) label.text = "RETURN HOME";
+    }
+
     private void OpenSettings()
     {
         CloseCardWindows();

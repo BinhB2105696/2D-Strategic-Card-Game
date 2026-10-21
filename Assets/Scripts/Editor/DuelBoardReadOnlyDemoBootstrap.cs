@@ -74,6 +74,17 @@ public static class DuelBoardReadOnlyDemoBootstrap
         if (canvas == null)
             return;
 
+        DuelBoardReadOnlyDemo demo = canvas.GetComponent<DuelBoardReadOnlyDemo>();
+        if (demo == null)
+            demo = canvas.AddComponent<DuelBoardReadOnlyDemo>();
+        if (!TryConfigureDemo(demo))
+            EditorApplication.isPlaying = false;
+    }
+
+    // Also used by the App Shell editor repair. It saves only serialized
+    // references; no gameplay state or visual layout is changed here.
+    internal static bool TryConfigureDemo(DuelBoardReadOnlyDemo demo)
+    {
         GameObject monsterPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
             "Assets/Prefabs/Card_Monster.prefab");
         GameObject spellTrapPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
@@ -85,6 +96,14 @@ public static class DuelBoardReadOnlyDemoBootstrap
         Sprite playerTwoAvatar = AssetDatabase.LoadAssetAtPath<Sprite>(
             PlayerTwoAvatarPath);
         Sprite cardBack = AssetDatabase.LoadAssetAtPath<Sprite>(CardBackPath);
+        if (monsterPrefab == null || spellTrapPrefab == null ||
+            boardBackground == null || playerOneAvatar == null ||
+            playerTwoAvatar == null || cardBack == null)
+        {
+            Debug.LogError("Playable demo is missing a card prefab or " +
+                "board/Avatar/Card Back sprite. PvE scene was not configured.");
+            return false;
+        }
         List<CardData> cards = new List<CardData>(30);
         foreach (string cardPath in CardPaths)
         {
@@ -95,16 +114,12 @@ public static class DuelBoardReadOnlyDemoBootstrap
                     "Playable demo deck is incomplete at '" + cardPath +
                     "'. In Edit Mode run Card Game > Sample Cards > " +
                     "Prepare Fixed Playable Demo Deck, then enter Play again.");
-                EditorApplication.isPlaying = false;
-                return;
+                return false;
             }
 
             cards.Add(card);
         }
 
-        DuelBoardReadOnlyDemo demo = canvas.GetComponent<DuelBoardReadOnlyDemo>();
-        if (demo == null)
-            demo = canvas.AddComponent<DuelBoardReadOnlyDemo>();
         demo.Configure(
             cards.ToArray(),
             monsterPrefab,
@@ -113,6 +128,7 @@ public static class DuelBoardReadOnlyDemoBootstrap
             playerOneAvatar,
             playerTwoAvatar,
             cardBack);
+        return true;
     }
 
     private static void EnsurePlayableDeckInEditMode()

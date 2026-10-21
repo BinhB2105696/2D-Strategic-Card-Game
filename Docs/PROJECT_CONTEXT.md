@@ -359,6 +359,46 @@ saves/selects 2–3 local decks, and includes at least two preset decks. Keep
 stable `cardId` references in saves; add a version field and reject or migrate
 unknown IDs. Account recovery/cloud sync is a separate online-scope decision.
 
+The 21 October Deck Builder implementation is a separate `AppShell` scene and
+must not change the duel layout or core rules. The local catalog uses
+existing CardData and card prefabs. Its first UI pass follows a two-layer
+portrait layout: a numbered deck grid behind a draggable card-catalog drawer,
+six card columns, a text search of card name/effect text, basic category and
+stat/type filters, and reversible sorts. The drawer has expanded and collapsed
+positions. The detailed filter uses Monster and Spell/Trap tabs; effect-component
+filtering, Extra Deck, rarity, and collection economy are not in this game's
+current data model. "Newest" is the card asset's recorded edit time at the
+last catalog refresh, not a live online release date. The two local presets
+must be validated against the catalog and current GameConfig. Guest login is
+local only. The subsequent student-approved app-foundation slice connects the
+selected saved 30–40-card deck to PvE against the fixed Easy Bot deck through a
+one-use scene handoff. Direct Play of SampleScene retains its original demo.
+For the Home-to-PvE route, an Editor repair adds a Camera to `AppShell` and
+serializes the existing `DuelBoardReadOnlyDemo` component with its fixed deck
+and visual references on `SampleScene/Field_Canvas`. This is the one necessary
+scene integration change; it must leave all saved duel RectTransforms and UI
+hierarchy unchanged. Both scenes must be enabled in Build Settings, with
+`AppShell` first. A scene switch must not rely on an Editor-only Play-mode hook.
+
+The student approved authoring the AppShell UI in Edit Mode. The Editor tool
+creates/saves it once; runtime binds serialized references and updates dynamic
+card lists, names, counts and results. It must not regenerate layout over manual
+scene edits. Home has a top-left avatar/name shortcut to Profile and a top-right
+Settings shortcut. Profile supports local name/avatar and recent PvE history.
+Settings stores master/music/effects volumes; there is no new music/SFX asset yet.
+An app-only result/exit adapter records completed or abandoned matches and
+returns to Home without changing duel rules. Auto/hot-seat practice and abandoned
+matches are excluded from manual-PvE win rate; this is a reviewable UI/statistics
+default, not a gameplay rule. Match archives include deck IDs, seed, version
+metadata and accepted actions; they are not yet a verified replay feature.
+
+Local schema v2 migrates v1 decks and adds stable local-player/deck IDs, timestamps,
+revision, settings and recent results. Keep the existing save filename and
+company/product identity to preserve existing saves. Local data is untrusted and
+device-local, not authentication or authoritative online ranking. Future account
+linking, per-account cache, secure token storage and server validation are described
+in `Docs/APP_FOUNDATION_GUIDE_2026-10-21.md`. No password/backend/network SDK is added.
+
 ## 12. Bots and Evaluation
 
 - `IBot` receives a safe game-state view and chooses a legal `GameAction`.
@@ -545,6 +585,26 @@ Known next gaps:
    are discussed.
 
 ## 16. Roadmap
+
+### 21-31 October temporary sequence (student-approved direction)
+
+- 21-24 Oct: build and visually review the separate guest/menu/Deck Builder
+  slice, local versioned deck saves, two presets, and portrait/Windows framing.
+  Convert the app UI to Edit-Mode-authorable views and connect the selected deck,
+  result/Home flow, local Profile and Settings through small app adapters. Preserve
+  duel layout/core rules. Verify this slice before late-October visual tuning.
+- 25-27 Oct: fix only blocking app/duel integration faults, verify the local
+  full-match loop, and obtain the planned early Android development build.
+  Check Windows portrait behavior in the Game view as well.
+- 28-31 Oct: bounded UI/animation corrections and all-category duel acceptance;
+  prepare reproducible data and notes for Normal Bot, simulation, replay, and
+  the networking feasibility decision due in early November.
+
+This is task resequencing, not a reduction of Tier 1A or Tier 1B. The ~3 Nov,
+~10 Nov, ~17 Nov, ~24 Nov, and 25 Nov freeze gates remain. If the app shell or
+Android build consumes the time reserved for Normal Bot/network feasibility,
+raise that risk with the student rather than silently moving those commitments.
+See `Docs/APP_SHELL_HANDOFF_2026-10-21.md` for bounded follow-up work.
 
 Verified checkpoints:
 

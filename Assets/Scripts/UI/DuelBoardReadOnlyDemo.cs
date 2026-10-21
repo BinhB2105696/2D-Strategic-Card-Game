@@ -32,6 +32,8 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
     private DuelPresentationController presentation;
     private TMP_FontAsset runtimeFont;
     private bool hasRenderedMatch;
+    private AppMatchRequest appMatch;
+    public AppDuelFlow AppFlow { get; private set; }
 
     public GameSession Session => session;
     public bool IsPresenting => presentation != null && presentation.IsBusy;
@@ -63,14 +65,15 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
 
     private void Start()
     {
+        appMatch = AppMatchLaunch.Consume();
         if (!ValidateSetup())
             return;
 
         GameConfig config = GameConfig.CreateDefault();
         List<CardDefinition> deck = new List<CardDefinition>(config.MinimumDeckSize);
 
-        for (int i = 0; i < config.MinimumDeckSize; i++)
-            deck.Add(CardDataConverter.ToDefinition(sampleCards[i % sampleCards.Length]));
+        foreach (CardData card in sampleCards)
+            deck.Add(CardDataConverter.ToDefinition(card));
 
         try
         {
@@ -79,7 +82,18 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
                 cardInteraction = gameObject.AddComponent<DuelCardInteractionController>();
             cardInteraction.Initialize(this);
 
-            session = GameSession.Create(config, seed, deck, deck);
+            List<CardDefinition> playerDeck = deck;
+            if (appMatch != null)
+            {
+                if (!LocalDeckStore.Validate(appMatch.deck, appMatch.catalog, config, out string reason))
+                    throw new InvalidOperationException(reason);
+                playerDeck = new List<CardDefinition>();
+                foreach (CardData card in appMatch.playerCards)
+                    playerDeck.Add(CardDataConverter.ToDefinition(card));
+                foreach (var item in appMatch.catalog) cardsById[item.Key] = item.Value;
+                if (appMatch.avatar != null) playerOneAvatarSprite = appMatch.avatar;
+            }
+            session = GameSession.Create(config, appMatch != null ? appMatch.seed : seed, playerDeck, deck);
 
             presentation = GetComponent<DuelPresentationController>();
             if (presentation == null)
@@ -95,6 +109,15 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
                 GetComponentInChildren<DuelHudPrototypeController>(true);
             if (hudController != null)
                 hudController.ConfigureEasyBot(easyBotController);
+
+            if (appMatch != null)
+            {
+                easyBotController.SetEnabled(true);
+                GameObject view = Instantiate(appMatch.overlayPrefab);
+                AppFlow = view.GetComponent<AppDuelFlow>();
+                AppFlow.Initialize(this, appMatch, sampleCards);
+                if (hudController != null) hudController.ConfigureAppExit(AppFlow);
+            }
 
             // Show the opening hands before Recovery so its Draw and Energy
             // Refresh steps remain visible instead of being skipped on screen.
@@ -349,6 +372,16 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         SetText(board, side + "_PileColumn/" + side + "_GraveyardZone/CountText",
             player.Graveyard.Count.ToString());
         ApplyAvatar(hud, side, GetAvatar(player.PlayerIndex));
+        if (appMatch != null)
+        {
+            Transform name = FindPath(hud, side + "_HUD/NameText");
+            TMP_Text label = name != null ? name.GetComponent<TMP_Text>() : null;
+            if (label != null)
+            {
+                label.richText = false;
+                label.text = player.PlayerIndex == 0 ? appMatch.profile.guestName : "Easy Bot";
+            }
+        }
         RenderDeckAndGraveyard(player, board, side);
 
         RenderHand(
