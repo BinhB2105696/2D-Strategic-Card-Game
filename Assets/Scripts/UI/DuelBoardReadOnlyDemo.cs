@@ -23,12 +23,18 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
     private readonly Dictionary<string, CardData> cardsById =
         new Dictionary<string, CardData>();
     private readonly List<GameObject> displayedCards = new List<GameObject>();
+    private readonly Dictionary<long, RectTransform> renderedCardRects =
+        new Dictionary<long, RectTransform>();
+    private readonly HashSet<long> readyAttackers = new HashSet<long>();
     private GameSession session;
     private DuelCardInteractionController cardInteraction;
     private DuelEasyBotController easyBotController;
+    private DuelPresentationController presentation;
     private TMP_FontAsset runtimeFont;
+    private bool hasRenderedMatch;
 
     public GameSession Session => session;
+    public bool IsPresenting => presentation != null && presentation.IsBusy;
     public bool IsEasyBotEnabled =>
         easyBotController != null && easyBotController.IsEnabled;
     public int ViewingPlayerIndex => IsEasyBotEnabled
@@ -75,6 +81,11 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
 
             session = GameSession.Create(config, seed, deck, deck);
 
+            presentation = GetComponent<DuelPresentationController>();
+            if (presentation == null)
+                presentation = gameObject.AddComponent<DuelPresentationController>();
+            presentation.Initialize(this);
+
             easyBotController = GetComponent<DuelEasyBotController>();
             if (easyBotController == null)
                 easyBotController = gameObject.AddComponent<DuelEasyBotController>();
@@ -85,8 +96,11 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
             if (hudController != null)
                 hudController.ConfigureEasyBot(easyBotController);
 
-            if (!ResolveAutomaticTurnStart())
-                return;
+            // Show the opening hands before Recovery so its Draw and Energy
+            // Refresh steps remain visible instead of being skipped on screen.
+            Render(session.State);
+            presentation.PlayOpeningDeal(session.State,
+                () => ResolveAutomaticTurnStart());
             Debug.Log(
                 "Read-only duel board ready: Turn " + session.State.TurnNumber +
                 ", " + session.State.CurrentPhase +
@@ -106,6 +120,8 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
     public bool ResolveAutomaticTurnStart()
     {
         if (session == null)
+            return false;
+        if (presentation != null && presentation.IsPlaying)
             return false;
 
         // The match begins with a separate starting hand. Recovery's draw and
@@ -128,18 +144,45 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
 
         bool reachedMain = session.State.CurrentPhase == TurnPhase.Main;
         if (reachedMain)
-            Render(session.State);
+            PresentPendingOrRender();
         return reachedMain;
+    }
+
+    public void PresentTurnTransitionThenResolveAutomatic()
+    {
+        if (session == null)
+            return;
+        if (presentation != null && presentation.HasPendingEvents)
+        {
+            presentation.PlayPending(session.State,
+                () => ResolveAutomaticTurnStart());
+            return;
+        }
+        Render(session.State);
+        ResolveAutomaticTurnStart();
     }
 
     public ActionResult TryApplyAction(GameAction action, bool refreshBoard = true)
     {
         if (session == null)
             return ActionResult.Failure("The sample duel is not ready.");
+        if (presentation != null && presentation.IsPlaying)
+            return ActionResult.Failure("Wait for the current animation to finish.");
 
+        if (hasRenderedMatch)
+            presentation?.CaptureBeforeAction(session.State);
         ActionResult result = session.TryApply(action);
-        if (result.Succeeded && refreshBoard)
-            Render(session.State);
+        if (result.Succeeded)
+        {
+            if (hasRenderedMatch)
+                presentation?.Record(result.Events);
+            if (refreshBoard)
+                PresentPendingOrRender();
+        }
+        else
+        {
+            presentation?.DiscardEmptyCapture();
+        }
         return result;
     }
 
@@ -156,10 +199,17 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
 
     private bool ApplyAutomaticAction(GameAction action)
     {
+        if (hasRenderedMatch)
+            presentation?.CaptureBeforeAction(session.State);
         ActionResult result = session.TryApply(action);
         if (result.Succeeded)
+        {
+            if (hasRenderedMatch)
+                presentation?.Record(result.Events);
             return true;
+        }
 
+        presentation?.DiscardEmptyCapture();
         Debug.LogError("Automatic turn step failed: " + result.ErrorMessage, this);
         return false;
     }
@@ -168,7 +218,27 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
     public void RefreshBoard()
     {
         if (session != null)
-            Render(session.State);
+            PresentPendingOrRender();
+    }
+
+    private void PresentPendingOrRender()
+    {
+        if (presentation != null && presentation.IsPlaying)
+            return;
+        if (presentation != null && presentation.HasPendingEvents)
+        {
+            presentation.PlayPending(session.State);
+            return;
+        }
+        presentation?.DiscardEmptyCapture();
+        Render(session.State);
+    }
+
+    public RectTransform FindRenderedCard(long instanceId)
+    {
+        return renderedCardRects.TryGetValue(instanceId, out RectTransform rect)
+            ? rect
+            : null;
     }
 
     public void Render(GameState state)
@@ -204,6 +274,18 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         }
 
         cardInteraction?.BeginRender(state);
+
+        readyAttackers.Clear();
+        if (!state.IsFinished && state.CurrentPhase == TurnPhase.Battle &&
+            !state.HasOpenResponseWindow && !state.HasPendingTriggeredEffect)
+        {
+            IReadOnlyList<GameAction> legalActions = GameRules.GetLegalActions(
+                state,
+                state.InteractionPlayerIndex);
+            foreach (GameAction legalAction in legalActions)
+                if (legalAction.Type == GameActionType.Attack)
+                    readyAttackers.Add(legalAction.SourceInstanceId);
+        }
 
         int viewingPlayerIndex = IsEasyBotEnabled
             ? easyBotController.HumanPlayerIndex
@@ -248,6 +330,7 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
             cardInteraction?.ShowResponsePrompt();
         else if (state.HasPendingTriggeredEffect && humanMayInteract)
             cardInteraction?.ShowTriggeredEffectPrompt();
+        hasRenderedMatch = true;
     }
 
     private void RenderPlayer(
@@ -366,6 +449,31 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
                 false,
                 false);
         }
+        if (graveyardZone != null)
+            CreateGraveyardTapTarget(graveyardZone, player.PlayerIndex);
+    }
+
+    private void CreateGraveyardTapTarget(Transform zone, int playerIndex)
+    {
+        GameObject target = new GameObject(
+            "RuntimeGraveyardTapTarget", typeof(RectTransform),
+            typeof(CanvasRenderer), typeof(Image), typeof(Button));
+        target.layer = zone.gameObject.layer;
+        RectTransform rect = target.GetComponent<RectTransform>();
+        rect.SetParent(zone, false);
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+        Image image = target.GetComponent<Image>();
+        image.color = new Color(0f, 0f, 0f, 0f);
+        image.raycastTarget = true;
+        Button button = target.GetComponent<Button>();
+        button.transition = Selectable.Transition.None;
+        button.targetGraphic = image;
+        button.onClick.AddListener(() =>
+            cardInteraction?.ShowGraveyard(playerIndex));
+        displayedCards.Add(target);
     }
 
     private void CreateDeckBack(Transform parent)
@@ -413,7 +521,7 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
             content.GetComponent<DuelHandLayoutController>();
         if (handLayout == null)
             handLayout = content.gameObject.AddComponent<DuelHandLayoutController>();
-        handLayout.BeginLayout(showHand);
+        handLayout.BeginLayout(showHand, !showHand);
 
         for (int i = 0; i < hand.Count; i++)
         {
@@ -494,6 +602,8 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
                 cards[i].IsFaceDown,
                 allowAnyInteraction &&
                 (ownerCanInteract || !cards[i].IsFaceDown));
+            if (monsterRow && readyAttackers.Contains(cards[i].InstanceId))
+                displayedCards.Add(DuelAttackReadyGlow.Create(anchor));
         }
     }
 
@@ -550,6 +660,7 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         rect.sizeDelta = new Vector2(250f, 350f);
         rect.localScale = Vector3.one * scale;
         rect.localRotation = Quaternion.Euler(0f, 0f, defense ? 90f : 0f);
+        renderedCardRects[instance.InstanceId] = rect;
 
         CardView view = card.GetComponent<CardView>();
         view.SetCardData(cardData);
@@ -680,6 +791,7 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
             if (card != null)
                 Destroy(card);
         displayedCards.Clear();
+        renderedCardRects.Clear();
     }
 
     private void SetText(Transform root, string path, string value)

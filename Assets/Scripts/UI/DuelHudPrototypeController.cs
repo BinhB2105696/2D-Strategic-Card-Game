@@ -292,11 +292,7 @@ public class DuelHudPrototypeController : MonoBehaviour
             if (endTurn == null || !ApplyAction(board, endTurn, false))
                 return;
 
-            if (!board.ResolveAutomaticTurnStart())
-            {
-                board.RefreshBoard();
-                Debug.LogError("Could not complete the next turn's automatic steps.", this);
-            }
+            board.PresentTurnTransitionThenResolveAutomatic();
         }
     }
 

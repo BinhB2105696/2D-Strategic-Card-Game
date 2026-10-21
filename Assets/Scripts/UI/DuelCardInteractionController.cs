@@ -155,6 +155,137 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         CloseSelection();
     }
 
+    public void ShowGraveyard(int playerIndex)
+    {
+        if (state == null || board.IsPresenting ||
+            playerIndex < 0 || playerIndex >= state.Players.Count)
+            return;
+
+        DuelHudPrototypeController hudController =
+            GetComponentInChildren<DuelHudPrototypeController>(true);
+        hudController?.PrepareForCardSelection();
+        ClearSelectionWindows();
+        detailPanel.SetActive(true);
+        IReadOnlyList<CardInstance> graveyard =
+            state.Players[playerIndex].Graveyard;
+        detailText.text = (playerIndex == board.ViewingPlayerIndex
+            ? "Your Graveyard"
+            : "Opponent Graveyard") +
+            " — newest to oldest (left to right)";
+
+        if (graveyard.Count == 0)
+        {
+            detailText.text += "\nNo cards yet.";
+        }
+        else
+        {
+            CreateGraveyardScroller(graveyard, playerIndex);
+        }
+        AddPanelButton(detailButtonArea, detailButtons,
+            "CLOSE", CloseDetailPanel);
+        LayoutPanelButtons(detailButtons);
+    }
+
+    private void ShowGraveyardCardInformation(
+        CardInstance card, int playerIndex)
+    {
+        ClearDetailRuntime();
+        detailPanel.SetActive(true);
+        detailText.text = "Graveyard card details";
+        CreateCardInformation(card);
+        AddPanelButton(detailButtonArea, detailButtons,
+            "BACK", () => ShowGraveyard(playerIndex));
+        AddPanelButton(detailButtonArea, detailButtons,
+            "CLOSE", CloseDetailPanel);
+        LayoutPanelButtons(detailButtons);
+    }
+
+    private void CreateGraveyardScroller(
+        IReadOnlyList<CardInstance> graveyard, int playerIndex)
+    {
+        GameObject scrollObject = new GameObject(
+            "RuntimeGraveyardScroll", typeof(RectTransform),
+            typeof(CanvasRenderer), typeof(Image), typeof(Mask),
+            typeof(ScrollRect));
+        scrollObject.layer = detailCardArea.gameObject.layer;
+        RectTransform viewport = scrollObject.GetComponent<RectTransform>();
+        viewport.SetParent(detailCardArea, false);
+        viewport.anchorMin = Vector2.zero;
+        viewport.anchorMax = Vector2.one;
+        viewport.offsetMin = new Vector2(4f, 4f);
+        viewport.offsetMax = new Vector2(-4f, -4f);
+        scrollObject.GetComponent<Image>().color =
+            new Color32(5, 24, 41, 220);
+        GameObject contentObject = new GameObject(
+            "Content", typeof(RectTransform),
+            typeof(HorizontalLayoutGroup), typeof(ContentSizeFitter));
+        contentObject.layer = scrollObject.layer;
+        RectTransform content = contentObject.GetComponent<RectTransform>();
+        content.SetParent(viewport, false);
+        content.anchorMin = new Vector2(0f, 0f);
+        content.anchorMax = new Vector2(0f, 1f);
+        content.pivot = new Vector2(0f, 0.5f);
+        content.anchoredPosition = Vector2.zero;
+        content.sizeDelta = Vector2.zero;
+        HorizontalLayoutGroup layout =
+            contentObject.GetComponent<HorizontalLayoutGroup>();
+        layout.padding = new RectOffset(12, 12, 10, 10);
+        layout.spacing = 12f;
+        layout.childAlignment = TextAnchor.MiddleLeft;
+        layout.childControlWidth = false;
+        layout.childControlHeight = true;
+        layout.childForceExpandWidth = false;
+        layout.childForceExpandHeight = true;
+        ContentSizeFitter fitter =
+            contentObject.GetComponent<ContentSizeFitter>();
+        fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+        fitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+        ScrollRect scroll = scrollObject.GetComponent<ScrollRect>();
+        scroll.viewport = viewport;
+        scroll.content = content;
+        scroll.horizontal = true;
+        scroll.vertical = false;
+        scroll.movementType = ScrollRect.MovementType.Clamped;
+        scroll.scrollSensitivity = 30f;
+        detailCards.Add(scrollObject);
+
+        for (int newestIndex = 0; newestIndex < graveyard.Count;
+             newestIndex++)
+        {
+            CardInstance card = graveyard[graveyard.Count - 1 - newestIndex];
+            GameObject choiceObject = new GameObject(
+                "GraveyardChoice_" + card.InstanceId,
+                typeof(RectTransform), typeof(CanvasRenderer),
+                typeof(Image), typeof(Button), typeof(LayoutElement));
+            choiceObject.layer = contentObject.layer;
+            RectTransform choice = choiceObject.GetComponent<RectTransform>();
+            choice.SetParent(content, false);
+            LayoutElement element =
+                choiceObject.GetComponent<LayoutElement>();
+            element.preferredWidth = 215f;
+            element.minWidth = 215f;
+            Image background = choiceObject.GetComponent<Image>();
+            background.color = new Color32(22, 77, 139, 235);
+            Button button = choiceObject.GetComponent<Button>();
+            button.targetGraphic = background;
+            CardInstance selected = card;
+            button.onClick.AddListener(() =>
+                ShowGraveyardCardInformation(selected, playerIndex));
+            CreateCardPreview(card, choice, new Vector2(0f, 20f), 0.60f);
+            TMP_Text label = CreatePanelLabel(
+                choice, "GraveyardCardName",
+                "#" + (newestIndex + 1) + " " + card.Definition.CardName,
+                21f);
+            RectTransform labelRect = label.rectTransform;
+            labelRect.anchorMin = new Vector2(0f, 0f);
+            labelRect.anchorMax = new Vector2(1f, 0f);
+            labelRect.pivot = new Vector2(0.5f, 0f);
+            labelRect.anchoredPosition = new Vector2(0f, 2f);
+            labelRect.sizeDelta = new Vector2(-8f, 48f);
+        }
+    }
+
     public void ShowResponsePrompt()
     {
         if (state == null || !state.HasOpenResponseWindow || state.IsFinished)
@@ -1795,7 +1926,10 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         foreach (GameObject item in objects)
         {
             if (item != null)
+            {
+                item.SetActive(false);
                 Destroy(item);
+            }
         }
         objects.Clear();
     }

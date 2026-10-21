@@ -100,7 +100,7 @@ The recommended first playable slice is:
    `EffectDefinition`.
 5. Pay its Available Energy cost.
 6. Resolve the reusable Draw Cards operation.
-7. Move the resolved Spell from its zone to Graveyard face-down.
+7. Move the resolved Spell from its zone to Graveyard face-up.
 8. Emit events for placement, activation, cost, resolution, and movement.
 
 Future variants use explicit alternate flows rather than bypassing this rule

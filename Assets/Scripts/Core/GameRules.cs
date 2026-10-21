@@ -1300,13 +1300,13 @@ public static class GameRules
         state.RemovePersistentModifiersFromSource(card.InstanceId);
         if (card.Zone == CardZone.FieldZone)
         {
-            owner.MoveFieldSpellToGraveyard(true);
+            owner.MoveFieldSpellToGraveyard();
         }
         else if (card.Zone == CardZone.SpellTrapZone)
         {
             int zoneIndex = owner.FindSpellTrapZoneIndex(card.InstanceId);
             if (zoneIndex >= 0)
-                owner.MoveSpellTrapToGraveyard(zoneIndex, true);
+                owner.MoveSpellTrapToGraveyard(zoneIndex);
         }
         else
         {
@@ -1343,7 +1343,7 @@ public static class GameRules
                     continue;
 
                 state.RemovePersistentModifiersFromSource(equip.InstanceId);
-                player.MoveSpellTrapToGraveyard(zoneIndex, true);
+                player.MoveSpellTrapToGraveyard(zoneIndex);
                 events.Add(GameEvent.CardSentToGraveyard(
                     player.PlayerIndex,
                     equip.InstanceId,

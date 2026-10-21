@@ -91,7 +91,7 @@ public static class NormalSpellDiagnostics
             player.Graveyard.Count == graveyardBefore + 1 &&
             player.Graveyard[player.Graveyard.Count - 1].InstanceId ==
             spell.InstanceId &&
-            player.Graveyard[player.Graveyard.Count - 1].IsFaceDown;
+            !player.Graveyard[player.Graveyard.Count - 1].IsFaceDown;
         bool spellTrapZoneReleased = player.SpellTrapZones[0] == null;
         bool drewOneCard = player.Deck.Count == deckBefore - 1 &&
             player.Hand.Count == handBefore;
@@ -127,7 +127,7 @@ public static class NormalSpellDiagnostics
             "Activation Energy paid: 1\n" +
             "Cards drawn by effect: 1\n" +
             "Spell entered Spell/Trap Zone face-up: True\n" +
-            "Resolved Spell moved from field to Graveyard face-down: True\n" +
+            "Resolved Spell moved from field to Graveyard face-up: True\n" +
             "Spell/Trap Zone released after resolution: True\n" +
             "Activation event order is correct: True\n" +
             $"Generated events: {generatedEvents.Count}\n" +

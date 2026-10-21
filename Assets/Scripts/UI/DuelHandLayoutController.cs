@@ -15,11 +15,13 @@ public sealed class DuelHandLayoutController : MonoBehaviour
     private readonly List<RectTransform> slots = new List<RectTransform>();
     private RectTransform contentRect;
     private bool allowFocus;
+    private bool reverseOrder;
     private int focusedIndex = -1;
 
-    public void BeginLayout(bool enableFocus)
+    public void BeginLayout(bool enableFocus, bool reverseVisualOrder = false)
     {
         allowFocus = enableFocus;
+        reverseOrder = reverseVisualOrder;
         focusedIndex = -1;
         slots.Clear();
 
@@ -82,16 +84,22 @@ public sealed class DuelHandLayoutController : MonoBehaviour
         foreach (float gap in gaps)
             occupiedSpan += gap;
 
+        float[] visualPositions = new float[slots.Count];
         float positionX = -occupiedSpan * 0.5f;
+        for (int index = 0; index < slots.Count; index++)
+        {
+            visualPositions[index] = positionX;
+            if (index < gaps.Length)
+                positionX += gaps[index];
+        }
         for (int index = 0; index < slots.Count; index++)
         {
             RectTransform slot = slots[index];
             slot.anchorMin = slot.anchorMax = slot.pivot =
                 new Vector2(0.5f, 0.5f);
-            slot.anchoredPosition = new Vector2(positionX, 0f);
-
-            if (index < gaps.Length)
-                positionX += gaps[index];
+            int visualIndex = reverseOrder ? slots.Count - 1 - index : index;
+            slot.anchoredPosition = new Vector2(
+                visualPositions[visualIndex], 0f);
         }
     }
 

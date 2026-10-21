@@ -20,6 +20,8 @@ public class CardView : MonoBehaviour
     [Header("Card State")]
     [SerializeField] private bool startFaceDown;
 
+    public bool IsFaceDown => startFaceDown;
+
     [Header("Monster UI")]
     [SerializeField] private GameObject monsterStatsContainer;
     [SerializeField] private TMP_Text rankText;

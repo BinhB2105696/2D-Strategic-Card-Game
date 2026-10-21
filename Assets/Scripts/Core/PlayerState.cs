@@ -369,14 +369,14 @@ public sealed class PlayerState
         return replaced;
     }
 
-    internal CardInstance MoveFieldSpellToGraveyard(bool faceDown)
+    internal CardInstance MoveFieldSpellToGraveyard()
     {
         if (fieldSpell == null)
             return null;
 
         CardInstance card = fieldSpell;
         fieldSpell = null;
-        card.MoveToZone(CardZone.Graveyard, faceDown);
+        card.MoveToZone(CardZone.Graveyard, false);
         graveyard.Add(card);
         return card;
     }
@@ -386,9 +386,7 @@ public sealed class PlayerState
         LastFieldSpellActivationTurn = turnNumber;
     }
 
-    internal CardInstance MoveSpellTrapToGraveyard(
-        int zoneIndex,
-        bool faceDown)
+    internal CardInstance MoveSpellTrapToGraveyard(int zoneIndex)
     {
         if (zoneIndex < 0 || zoneIndex >= spellTrapZones.Length)
         {
@@ -404,7 +402,7 @@ public sealed class PlayerState
         }
 
         spellTrapZones[zoneIndex] = null;
-        card.MoveToZone(CardZone.Graveyard, faceDown);
+        card.MoveToZone(CardZone.Graveyard, false);
         graveyard.Add(card);
         return card;
     }

@@ -1,6 +1,6 @@
 # PROJECT CONTEXT
 
-> Last updated: 19 October 2026
+> Last updated: 21 October 2026
 >
 > Status tags:
 > - **[CONFIRMED]**: implement as written unless the user changes it.
@@ -250,7 +250,9 @@ separate action available only in End.
 - A standard Spell/Trap activated from Hand requires an appropriate empty zone
   and first moves onto the field. Cost and effect then resolve from the field.
 - A resolved Normal Spell moves from its shared Spell/Trap Zone to Graveyard
-  face-down, releasing that zone **[CONFIRMED]**.
+  face-up, releasing that zone **[CONFIRMED, changed by student 21 October]**.
+- Cards enter each owner's Graveyard face-up in arrival order; the newest card
+  is on top. Both Graveyards are publicly browsable newest-to-oldest.
 - Equip Spells will target a Monster and remain in a shared Spell/Trap Zone
   while equipped. Field Spells will remain in a dedicated Field Zone.
 - Future hand-activated Spell/Trap effects may explicitly bypass field

@@ -88,6 +88,11 @@ public sealed class DuelEasyBotController : MonoBehaviour
         if ((!IsEnabled && !IsAutoPlayerEnabled) ||
             board == null || board.Session == null)
             return;
+        if (board.IsPresenting)
+        {
+            wasWaitingForBot = false;
+            return;
+        }
 
         GameState state = board.Session.State;
         int controlledPlayerIndex = state.InteractionPlayerIndex;
@@ -169,13 +174,7 @@ public sealed class DuelEasyBotController : MonoBehaviour
 
         if (action.Type == GameActionType.EndTurn)
         {
-            if (!board.ResolveAutomaticTurnStart())
-            {
-                Debug.LogError(
-                    BotDisplayName + " could not complete automatic turn " +
-                    "start steps.",
-                    this);
-            }
+            board.PresentTurnTransitionThenResolveAutomatic();
             return;
         }
 
