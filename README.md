@@ -351,10 +351,25 @@ sides play while the board remains visible. The runtime board also uses the
 selected portrait background and avatars, shows a card back while each Deck is
 nonempty, and shows the latest Graveyard card face-up.
 
-Focused all-category/multi-link regression, readable event-driven animation,
-the duel log, Normal Bot, simulation metrics, the small product shell and Deck
-Builder, the networking feasibility spike and online PvP, and platform builds
-remain incomplete. The revised scope and animation preparation are in
+As of 2 November 2026, the first event-driven duel-presentation queue is also
+implemented in the local board. It captures the board before an accepted action,
+plays ordered `GameEvent` feedback for opening draws, draws, summons, sets,
+activations, attacks, damage, Energy/HP/LP changes, Graveyard movement, and
+turn/phase transitions, blocks input while it is playing, then renders the
+authoritative final state. The compact duel log, an explicit Fast/Skip control,
+all-category presentation acceptance, and Android performance/touch acceptance
+are still incomplete.
+
+A separate AppShell now provides a local guest profile, local deck saves,
+Profile/Settings, Deck Builder, two validated preset decks, and a selected-deck
+PvE handoff against the Easy Bot. Its focused Editor verification passed on 21
+October for save/load safety, deck validation, selected-deck sessions, Easy Bot
+decisions, and authored UI bindings. This is local-only: it is not online
+authentication, cloud sync, replay playback, or a released platform build.
+
+Normal Bot, headless simulation metrics, deterministic replay/state-hash
+verification, networking feasibility/online PvP, and Android/Windows builds
+remain incomplete. The revised scope and current gaps are in
 `Docs/PROJECT_CONTEXT.md` and `Docs/DUEL_PRESENTATION_PLAN.md`.
 
 The December thesis schedule and dated milestones are in

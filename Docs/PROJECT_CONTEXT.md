@@ -350,6 +350,16 @@ when animations are skipped. It should share the same accepted-event stream as
 the animation queue. Start with one generic animation per event family rather
 than individual effects for each card. See `Docs/DUEL_PRESENTATION_PLAN.md`.
 
+**2 November source-status update:** the first queue is now implemented on the
+local board. It captures the rendered board before a valid action, consumes the
+accepted `GameEvent` list in order, blocks input while playing, and converges to
+the authoritative final `GameState`. The implemented feedback covers opening
+hands, draws, summon/Set/activation, Field placement, Graveyard movement,
+attack/damage, Monster HP, player LP, Energy, and turn/phase changes. This is a
+functional baseline, not final acceptance: the compact duel-log UI, explicit
+Fast/Skip control, response/chain readability review, all-category Play Mode
+acceptance, and Android touch/performance check are still required.
+
 ### Product shell and persistence MVP
 
 Start with a guest/local profile and local deck storage. The Main Menu exposes
@@ -391,6 +401,14 @@ returns to Home without changing duel rules. Auto/hot-seat practice and abandone
 matches are excluded from manual-PvE win rate; this is a reviewable UI/statistics
 default, not a gameplay rule. Match archives include deck IDs, seed, version
 metadata and accepted actions; they are not yet a verified replay feature.
+
+**2 November source-status update:** the AppShell slice is implemented in the
+saved scene and its local persistence/session boundary is present. Focused
+Editor verification passed on 21 October for save/load and migration safety,
+copy/deck validation, selected 30/31/40-card sessions, Easy Bot decisions, and
+authored UI bindings. The latest uncommitted UI changes refine Deck Builder
+filter behavior and its selected-tab indication only. A Play Mode acceptance
+pass and an actual Android/Windows build remain separate requirements.
 
 Local schema v2 migrates v1 decks and adds stable local-player/deck IDs, timestamps,
 revision, settings and recent results. Keep the existing save filename and
@@ -572,17 +590,17 @@ Known next gaps:
    Trap set-turn lockout, attack responses, Counter Trap negation,
    two-or-more-link LIFO resolution, insufficient Energy, full zones, pending
    triggers at match end, and the match-result overlay.
-2. Build the accepted-GameEvent presentation queue, compact duel log, and
-   functional animation slice in section 11. Check Android portrait readability
-   and obtain an early Android development build; keep the existing scene layout
-   under the student's visual review.
+2. Finish acceptance of the implemented GameEvent presentation queue: add the
+   compact duel-log UI and explicit Fast/Skip behavior, review response/chain
+   readability and all event families in Play Mode, then check Android portrait
+   readability, touch input, performance, and an early development build.
 3. Implement Normal Bot heuristic scoring and a headless bot-vs-bot runner with
    the metrics in section 12. Add deterministic state hashes/replay loading
    before networking depends on the action stream.
-4. Deliver the small guest profile/Main Menu/Deck Builder MVP in section 11,
-   while performing the short networking feasibility spike from section 13.
-   Do not install or commit a networking stack until the result and tradeoffs
-   are discussed.
+4. Run the remaining AppShell Play Mode acceptance and Android/Windows build
+   checks, while performing the short networking feasibility spike from section
+   13. Do not install or commit a networking stack until the result and
+   tradeoffs are discussed.
 
 ## 16. Roadmap
 
@@ -653,14 +671,15 @@ Discuss any change to the Tier 1A/1B commitments with the student; do not
 silently remove them. As of 19 October, the core Step 4 local-play slice and the expanded executable
 card-flow portion of Step 5 have initial Play Mode acceptance. The complete
 legal-action view and first Easy Bot have Human-vs-Bot Play Mode acceptance.
-The latest checkpoint adds approved background/avatars, Deck/Graveyard visual
-cards, Auto bot-vs-bot presentation, and Monster artwork. The student has
-confirmed the background and Auto flow in Play Mode; the latest Monster artwork
-still needs an in-Editor visual acceptance pass. The immediate critical path is
-the remaining all-category integration pass and functional duel presentation,
-then Normal Bot, headless metrics, replay/state-hash checks, product-shell MVP,
-and the networking decision. Do not substitute more isolated card scripts or
-smoke tests for those milestones. Tests verify each finished slice.
+The latest source audit on 2 November confirms a working first presentation
+queue and the local AppShell/Deck Builder/PvE slice in addition to the earlier
+background, avatar, Deck/Graveyard, Auto, and Monster-artwork work. App
+persistence and UI bindings have a focused Editor PASS; presentation and
+AppShell still need their stated Play Mode/device acceptance. The immediate
+critical path is the all-category integration pass, presentation completion,
+Normal Bot, headless metrics, replay/state-hash checks, networking feasibility,
+and platform builds. Do not substitute more isolated card scripts or smoke
+tests for those milestones. Tests verify each finished slice.
 
 ## 17. Change Management
 

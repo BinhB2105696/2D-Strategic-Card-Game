@@ -69,6 +69,12 @@ public sealed partial class DeckBuilderAppController
         {
             builderPage.SetActive(true);
             OpenModalPanel(page == "CardDetail" ? detailPanel : page == "Filter" ? filterPanel : messagePanel);
+            if (page == "Filter")
+            {
+                monsterFilterPage.SetActive(filterTab == 0);
+                spellFilterPage.SetActive(filterTab == 1);
+                RefreshFilterTabVisuals();
+            }
         }
     }
 
@@ -126,7 +132,7 @@ public sealed partial class DeckBuilderAppController
         Bind("MainMenu/SettingsShortcut", OpenSettings);
         Bind("DeckBuilder/PreviousDeck", () => SelectDeck(-1));
         Bind("DeckBuilder/NextDeck", () => SelectDeck(1));
-        Bind("DeckBuilder/FavoriteInfo", () => { favoritesOnly = !favoritesOnly; RebuildCatalog(); });
+        Bind("DeckBuilder/FavoriteInfo", () => SelectQuickCategory(4));
         Bind("DeckBuilder/Back", LeaveBuilder);
         Bind("DeckBuilder/Home", LeaveBuilder);
         Bind("DeckBuilder/Save", SaveDeck);
@@ -136,12 +142,7 @@ public sealed partial class DeckBuilderAppController
         for (int i = 0; i < names.Length; i++)
         {
             int choice = i;
-            Bind(toolbarKey + "Category_" + names[i], () =>
-            {
-                if (choice == 4) favoritesOnly = !favoritesOnly;
-                else quickCategory = choice - 1;
-                RebuildCatalog();
-            });
+            Bind(toolbarKey + "Category_" + names[i], () => SelectQuickCategory(choice));
         }
         Bind(toolbarKey + "ClearSearch", () => searchInput.text = "");
         Bind(toolbarKey + "AdvancedFilter", ShowFilter);
@@ -159,10 +160,11 @@ public sealed partial class DeckBuilderAppController
         Bind("ModalLayer/FilterPanel/Clear", () =>
         {
             ranks.Clear(); attributes.Clear(); monsterTypes.Clear(); spellTypes.Clear(); trapTypes.Clear();
+            detailedScope = -1; quickCategory = -1; favoritesOnly = false;
             RebuildCatalog(); ShowFilter();
         });
-        Bind("ModalLayer/FilterPanel/Apply", () => { RebuildCatalog(); CloseModal(); });
-        Bind("ModalLayer/FilterPanel/Close", () => { RebuildCatalog(); CloseModal(); });
+        Bind("ModalLayer/FilterPanel/Apply", ApplyDetailedFilter);
+        Bind("ModalLayer/FilterPanel/Close", ApplyDetailedFilter);
         Bind("ModalLayer/MessagePanel/Okay", CloseModal);
         Bind("ModalLayer/ConfirmPanel/Cancel", CloseModal);
         Bind("ModalLayer/ConfirmPanel/Discard", () =>
@@ -301,6 +303,55 @@ public sealed partial class DeckBuilderAppController
         confirmText.enableWordWrapping = true;
         ButtonAt(panel, "Cancel", "KEEP EDITING", 30, 30, 360, 420, 100, Blue, null);
         ButtonAt(panel, "Discard", "DISCARD", 32, 490, 360, 420, 100, Blue, null);
+    }
+
+    private void RefreshFilterTabVisuals()
+    {
+        RefreshFilterTab("MonsterTab", filterTab == 0);
+        RefreshFilterTab("SpellTrapTab", filterTab == 1);
+
+        // Follow the authored viewport without rebuilding or resizing the saved UI.
+        // Keep the frame outside its RectMask2D, and never intercept list input.
+        RectTransform viewport = (filterTab == 0 ? monsterFilterPage : spellFilterPage)
+            .GetComponent<RectTransform>();
+        RectTransform frame = filterPanel.transform.Find("ActiveFilterFrame") as RectTransform;
+        if (frame == null) frame = NewRect(filterPanel.transform, "ActiveFilterFrame");
+        frame.anchorMin = viewport.anchorMin;
+        frame.anchorMax = viewport.anchorMax;
+        frame.pivot = viewport.pivot;
+        frame.localScale = viewport.localScale;
+        frame.localRotation = viewport.localRotation;
+        frame.sizeDelta = viewport.sizeDelta + new Vector2(10, 20);
+        frame.anchoredPosition = viewport.anchoredPosition +
+            new Vector2(-5 + 10 * viewport.pivot.x, -5 + 20 * viewport.pivot.y);
+        frame.SetAsLastSibling();
+        FilterFrameEdge(frame, "Top", new Vector2(0, 1), Vector2.one, new Vector2(0, -3), Vector2.zero);
+        FilterFrameEdge(frame, "Bottom", Vector2.zero, new Vector2(1, 0), Vector2.zero, new Vector2(0, 3));
+        FilterFrameEdge(frame, "Left", Vector2.zero, new Vector2(0, 1), Vector2.zero, new Vector2(3, 0));
+        FilterFrameEdge(frame, "Right", new Vector2(1, 0), Vector2.one, new Vector2(-3, 0), Vector2.zero);
+    }
+
+    private void RefreshFilterTab(string name, bool selected)
+    {
+        Button button = buttonReferences.Find(item => item.key == "ModalLayer/FilterPanel/" + name)?.button;
+        if (button == null) return;
+        button.GetComponent<Image>().color = selected ? Gold : Blue;
+        button.GetComponentInChildren<TMP_Text>(true).color = selected ? Navy : White;
+    }
+
+    private static void FilterFrameEdge(RectTransform frame, string name, Vector2 min, Vector2 max,
+        Vector2 offsetMin, Vector2 offsetMax)
+    {
+        RectTransform edge = frame.Find(name) as RectTransform;
+        if (edge == null) edge = NewRect(frame, name);
+        edge.anchorMin = min;
+        edge.anchorMax = max;
+        edge.offsetMin = offsetMin;
+        edge.offsetMax = offsetMax;
+        Image image = edge.GetComponent<Image>();
+        if (image == null) image = edge.gameObject.AddComponent<Image>();
+        image.color = Gold;
+        image.raycastTarget = false;
     }
 
     private GameObject CreateFilterList(Transform parent, string name, bool monsters)

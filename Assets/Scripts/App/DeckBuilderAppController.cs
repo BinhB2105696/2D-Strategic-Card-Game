@@ -55,6 +55,8 @@ public sealed partial class DeckBuilderAppController : MonoBehaviour
     private bool favoritesOnly;
     private bool sortDescending;
     private int filterTab;
+    // -1: quick category; 0: detailed Monsters; 1: detailed Spells/Traps.
+    private int detailedScope = -1;
     private SortMode sortMode = SortMode.Name;
     private float catalogHeight = 1120f;
     private bool saveRequiresExplicitAction;
@@ -225,7 +227,7 @@ public sealed partial class DeckBuilderAppController : MonoBehaviour
             Blue, () => SelectDeck(1));
         ButtonAt(parent, "FavoriteInfo", "* FAVORITES", 28,
             355, 190, 280, 70, Blue,
-            () => { favoritesOnly = !favoritesOnly; RebuildCatalog(); });
+            () => SelectQuickCategory(4));
 
         RectTransform deckViewport = Stretch(parent, "DeckViewport",
             12, 145, 12, 275);
@@ -262,11 +264,7 @@ public sealed partial class DeckBuilderAppController : MonoBehaviour
             int choice = i;
             ButtonAt(tools, "Category_" + categories[i], categories[i], 28,
                 18 + i * 211, 0, 200, 58, Blue, () =>
-                {
-                    if (choice == 4) favoritesOnly = !favoritesOnly;
-                    else quickCategory = choice - 1;
-                    RebuildCatalog();
-                });
+                { SelectQuickCategory(choice); });
         }
         searchInput = Input(tools, "Search", "", 20, 70, 630, 60,
             "Search name or effect text...");
@@ -330,6 +328,7 @@ public sealed partial class DeckBuilderAppController : MonoBehaviour
         editingDeck = Copy(profile.decks[profile.selectedDeck]);
         quickCategory = -1;
         favoritesOnly = false;
+        detailedScope = -1;
         SetCatalogHeight(catalogHeight);
         RebuildDeck();
         RebuildCatalog();
@@ -422,15 +421,38 @@ public sealed partial class DeckBuilderAppController : MonoBehaviour
             (card.EffectText == null || card.EffectText.IndexOf(query,
                 StringComparison.OrdinalIgnoreCase) < 0))
             return false;
-        if (card.Category == CardCategory.Monster)
+        if (detailedScope < 0) return true;
+        if (detailedScope == 0)
+        {
+            if (card.Category != CardCategory.Monster) return false;
             return (ranks.Count == 0 || ranks.Contains(card.MonsterRank.ToString())) &&
                 (attributes.Count == 0 || attributes.Contains(
                     card.MonsterAttribute.ToString())) &&
                 (monsterTypes.Count == 0 || monsterTypes.Contains(
                     card.MonsterType.ToString()));
+        }
+        if (card.Category == CardCategory.Monster) return false;
+        bool hasSubtypeSelection = spellTypes.Count > 0 || trapTypes.Count > 0;
         if (card.Category == CardCategory.Spell)
-            return spellTypes.Count == 0 || spellTypes.Contains(card.SpellType.ToString());
-        return trapTypes.Count == 0 || trapTypes.Contains(card.TrapType.ToString());
+            return !hasSubtypeSelection || spellTypes.Contains(card.SpellType.ToString());
+        return !hasSubtypeSelection || trapTypes.Contains(card.TrapType.ToString());
+    }
+
+    private void SelectQuickCategory(int choice)
+    {
+        favoritesOnly = choice == 4;
+        quickCategory = choice == 4 ? -1 : choice - 1;
+        detailedScope = -1;
+        RebuildCatalog();
+    }
+
+    private void ApplyDetailedFilter()
+    {
+        detailedScope = filterTab;
+        quickCategory = -1;
+        favoritesOnly = false;
+        RebuildCatalog();
+        CloseModal();
     }
 
     private int CompareCatalog(CardData a, CardData b)
@@ -532,6 +554,7 @@ public sealed partial class DeckBuilderAppController : MonoBehaviour
         OpenModalPanel(filterPanel);
         monsterFilterPage.SetActive(filterTab == 0);
         spellFilterPage.SetActive(filterTab == 1);
+        RefreshFilterTabVisuals();
         foreach (AppFilterOption option in filterOptions)
             option.Refresh(FilterSet(option.group).Contains(option.value));
     }
