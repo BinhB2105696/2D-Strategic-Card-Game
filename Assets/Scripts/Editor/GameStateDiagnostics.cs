@@ -527,12 +527,12 @@ public static class GameStateDiagnostics
             firstState.MonsterZones[0] == null &&
             firstState.Graveyard.Count == 1 &&
             firstState.Graveyard[0] == firstMonster &&
-            firstState.Health == 3900;
+            firstState.Health == config.StartingPlayerHealth - config.GetKnockoutPenalty(testMonster.MonsterRank);
 
         if (!destructionIsCorrect)
         {
             Debug.LogError(
-                "Battle destruction or Energy penalty is incorrect.");
+                "Battle KO or rank penalty is incorrect.");
             return;
         }
 
@@ -547,7 +547,7 @@ public static class GameStateDiagnostics
             secondMonster.InstanceId));
 
         bool firstDirectAttackIsCorrect =
-            firstState.Health == 2400 &&
+            firstState.Health == config.StartingPlayerHealth - config.GetKnockoutPenalty(testMonster.MonsterRank) - 1500 &&
             secondMonster.AttacksUsedThisTurn == 1 &&
             secondMonster.MaxAttacksThisTurn == 1;
 
@@ -562,7 +562,7 @@ public static class GameStateDiagnostics
             secondPlayer,
             secondMonster.InstanceId));
 
-        if (firstState.Health != 900 ||
+        if (firstState.Health != config.StartingPlayerHealth - config.GetKnockoutPenalty(testMonster.MonsterRank) - 3000 ||
             secondMonster.AttacksUsedThisTurn != 2 ||
             secondMonster.MaxAttacksThisTurn != 2)
         {
@@ -575,7 +575,7 @@ public static class GameStateDiagnostics
             "Turn 1 skipped Battle Phase and attack was rejected: True\n" +
             "Attack Position defender took full ATK damage: True\n" +
             "Destroyed Monster moved to Graveyard: True\n" +
-            "Destruction penalty: 100 HP for 1 allocated Energy\n" +
+            "KO penalty uses rank, independently of allocated Energy\n" +
             "Attacker did not take counter-damage: True\n" +
             "Overflow damage did not reach player HP: True\n" +
             "Direct attack after opponent field became empty: 1500\n" +
@@ -693,7 +693,7 @@ public static class GameStateDiagnostics
             defaults.NormalSummonEnergyCost,
             defaults.MonsterZoneCount,
             defaults.SpellTrapZoneCount,
-            defaults.DestructionPenaltyPerEnergy);
+            defaults.KnockoutPenaltyPerRank);
     }
 
     private static CardDefinition CreateBattleTestMonster()

@@ -199,6 +199,12 @@ public sealed class DefinitionCardEffect : ICardEffect
                     ResolveHealthRestore(context, operation.Amount, events);
                     break;
 
+                case EffectOperationType.IncreaseMaximumHealth:
+                case EffectOperationType.ReduceMaximumHealth:
+                    ResolveMaximumHealth(context, operation.Type == EffectOperationType.IncreaseMaximumHealth
+                        ? operation.Amount : -operation.Amount, events);
+                    break;
+
                 case EffectOperationType.NegatePreviousChainLink:
                     ResolveNegation(context, events);
                     break;
@@ -311,7 +317,7 @@ public sealed class DefinitionCardEffect : ICardEffect
             removed,
             context.State.CurrentPhase));
         int restored = removed * System.Math.Max(0, healthPerEnergy);
-        target.RestoreHealth(restored);
+        restored = target.RestoreHealth(restored);
         events.Add(GameEvent.MonsterHealthModified(
             target.OwnerPlayerIndex,
             target.InstanceId,
@@ -494,12 +500,27 @@ public sealed class DefinitionCardEffect : ICardEffect
             return;
 
         int restored = System.Math.Max(0, amount);
-        target.RestoreHealth(restored);
+        restored = target.RestoreHealth(restored);
         events.Add(GameEvent.MonsterHealthModified(
             target.OwnerPlayerIndex,
             target.InstanceId,
             restored,
             context.State.CurrentPhase));
+    }
+
+    private static void ResolveMaximumHealth(EffectContext context, int amount, List<GameEvent> events)
+    {
+        CardInstance target = FindEffectMonster(context);
+        if (target == null || target.IsDestroyed) return;
+        int before = target.CurrentHealth;
+        int maximumBefore = target.MaximumHealth;
+        // A resolved permanent buff belongs to its target, not the spent spell.
+        context.State.ApplyStatModifier(target.InstanceId, target, 0, 0,
+            maximumHealthAmount: amount);
+        events.Add(GameEvent.MonsterMaximumHealthModified(target.OwnerPlayerIndex,
+            target.InstanceId, target.MaximumHealth - maximumBefore, context.State.CurrentPhase));
+        events.Add(GameEvent.MonsterHealthModified(target.OwnerPlayerIndex,
+            target.InstanceId, target.CurrentHealth - before, context.State.CurrentPhase));
     }
 
     private static CardInstance FindEffectMonster(EffectContext context)

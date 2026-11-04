@@ -159,7 +159,7 @@ Examples include:
 - Draw
 - Attack/Defense buff
 - Attack/Defense debuff
-- Destroy
+- Spell/Trap removal (Monster defeat must respect HP)
 - Discard
 - Change position
 - Recover/revive
@@ -311,7 +311,7 @@ This structure may change as implementation progresses.
 - [ ] Event-driven functional duel animation and compact duel log
 - [ ] Normal Bot
 - [ ] Headless bot-vs-bot simulation, replay/state hashes, and evaluation metrics
-- [ ] Guest profile, Main Menu, and Deck Builder MVP with local deck saves
+- [x] Guest profile, Main Menu, and Deck Builder MVP with local deck saves (Editor verified; device acceptance pending)
 - [ ] Gameplay balancing and testing
 - [ ] Online PvP and player identity/accounts
 - [ ] Android build
@@ -330,6 +330,12 @@ Detailed and frequently changing design decisions are maintained separately in:
 This document is intended to be updated whenever important gameplay, architecture, bot, or project-scope decisions change.
 
 ## Current Status
+
+The 3 November balance slice uses 6000 starting LP, capped Monster recovery,
+damage-preserving maximum HP and KO penalties of 500/1000/1500/2000 LP by rank,
+replacing the Energy-based penalty. Seven existing Monsters and two DEF buffs
+are rebalanced; no new card designs are added. See
+`Docs/HP_BALANCE_2026-11-03.md` for verification status and Play Mode checks.
 
 The repository and Unity project use Unity 2022.3.62f3 LTS.
 

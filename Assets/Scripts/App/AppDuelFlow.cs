@@ -40,10 +40,11 @@ public sealed class AppDuelFlow : MonoBehaviour
         if (board.Session.State.IsFinished && !resultShown)
         {
             resultShown = true; pendingExit = false;
-            outcome = board.Session.State.WinnerPlayerIndex == 0 ? "Win" : "Loss";
+            outcome = board.Session.State.WinnerPlayerIndex < 0 ? "Draw" :
+                board.Session.State.WinnerPlayerIndex == 0 ? "Win" : "Loss";
             board.CloseCardWindows();
             panel.SetActive(true); cancel.gameObject.SetActive(false);
-            title.text = outcome == "Win" ? "VICTORY" : "DEFEAT";
+            title.text = outcome == "Draw" ? "DRAW" : outcome == "Win" ? "VICTORY" : "DEFEAT";
             description.text = request.deck.name + "\nTurns: " + board.Session.State.TurnNumber +
                 (usedAuto ? "\nAuto / practice match" : "\nPvE vs Easy Bot");
             SaveResult();

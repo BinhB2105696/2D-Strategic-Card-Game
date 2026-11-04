@@ -17,6 +17,7 @@ public sealed class DuelPresentationController : MonoBehaviour
         public int Index;
         public bool FaceDown;
         public int Health;
+        public int MaximumHealth;
         public int Energy;
         public RectTransform Visual;
     }
@@ -54,6 +55,7 @@ public sealed class DuelPresentationController : MonoBehaviour
         new Dictionary<long, int>();
     private readonly List<GameObject> hiddenGraveStatuses =
         new List<GameObject>();
+    private readonly Dictionary<long, int> visibleMonsterMaximumHealth = new Dictionary<long, int>();
     private readonly int[] visibleHealth = new int[2];
     private readonly int[] visibleEnergy = new int[2];
     private DuelBoardReadOnlyDemo board;
@@ -198,10 +200,12 @@ public sealed class DuelPresentationController : MonoBehaviour
         visibleEnergy[1] = before.Energy[1];
         displayedTurnNumber = before.TurnNumber;
         visibleMonsterHealth.Clear();
+        visibleMonsterMaximumHealth.Clear();
         visibleMonsterEnergy.Clear();
         foreach (KeyValuePair<long, CardBefore> pair in before.Cards)
         {
             visibleMonsterHealth[pair.Key] = pair.Value.Health;
+            visibleMonsterMaximumHealth[pair.Key] = pair.Value.MaximumHealth;
             visibleMonsterEnergy[pair.Key] = pair.Value.Energy;
         }
         StartCoroutine(PlaySequence(events, finalState, onComplete));
@@ -274,6 +278,7 @@ public sealed class DuelPresentationController : MonoBehaviour
             FaceDown = card.IsFaceDown ||
                 (zone == CardZone.Hand && playerIndex != before.ViewingPlayer),
             Health = card.CurrentHealth,
+            MaximumHealth = card.MaximumHealth,
             Energy = card.AllocatedEnergy,
             Visual = board.FindRenderedCard(card.InstanceId)
         };
@@ -463,6 +468,10 @@ public sealed class DuelPresentationController : MonoBehaviour
             case GameEventType.MonsterHealthModified:
                 yield return ChangeMonsterHealth(eventData.CardInstanceId,
                     eventData.Amount);
+                break;
+            case GameEventType.MonsterMaximumHealthModified:
+                visibleMonsterMaximumHealth.TryGetValue(eventData.CardInstanceId, out int maximum);
+                visibleMonsterMaximumHealth[eventData.CardInstanceId] = Mathf.Max(0, maximum + eventData.Amount);
                 break;
             case GameEventType.EnergySpent:
                 yield return ChangeEnergy(eventData.PlayerIndex,
@@ -734,7 +743,8 @@ public sealed class DuelPresentationController : MonoBehaviour
             ? CardPosition(pendingAttackerId)
             : CardPosition(instanceId) + Vector2.up * 70f;
         yield return AnimateNumber(label, "HP ", oldValue, newValue,
-            source, target);
+            source, target, value => DuelMonsterZoneStatusView.SetHealthText(label, value,
+                visibleMonsterMaximumHealth.TryGetValue(instanceId, out int maximum) ? maximum : newValue));
     }
 
     private IEnumerator ChangePlayerHealth(int playerIndex, int delta)
@@ -781,11 +791,15 @@ public sealed class DuelPresentationController : MonoBehaviour
         int oldValue,
         int newValue,
         Vector2 source,
-        Vector2 target)
+        Vector2 target,
+        Action<int> onValue = null)
     {
         int change = newValue - oldValue;
         if (change == 0)
+        {
+            onValue?.Invoke(newValue);
             yield break;
+        }
 
         TextMeshProUGUI flying = CreateText(
             "RuntimeValueChange",
@@ -807,10 +821,12 @@ public sealed class DuelPresentationController : MonoBehaviour
             if (label != null)
                 label.text = prefix + Mathf.RoundToInt(
                     Mathf.Lerp(oldValue, newValue, t));
+            onValue?.Invoke(Mathf.RoundToInt(Mathf.Lerp(oldValue, newValue, t)));
             yield return null;
         }
         if (label != null)
             label.text = prefix + newValue;
+        onValue?.Invoke(newValue);
         Destroy(flying.gameObject);
     }
 

@@ -50,6 +50,16 @@ message from charging a cost and leaving a half-resolved action.
    erase `AttacksUsedThisTurn` unless a card explicitly says so.
 10. Each supported operation should be reusable by more than one card. Avoid
     writing a unique rules branch identified by a card name.
+11. Recovery is capped at current maximum Monster HP. Maximum-HP changes instead
+    preserve accumulated damage, in both directions. A decrease or lost buff
+    may KO a Monster. Printed/base HP is never mutated by an effect.
+12. A field Monster at 0 HP incurs the rank KO penalty exactly once, regardless
+    of cause; tributes do not. Existing battle-only triggers stay battle-only.
+    Settle simultaneous KO penalties before checking winner/draw.
+13. Health events report actual recovered/lost HP, not the requested amount.
+    Maximum-HP changes have a separate event for the presentation denominator.
+    End-of-effect/chain-link cleanup and end-turn expiration must settle KOs
+    before the next action or chain link. A KO is not healed/revived implicitly.
 
 ## 3. Current C# contracts
 
@@ -111,3 +121,14 @@ a dedicated Field Zone.
 Trap setting, response windows, Speed 2/3 chains, Equip duration, and Field
 Spell ownership described above are now connected through the same validated
 action/effect pipeline. Future components must continue using that boundary.
+
+## 5. November HP components
+
+`ModifyMaximumHealthResolutionAsset` supports increase or decrease through its
+direction setting and a positive amount slot. Resolved changes belong to the
+target until it leaves the field; they do not expire merely because a Normal
+Spell goes to the Graveyard. Tide Sprite uses the increase asset with Amount 300.
+`RestoreMonsterHealth` and `RestoreHealthPerRemovedAllocatedEnergy` are recovery,
+not maximum-HP buffs. The latter still removes all Energy even at full HP.
+Stat modifiers can also carry maximum HP, including temporary and continuous
+source-bound modifiers, so expiration/source removal preserves damage.

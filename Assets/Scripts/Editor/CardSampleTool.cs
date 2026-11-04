@@ -693,6 +693,85 @@ public static class CardSampleTool
         ConfigureRequestedCards(
             ownMonster,
             CreateComponent<OpponentMonsterTargetAsset>(OpponentMonsterPath));
+        ApplyNovemberBalanceInternal();
+    }
+
+    // Targeted, repeatable migration. Preserve artwork, IDs, ranks, timing,
+    // targets, costs and usage limits; do not regenerate scenes or card prefabs.
+    [MenuItem("Card Game/Sample Cards/Apply November 3 Balance")]
+    public static void ApplyNovemberBalance()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode)
+            throw new InvalidOperationException("Apply card balance in Edit Mode only.");
+        ApplyNovemberBalanceInternal();
+        // Save only this migration's targets, not unrelated dirty assets in the Editor.
+        foreach (string id in new[] { "dawnwing_fairy", "gravebound_imp", "sample_tide_sprite",
+            "sample_stone_guardian", "fire_dragon", "sample_sky_sage", "legendary_fighter", "guardian_shift" })
+        {
+            CardData card = FindCardById(id);
+            if (card != null) AssetDatabase.SaveAssetIfDirty(card);
+        }
+        AssetDatabase.SaveAssetIfDirty(AssetDatabase.LoadAssetAtPath<ModifyMaximumHealthResolutionAsset>(
+            ResolutionFolder + "/Increase_Maximum_Health.asset"));
+        Debug.Log("November 3 balance applied to 7 Monsters and Guardian Shift.");
+    }
+
+    private static void ApplyNovemberBalanceInternal()
+    {
+        SetBalancedStats("dawnwing_fairy", 700, 400, 150);
+        SetBalancedStats("gravebound_imp", 800, 500, 200);
+        SetBalancedStats("sample_tide_sprite", 900, 450, 200);
+        SetBalancedStats("sample_stone_guardian", 1000, 350, 450);
+        SetBalancedStats("fire_dragon", 1600, 1000, 300);
+        SetBalancedStats("sample_sky_sage", 2500, 1400, 600);
+        SetBalancedStats("legendary_fighter", 3500, 1000, 800);
+        ModifyMaximumHealthResolutionAsset maximumHealth =
+            CreateComponent<ModifyMaximumHealthResolutionAsset>(ResolutionFolder + "/Increase_Maximum_Health.asset");
+        UpdateBalancedEffect("sample_tide_sprite",
+            "Once per turn: Pay 1 Energy; this card gains 300 maximum HP, preserving damage already taken.",
+            300, maximumHealth);
+        UpdateBalancedEffect("sample_stone_guardian",
+            "Once per turn: Pay 1 Energy; this card gains 300 DEF.", 300);
+        UpdateBalancedEffect("guardian_shift",
+            "When an opponent's monster attacks a monster you control: That monster gains 500 DEF. " +
+            "If it is in Attack Position, change it to Defense Position, then remove all its Energy.", 500);
+        CardData fighter = FindCardById("legendary_fighter");
+        if (fighter != null)
+        {
+            SerializedObject card = new SerializedObject(fighter);
+            SetString(card, "effectText", "When summoned, gains ATK equal to the original ATK of its 3 tributes. " +
+                "When it KOs a monster by battle, remove all Energy from this card; recover 500 HP for each " +
+                "Energy removed, up to its current maximum HP.");
+            SaveCard(card, fighter);
+        }
+    }
+
+    private static void SetBalancedStats(string id, int hp, int atk, int def)
+    {
+        CardData data = FindCardById(id);
+        if (data == null) return;
+        SerializedObject card = new SerializedObject(data);
+        SetInt(card, "baseHealth", hp);
+        SetInt(card, "baseAttack", atk);
+        SetInt(card, "baseDefense", def);
+        SaveCard(card, data);
+    }
+
+    private static void UpdateBalancedEffect(string id, string text, int amount,
+        EffectResolutionAsset replacement = null)
+    {
+        CardData data = FindCardById(id);
+        if (data == null) return;
+        SerializedObject card = new SerializedObject(data);
+        SerializedProperty effects = card.FindProperty("effects");
+        if (effects.arraySize == 0) return;
+        SerializedProperty resolution = effects.GetArrayElementAtIndex(0).FindPropertyRelative("resolution");
+        if (resolution.arraySize == 0) return;
+        SetString(card, "effectText", text);
+        SerializedProperty slot = resolution.GetArrayElementAtIndex(0);
+        slot.FindPropertyRelative("amount").intValue = amount;
+        if (replacement != null) slot.FindPropertyRelative("component").objectReferenceValue = replacement;
+        SaveCard(card, data);
     }
 
     private static void ConfigureIronBlade(

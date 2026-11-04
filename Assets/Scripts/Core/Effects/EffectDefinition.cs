@@ -51,7 +51,9 @@ public enum EffectOperationType
     TransferAttackUntilEndOfTurn,
     SkipCurrentBattlePhase,
     SearchBasicMonsterFromDeck,
-    RecoverBasicMonsterFromGraveyard
+    RecoverBasicMonsterFromGraveyard,
+    IncreaseMaximumHealth,
+    ReduceMaximumHealth
 }
 
 [Serializable]

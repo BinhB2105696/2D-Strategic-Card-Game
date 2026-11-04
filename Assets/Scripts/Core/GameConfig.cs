@@ -12,7 +12,7 @@ public sealed class GameConfig
     public int NormalSummonEnergyCost { get; }
     public int MonsterZoneCount { get; }
     public int SpellTrapZoneCount { get; }
-    public int DestructionPenaltyPerEnergy { get; }
+    public int KnockoutPenaltyPerRank { get; }
 
     public GameConfig(
         int startingPlayerHealth,
@@ -24,7 +24,7 @@ public sealed class GameConfig
         int normalSummonEnergyCost,
         int monsterZoneCount,
         int spellTrapZoneCount,
-        int destructionPenaltyPerEnergy)
+        int knockoutPenaltyPerRank)
     {
         if (startingPlayerHealth <= 0)
         {
@@ -43,7 +43,7 @@ public sealed class GameConfig
 
         if (cardsDrawnPerTurn < 0 || baseMaximumEnergy < 0 ||
             normalSummonEnergyCost < 0 || monsterZoneCount <= 0 ||
-            spellTrapZoneCount <= 0 || destructionPenaltyPerEnergy < 0)
+            spellTrapZoneCount <= 0 || knockoutPenaltyPerRank < 0)
         {
             throw new ArgumentException(
                 "Game configuration values cannot be negative, and zone " +
@@ -59,13 +59,16 @@ public sealed class GameConfig
         NormalSummonEnergyCost = normalSummonEnergyCost;
         MonsterZoneCount = monsterZoneCount;
         SpellTrapZoneCount = spellTrapZoneCount;
-        DestructionPenaltyPerEnergy = destructionPenaltyPerEnergy;
+        KnockoutPenaltyPerRank = knockoutPenaltyPerRank;
     }
+
+    public int GetKnockoutPenalty(MonsterRank rank) =>
+        checked(KnockoutPenaltyPerRank * ((int)rank + 1));
 
     public static GameConfig CreateDefault()
     {
         return new GameConfig(
-            startingPlayerHealth: 4000,
+            startingPlayerHealth: 6000,
             minimumDeckSize: 30,
             maximumDeckSize: 40,
             startingHandSize: 4,
@@ -74,6 +77,6 @@ public sealed class GameConfig
             normalSummonEnergyCost: 1,
             monsterZoneCount: 3,
             spellTrapZoneCount: 3,
-            destructionPenaltyPerEnergy: 100);
+            knockoutPenaltyPerRank: 500);
     }
 }

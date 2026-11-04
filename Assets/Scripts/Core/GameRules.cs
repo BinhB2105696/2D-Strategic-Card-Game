@@ -96,6 +96,15 @@ public static class GameRules
             return ActionResult.Failure(validationError);
         }
 
+        ActionResult result = ApplyValidatedAction(state, action);
+        if (!result.Succeeded) return result;
+        List<GameEvent> events = new List<GameEvent>(result.Events);
+        ResolveKnockouts(state, events);
+        return ActionResult.Success(events);
+    }
+
+    private static ActionResult ApplyValidatedAction(GameState state, GameAction action)
+    {
         switch (action.Type)
         {
             case GameActionType.ResolveDrawStep:
@@ -364,7 +373,9 @@ public static class GameRules
         int endingPlayerIndex = state.CurrentPlayerIndex;
         List<GameEvent> events = new List<GameEvent>();
         ResolveFieldMaintenance(state, endingPlayerIndex, events);
-        state.ExpireTemporaryModifiers(completedTurn);
+        state.ExpireTemporaryModifiers(completedTurn, events);
+        ResolveKnockouts(state, events);
+        if (state.IsFinished) return ActionResult.Success(events);
         state.StartNextTurn();
         events.Add(GameEvent.TurnStarted(
             state.CurrentPlayerIndex,
@@ -919,7 +930,7 @@ public static class GameRules
                 if (replaced != null)
                 {
                     state.RemovePersistentModifiersFromSource(
-                        replaced.InstanceId);
+                        replaced.InstanceId, events);
                     events.Add(GameEvent.CardSentToGraveyard(
                         player.PlayerIndex,
                         replaced.InstanceId,
@@ -1083,7 +1094,7 @@ public static class GameRules
             events.Add(GameEvent.PlayerDamaged(
                 defenderOwner.PlayerIndex,
                 attacker.CurrentAttack));
-            AddMatchEndIfNeeded(state, attackerOwner, defenderOwner, events);
+            AddMatchEndIfNeeded(state, events);
             return;
         }
 
@@ -1105,40 +1116,7 @@ public static class GameRules
             defender.InstanceId,
             damage));
 
-        if (defender.IsDestroyed)
-        {
-            int destructionPenalty = defender.AllocatedEnergy *
-                state.Config.DestructionPenaltyPerEnergy;
-            SendMonsterToGraveyard(
-                state,
-                defenderOwner,
-                defenderZoneIndex,
-                events);
-            events.Add(GameEvent.MonsterDestroyed(
-                defenderOwner.PlayerIndex,
-                defender.InstanceId));
-
-            ResolveTriggeredEffects(
-                state,
-                attacker,
-                EffectTriggerType.OnBattleDestroyedMonster,
-                events);
-            ResolveTriggeredEffects(
-                state,
-                defender,
-                EffectTriggerType.OnDestroyed,
-                events);
-
-            if (destructionPenalty > 0)
-            {
-                defenderOwner.TakeDamage(destructionPenalty);
-                events.Add(GameEvent.PlayerDamaged(
-                    defenderOwner.PlayerIndex,
-                    destructionPenalty));
-            }
-        }
-
-        AddMatchEndIfNeeded(state, attackerOwner, defenderOwner, events);
+        ResolveKnockouts(state, events, defender.InstanceId, attacker);
     }
 
     private static void ResolveChain(
@@ -1178,6 +1156,8 @@ public static class GameRules
                 source,
                 link,
                 events);
+            ResolveKnockouts(state, events);
+            if (state.IsFinished) return;
         }
 
         PendingAttack pendingAttack = chain.PendingAttack;
@@ -1239,6 +1219,7 @@ public static class GameRules
 
         int attackAmount = 0;
         int defenseAmount = 0;
+        int healthAmount = 0;
         for (int index = 0;
              index < effect.ContinuousModifiers.Count;
              index++)
@@ -1246,13 +1227,24 @@ public static class GameRules
             IContinuousModifier modifier = effect.ContinuousModifiers[index];
             attackAmount += modifier.ModifyAttack(source, target);
             defenseAmount += modifier.ModifyDefense(source, target);
+            healthAmount += modifier.ModifyHealth(source, target);
         }
 
+        int oldHealth = target.CurrentHealth;
+        int oldMaximum = target.MaximumHealth;
         state.ApplyStatModifier(
             source.InstanceId,
             target,
             attackAmount,
-            defenseAmount);
+            defenseAmount,
+            maximumHealthAmount: healthAmount);
+        if (healthAmount != 0)
+        {
+            events.Add(GameEvent.MonsterMaximumHealthModified(target.OwnerPlayerIndex,
+                target.InstanceId, target.MaximumHealth - oldMaximum, state.CurrentPhase));
+            events.Add(GameEvent.MonsterHealthModified(target.OwnerPlayerIndex,
+                target.InstanceId, target.CurrentHealth - oldHealth, state.CurrentPhase));
+        }
         if (attackAmount != 0)
         {
             events.Add(GameEvent.MonsterAttackModified(
@@ -1297,7 +1289,7 @@ public static class GameRules
         List<GameEvent> events)
     {
         PlayerState owner = state.Players[card.OwnerPlayerIndex];
-        state.RemovePersistentModifiersFromSource(card.InstanceId);
+        state.RemovePersistentModifiersFromSource(card.InstanceId, events);
         if (card.Zone == CardZone.FieldZone)
         {
             owner.MoveFieldSpellToGraveyard();
@@ -1342,7 +1334,7 @@ public static class GameRules
                     equip.EquippedTargetInstanceId != monster.InstanceId)
                     continue;
 
-                state.RemovePersistentModifiersFromSource(equip.InstanceId);
+                state.RemovePersistentModifiersFromSource(equip.InstanceId, events);
                 player.MoveSpellTrapToGraveyard(zoneIndex);
                 events.Add(GameEvent.CardSentToGraveyard(
                     player.PlayerIndex,
@@ -1727,7 +1719,7 @@ public static class GameRules
                 EffectDefinition effect = FindManualActivationEffect(equip);
                 if (effect == null || effect.ContinuousModifiers.Count == 0)
                     continue;
-                state.RemovePersistentModifiersFromSource(equip.InstanceId);
+                state.RemovePersistentModifiersFromSource(equip.InstanceId, events);
                 ApplyModifierSet(state, equip, target, effect, events);
             }
         }
@@ -1776,18 +1768,51 @@ public static class GameRules
         return false;
     }
 
-    private static void AddMatchEndIfNeeded(
-        GameState state,
-        PlayerState attackerOwner,
-        PlayerState defenderOwner,
-        List<GameEvent> events)
+    // Settle a whole KO batch before deciding a winner; cleanup can remove HP
+    // buffs from other monsters. A card leaves its zone once, so it is penalized once.
+    internal static void ResolveKnockouts(GameState state, List<GameEvent> events,
+        long battleDefenderId = 0, CardInstance battleAttacker = null)
     {
-        if (!defenderOwner.HasLost)
+        if (state.IsFinished) return;
+        CardInstance battleVictim = null;
+        while (true)
         {
-            return;
+            List<CardInstance> knockedOut = new List<CardInstance>();
+            foreach (PlayerState player in state.Players)
+                foreach (CardInstance monster in player.MonsterZones)
+                    if (monster != null && monster.IsDestroyed) knockedOut.Add(monster);
+            if (knockedOut.Count == 0) break;
+            foreach (CardInstance monster in knockedOut)
+            {
+                PlayerState owner = state.Players[monster.OwnerPlayerIndex];
+                int zone = owner.FindMonsterZoneIndex(monster.InstanceId);
+                if (zone < 0) continue;
+                SendMonsterToGraveyard(state, owner, zone, events);
+                events.Add(GameEvent.MonsterDestroyed(owner.PlayerIndex, monster.InstanceId));
+                int penalty = state.Config.GetKnockoutPenalty(monster.Definition.MonsterRank);
+                owner.TakeDamage(penalty);
+                events.Add(GameEvent.PlayerDamaged(owner.PlayerIndex, penalty));
+                if (monster.InstanceId == battleDefenderId) battleVictim = monster;
+            }
         }
+        AddMatchEndIfNeeded(state, events);
+        if (state.IsFinished || battleVictim == null) return;
+        if (battleAttacker != null && battleAttacker.Zone == CardZone.MonsterZone)
+            ResolveTriggeredEffects(state, battleAttacker,
+                EffectTriggerType.OnBattleDestroyedMonster, events);
+        // Existing OnDestroyed recovery is battle-only, not every kind of KO.
+        ResolveTriggeredEffects(state, battleVictim, EffectTriggerType.OnDestroyed, events);
+        ResolveKnockouts(state, events);
+    }
 
-        state.EndMatch(attackerOwner.PlayerIndex);
-        events.Add(GameEvent.MatchEnded(attackerOwner.PlayerIndex));
+    private static void AddMatchEndIfNeeded(GameState state, List<GameEvent> events)
+    {
+        if (state.IsFinished) return;
+        bool firstLost = state.Players[0].HasLost;
+        bool secondLost = state.Players[1].HasLost;
+        if (!firstLost && !secondLost) return;
+        int winner = firstLost && secondLost ? -1 : firstLost ? 1 : 0;
+        state.EndMatch(winner);
+        events.Add(GameEvent.MatchEnded(winner));
     }
 }

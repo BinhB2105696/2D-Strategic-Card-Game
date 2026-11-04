@@ -139,7 +139,7 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         CloseEnergyPanel();
         ClearDetailRuntime();
         detailPanel.SetActive(true);
-        detailText.text = "Player " +
+        detailText.text = completedState.WinnerPlayerIndex < 0 ? "Draw\nBoth players' LP reached 0." : "Player " +
             (completedState.WinnerPlayerIndex + 1) +
             " Wins\nThe opponent's LP reached 0.";
         AddPanelButton(
@@ -1522,7 +1522,7 @@ public sealed class DuelCardInteractionController : MonoBehaviour
                 "<" + definition.MonsterRank + "> [" +
                 definition.MonsterType + "]\n" +
                 "Attribute: " + definition.MonsterAttribute + "\n" +
-                "HP " + card.CurrentHealth + "   ATK " +
+                "HP " + card.CurrentHealth + "/" + card.MaximumHealth + "   ATK " +
                 card.CurrentAttack + "   DEF " + card.CurrentDefense + "\n" +
                 "Attack Energy: " + card.AllocatedEnergy + "/" +
                 definition.AttackEnergyRequirement + "\n\nEffect\n" +

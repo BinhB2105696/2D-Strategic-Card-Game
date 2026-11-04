@@ -119,7 +119,7 @@ public sealed class DuelMonsterZoneStatusView : MonoBehaviour
         if (!visible)
             return;
 
-        healthText.text = "HP " + monster.CurrentHealth;
+        SetHealthText(healthText, monster.CurrentHealth, monster.MaximumHealth);
         attackText.text = "ATK " + monster.CurrentAttack;
         defenseText.text = "DEF " + monster.CurrentDefense;
         energyText.text = "E " + monster.AllocatedEnergy + "/" +
@@ -139,6 +139,13 @@ public sealed class DuelMonsterZoneStatusView : MonoBehaviour
         defenseText.fontStyle = attackPosition
             ? FontStyles.Normal
             : FontStyles.Bold;
+    }
+
+    // Shared by the stationary HUD and its animation clone. Text only: preserve layout.
+    public static void SetHealthText(TMP_Text label, int current, int maximum)
+    {
+        if (label == null) return;
+        label.text = "HP " + current + "/" + maximum;
     }
 
     private static TMP_Text CreateLabel(

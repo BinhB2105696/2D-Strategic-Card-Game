@@ -41,7 +41,8 @@ public enum GameEventType
     DeckShuffled,
     TriggeredEffectOffered,
     TriggeredEffectDeclined,
-    MatchEnded
+    MatchEnded,
+    MonsterMaximumHealthModified
 }
 
 [Serializable]
@@ -53,6 +54,11 @@ public sealed class GameEvent
     public long TargetInstanceId { get; }
     public int Amount { get; }
     public TurnPhase Phase { get; }
+
+    public static GameEvent MonsterMaximumHealthModified(int playerIndex,
+        long instanceId, int amount, TurnPhase phase) =>
+        new GameEvent(GameEventType.MonsterMaximumHealthModified,
+            playerIndex, instanceId, 0, amount, phase);
 
     private GameEvent(
         GameEventType type,

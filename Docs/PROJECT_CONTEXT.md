@@ -1,6 +1,6 @@
 # PROJECT CONTEXT
 
-> Last updated: 21 October 2026
+> Last updated: 3 November 2026
 >
 > Status tags:
 > - **[CONFIRMED]**: implement as written unless the user changes it.
@@ -145,7 +145,7 @@ Higher-tier work must not destabilize a lower tier.
 
 ## 6. Match Fundamentals
 
-- Player starting HP: 4000 **[TENTATIVE]**.
+- Player starting LP: 6000 **[TENTATIVE, trial approved 3 November]**.
 - Deck size: 30-40 cards **[TENTATIVE]**.
 - Starting hand: 4 cards **[TENTATIVE]**.
 - Normal draw: 1 card each turn **[TENTATIVE]**.
@@ -176,7 +176,12 @@ All configurable numbers must live in one `GameConfig`, not as scattered magic n
 - Card effects may remove allocated Energy.
 - Allocated Energy does not increase ATK/DEF **[OPEN, default]**.
 - Energy per monster has no cap **[OPEN, default]**.
-- When a monster is destroyed, its owner loses 100 HP per allocated Energy **[OPEN, default]**.
+- When a field Monster reaches 0 HP (KO), its owner loses LP by rank: Basic
+  500, Advanced 1000, Supreme 1500, Ultimate 2000. This replaces, rather than
+  adds to, the old allocated-Energy penalty **[CONFIRMED, 3 November]**.
+- The rank penalty applies to battle, effect damage and maximum-HP loss alike.
+  Tribute or other non-KO movement does not incur it. Both players reaching
+  0 LP in the same settled KO batch is a draw **[CONFIRMED, 3 November]**.
 
 `PlayerState` must distinguish `MaxEnergy` from `AvailableEnergy`.
 
@@ -222,7 +227,9 @@ choices when no effect is pending. Effects may skip a future Standby Phase.
 - Against Defense Position: damage to monster HP is `max(0, ATK - DEF)`.
 - Overflow damage never reaches player HP **[CONFIRMED]**.
 - Monster damage persists across turns **[OPEN, default]**.
-- A monster at 0 HP goes to the Graveyard and triggers the destruction penalty.
+- A Monster at 0 HP is knocked out, goes to the Graveyard and incurs its rank
+  penalty exactly once. Battle-only effects remain battle-only; effect/HP-buff
+  loss KOs do not activate Gravebound Imp or Legendary Fighter's battle trigger.
 - Direct attack is allowed only when the opponent has no monsters; damage equals attacker ATK **[OPEN, default]**.
 
 ### End Phase
@@ -264,6 +271,31 @@ Initial deck direction:
 - Three sample archetypes: Aggro, Sustain/Defense, and Control.
 - Heavy overlap is allowed; 30-card decks do not require 30 unique designs each.
 - Combo is optional after the first three archetypes work.
+
+### Monster HP and stat design — approved 3 November
+
+- Base HP is the printed immutable definition. Current maximum HP includes
+  active modifiers. Current HP is maximum HP minus accumulated damage, clamped
+  to zero. Raising/lowering maximum HP preserves that damage: 600/900 plus
+  300 maximum HP becomes 900/1200. Losing a buff can cause KO.
+- Recovery restores current HP only, capped at current maximum HP; it cannot
+  revive a KO. Legendary Fighter removes all allocated Energy and recovers
+  500 HP per Energy, with excess recovery discarded. Tide Sprite instead gains
+  300 maximum HP permanently while on the field, preserving damage.
+- Reference HP bands: Basic 500–1200; Advanced 1200–2000 (typical 1600);
+  Supreme 2000–3000 (typical 2500); Ultimate 3000–4000 (typical 3500).
+  These overlap intentionally and are design guidance, not asset-validation limits.
+- Ordinary ATK is roughly 50–70% of HP and DEF 20–25%. Specialists and strong
+  effects may depart from those ratios: e.g. 1200/800/0 aggro or 1000/0/700 tank.
+  Balance effects, attack Energy and tribute investment together, not raw stat sum.
+- Do not add unconditional effect-based Monster destruction. Damage effects
+  can KO; direct Spell/Trap removal is distinct. Reflection/transfer effects
+  require their own approved timing/loop rules before implementation.
+- Approved rebalance: Fairy 700/400/150; Imp 800/500/200; Tide 900/450/200;
+  Stone 1000/350/450; Fire Dragon 1600/1000/300; Sky Sage 2500/1400/600;
+  Legendary Fighter 3500/1000/800 (HP/ATK/DEF). Other base fields unchanged.
+  Stone's persistent DEF gain is now 300; Guardian Shift's is 500. See
+  `Docs/HP_BALANCE_2026-11-03.md` for verification and acceptance steps.
 
 ## 10. Card UI
 
@@ -406,8 +438,8 @@ metadata and accepted actions; they are not yet a verified replay feature.
 saved scene and its local persistence/session boundary is present. Focused
 Editor verification passed on 21 October for save/load and migration safety,
 copy/deck validation, selected 30/31/40-card sessions, Easy Bot decisions, and
-authored UI bindings. The latest uncommitted UI changes refine Deck Builder
-filter behavior and its selected-tab indication only. A Play Mode acceptance
+authored UI bindings. Deck Builder filter behavior and selected-tab indication
+were committed in checkpoint `c6b8b6c`. A Play Mode acceptance
 pass and an actual Android/Windows build remain separate requirements.
 
 Local schema v2 migrates v1 decks and adds stable local-player/deck IDs, timestamps,
@@ -468,7 +500,7 @@ Do not install networking packages until local core actions are deterministic an
 
 | Question | Default |
 |---|---|
-| HP penalty per Energy on destroyed monster | 100 |
+| KO penalty by rank (confirmed 3 November) | 500 / 1000 / 1500 / 2000 LP; independent of Energy |
 | Allocated Energy boosts ATK/DEF | No |
 | Max allocated Energy per monster | No cap |
 | Monster damage persists | Yes |
@@ -480,6 +512,14 @@ Do not install networking packages until local core actions are deterministic an
 | Networking stack | Tentative UGS stack in section 13; decide after spike |
 
 ## 15. Current Progress
+
+3 November approved implementation slice: capped recovery, damage-preserving
+maximum HP, rank-based KO penalty, 6000 LP trial, seven Monster stat rebalance,
+Stone/Guardian DEF adjustments and current/maximum HP text (no bar; existing
+font, alignment and layout preserved). This is not a Normal Bot,
+new-archetype or networking milestone. Verification status is recorded in
+`Docs/HP_BALANCE_2026-11-03.md`; source completion is not Play Mode acceptance.
+The opponent-Graveyard omission in BotGameStateView remains a known follow-up.
 
 Completed or explored:
 

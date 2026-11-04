@@ -17,6 +17,7 @@ public sealed class BotCardView
     public CardZone Zone { get; }
     public BattlePosition BattlePosition { get; }
     public int CurrentHealth { get; }
+    public int MaximumHealth { get; }
     public int CurrentAttack { get; }
     public int CurrentDefense { get; }
     public int AllocatedEnergy { get; }
@@ -45,6 +46,7 @@ public sealed class BotCardView
         Zone = card.Zone;
         BattlePosition = card.BattlePosition;
         CurrentHealth = IsKnown ? card.CurrentHealth : 0;
+        MaximumHealth = IsKnown ? card.MaximumHealth : 0;
         CurrentAttack = IsKnown ? card.CurrentAttack : 0;
         CurrentDefense = IsKnown ? card.CurrentDefense : 0;
         AllocatedEnergy = IsKnown ? card.AllocatedEnergy : 0;

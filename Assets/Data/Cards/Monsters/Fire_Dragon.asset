@@ -20,9 +20,9 @@ MonoBehaviour:
   monsterAttribute: 2
   monsterRank: 1
   monsterType: 0
-  baseHealth: 1800
-  baseAttack: 1200
-  baseDefense: 900
+  baseHealth: 1600
+  baseAttack: 1000
+  baseDefense: 300
   attackEnergyRequirement: 2
   spellType: 1
   trapType: 1

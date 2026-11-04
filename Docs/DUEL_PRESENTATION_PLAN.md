@@ -30,13 +30,14 @@ available when animations are skipped or a device cannot keep up.
 ## Integration boundary
 
 `GameSession.TryApply(GameAction)` returns an `ActionResult` with ordered
-`GameEvent` values. Today the board renders the resulting state immediately.
-The first implementation must capture the visible pre-action board and accepted
-event list, run a presentation queue in event order, then converge to the
-authoritative final `GameState`. A few event types may need old/new visual
-values or lightweight before/after snapshots; verify this before animating
-damage or Graveyard changes. No animation may submit a hidden extra action or
-write to `GameState`.
+`GameEvent` values. The first queue is implemented: it captures the visible
+pre-action board, plays accepted events, then converges to the authoritative
+final `GameState`. Compact log/Fast/Skip and full acceptance remain outstanding.
+The November HP slice adds current/maximum HP snapshots and displays
+`HP current/maximum` in the existing label, preserving font, alignment and position;
+no health bar is added. Recovery animates only the actual capped change; maximum-HP
+events update the denominator without changing gameplay state. No animation
+may submit a hidden extra action or write to `GameState`.
 
 Human controls, response prompts, and bot ticks pause while a blocking event
 sequence runs. Auto and normal play use the same queue. Phase/turn transitions

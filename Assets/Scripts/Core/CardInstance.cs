@@ -26,7 +26,13 @@ public sealed class CardInstance
     public int OwnerPlayerIndex { get; }
     public CardDefinition Definition { get; }
 
-    public int CurrentHealth { get; private set; }
+    // Keep damage independent of the maximum so adding/removing a modifier
+    // never heals damage, even when a reduction temporarily takes HP below zero.
+    private int damageTaken;
+    private int maximumHealthAdjustment;
+    public int MaximumHealth => Definition.IsMonster
+        ? Math.Max(0, checked(Definition.BaseHealth + maximumHealthAdjustment)) : 0;
+    public int CurrentHealth => Math.Max(0, MaximumHealth - damageTaken);
     public int CurrentAttack => Math.Max(
         0,
         Definition.BaseAttack + attackAdjustment);
@@ -75,7 +81,6 @@ public sealed class CardInstance
 
         InstanceId = instanceId;
         OwnerPlayerIndex = ownerPlayerIndex;
-        CurrentHealth = definition.IsMonster ? definition.BaseHealth : 0;
         Zone = CardZone.Deck;
         BattlePosition = BattlePosition.None;
         IsFaceDown = true;
@@ -163,10 +168,10 @@ public sealed class CardInstance
             throw new ArgumentOutOfRangeException(nameof(amount));
         }
 
-        CurrentHealth = Math.Max(0, CurrentHealth - amount);
+        damageTaken = checked(damageTaken + Math.Min(amount, CurrentHealth));
     }
 
-    public void RestoreHealth(int amount)
+    public int RestoreHealth(int amount)
     {
         if (!Definition.IsMonster)
             throw new InvalidOperationException(
@@ -174,13 +179,26 @@ public sealed class CardInstance
         if (amount < 0)
             throw new ArgumentOutOfRangeException(nameof(amount));
 
-        CurrentHealth = checked(CurrentHealth + amount);
+        if (IsDestroyed) return 0; // Healing is not revival.
+        int restored = Math.Min(amount, damageTaken);
+        damageTaken -= restored;
+        return restored;
+    }
+
+    public void ModifyMaximumHealth(int amount)
+    {
+        if (!Definition.IsMonster)
+            throw new InvalidOperationException("Only a Monster has maximum HP.");
+        maximumHealthAdjustment = checked(maximumHealthAdjustment + amount);
     }
 
     public void ResetHealthToBase()
     {
         if (Definition.IsMonster)
-            CurrentHealth = Definition.BaseHealth;
+        {
+            maximumHealthAdjustment = 0;
+            damageTaken = 0;
+        }
     }
 
     public void ModifyAttack(int amount)

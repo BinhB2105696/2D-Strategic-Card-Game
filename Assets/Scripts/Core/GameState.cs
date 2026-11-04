@@ -145,23 +145,25 @@ public sealed class GameState
         CardInstance target,
         int attackAmount,
         int defenseAmount,
-        int expireAfterTurn = 0)
+        int expireAfterTurn = 0,
+        int maximumHealthAmount = 0)
     {
         StatModifierApplication application = new StatModifierApplication(
             sourceInstanceId,
             target,
             attackAmount,
             defenseAmount,
-            expireAfterTurn);
+            expireAfterTurn,
+            maximumHealthAmount);
         application.Apply();
         statModifiers.Add(application);
     }
 
-    internal void RemovePersistentModifiersFromSource(long sourceInstanceId)
+    internal void RemovePersistentModifiersFromSource(long sourceInstanceId, List<GameEvent> events = null)
     {
         RemoveModifiers(application =>
             application.SourceInstanceId == sourceInstanceId &&
-            !application.IsTemporary);
+            !application.IsTemporary, events);
     }
 
     internal void RemoveModifiersFromTarget(long targetInstanceId)
@@ -170,11 +172,11 @@ public sealed class GameState
             application.Target.InstanceId == targetInstanceId);
     }
 
-    internal void ExpireTemporaryModifiers(int completedTurn)
+    internal void ExpireTemporaryModifiers(int completedTurn, List<GameEvent> events = null)
     {
         RemoveModifiers(application =>
             application.IsTemporary &&
-            application.ExpireAfterTurn <= completedTurn);
+            application.ExpireAfterTurn <= completedTurn, events);
     }
 
     internal bool HasModifierFromSourceToTarget(
@@ -188,7 +190,7 @@ public sealed class GameState
     }
 
     private void RemoveModifiers(
-        Predicate<StatModifierApplication> predicate)
+        Predicate<StatModifierApplication> predicate, List<GameEvent> events = null)
     {
         for (int index = statModifiers.Count - 1; index >= 0; index--)
         {
@@ -196,7 +198,19 @@ public sealed class GameState
             if (!predicate(application))
                 continue;
 
+            int oldHealth = application.Target.CurrentHealth;
+            int oldMaximum = application.Target.MaximumHealth;
             application.Remove();
+            if (events != null && application.MaximumHealthAmount != 0 &&
+                application.Target.Zone == CardZone.MonsterZone)
+            {
+                events.Add(GameEvent.MonsterMaximumHealthModified(
+                    application.Target.OwnerPlayerIndex, application.Target.InstanceId,
+                    application.Target.MaximumHealth - oldMaximum, CurrentPhase));
+                events.Add(GameEvent.MonsterHealthModified(
+                    application.Target.OwnerPlayerIndex, application.Target.InstanceId,
+                    application.Target.CurrentHealth - oldHealth, CurrentPhase));
+            }
             statModifiers.RemoveAt(index);
         }
     }
