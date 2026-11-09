@@ -140,6 +140,8 @@ public sealed class DuelEasyBotController : MonoBehaviour
         BotGameStateView view = BotGameStateView.Create(
             state,
             playerIndex);
+        if (bot is NormalBot normalBot)
+            normalBot.Observe(state, playerIndex);
         GameAction action = bot.ChooseAction(view, legalActions);
         if (action == null ||
             !ContainsReference(legalActions, action))

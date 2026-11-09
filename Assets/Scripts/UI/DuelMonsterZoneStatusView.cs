@@ -43,19 +43,31 @@ public sealed class DuelMonsterZoneStatusView : MonoBehaviour
         healthText = CreateLabel(
             rootRect,
             "HealthText",
+            new Vector2(0f, 1f),
+            new Vector2(1f, 1f),
             new Vector2(0.5f, 1f),
-            new Vector2(0.5f, 1f),
-            new Vector2(0.5f, 1f),
-            new Vector2(210f, 40f),
+            new Vector2(-12f, 40f),
             new Vector2(0f, 25f),
             35f,
             5f,
             FontStyles.Normal,
             0.5f,
             0.5f,
-            TextAlignmentOptions.Center,
+            TextAlignmentOptions.Right,
             combatFont);
         healthText.color = new Color32(255, 235, 235, 255);
+
+        GameObject barObject = new GameObject("HealthBar", typeof(RectTransform),
+            typeof(CanvasRenderer), typeof(DuelMonsterHealthBar));
+        barObject.layer = root.layer;
+        RectTransform barRect = barObject.GetComponent<RectTransform>();
+        barRect.SetParent(rootRect, false);
+        barRect.anchorMin = new Vector2(2f / 3f, 1f);
+        barRect.anchorMax = Vector2.one;
+        barRect.pivot = new Vector2(0.5f, 0.5f);
+        barRect.sizeDelta = new Vector2(0f, 12f);
+        barRect.anchoredPosition = new Vector2(-6f, -24f);
+        barObject.GetComponent<DuelMonsterHealthBar>().raycastTarget = false;
 
         energyText = CreateLabel(
             rootRect,
@@ -77,33 +89,33 @@ public sealed class DuelMonsterZoneStatusView : MonoBehaviour
         attackText = CreateLabel(
             rootRect,
             "AttackText",
-            new Vector2(0.5f, 0f),
-            new Vector2(0.5f, 0f),
             new Vector2(0f, 0f),
-            new Vector2(210f, 40f),
-            new Vector2(-105f, -15f),
+            new Vector2(1f, 0f),
+            new Vector2(0.5f, 0f),
+            new Vector2(-12f, 40f),
+            new Vector2(0f, -15f),
             35f,
             5f,
             FontStyles.Normal,
             0.5f,
             0.5f,
-            TextAlignmentOptions.Center,
+            TextAlignmentOptions.Right,
             combatFont);
 
         defenseText = CreateLabel(
             rootRect,
             "DefenseText",
-            new Vector2(0.5f, 0f),
-            new Vector2(0.5f, 0f),
             new Vector2(0f, 0f),
-            new Vector2(210f, 40f),
-            new Vector2(-105f, -48f),
+            new Vector2(1f, 0f),
+            new Vector2(0.5f, 0f),
+            new Vector2(-12f, 40f),
+            new Vector2(0f, -48f),
             35f,
             5f,
             FontStyles.Normal,
             0.5f,
             0.5f,
-            TextAlignmentOptions.Center,
+            TextAlignmentOptions.Right,
             combatFont);
 
         root.SetActive(false);
@@ -141,11 +153,14 @@ public sealed class DuelMonsterZoneStatusView : MonoBehaviour
             : FontStyles.Bold;
     }
 
-    // Shared by the stationary HUD and its animation clone. Text only: preserve layout.
+    // Update either the stationary HUD or its complete animation clone.
     public static void SetHealthText(TMP_Text label, int current, int maximum)
     {
         if (label == null) return;
-        label.text = "HP " + current + "/" + maximum;
+        label.text = "HP " + current;
+        Transform bar = label.transform.parent.Find("HealthBar");
+        if (bar != null)
+            bar.GetComponent<DuelMonsterHealthBar>().SetHealth(current, maximum);
     }
 
     private static TMP_Text CreateLabel(

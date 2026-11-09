@@ -103,7 +103,9 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
             easyBotController = GetComponent<DuelEasyBotController>();
             if (easyBotController == null)
                 easyBotController = gameObject.AddComponent<DuelEasyBotController>();
-            easyBotController.Initialize(this, new EasyBot());
+            IBot selectedBot = appMatch != null && appMatch.difficulty == DuelBotDifficulty.Normal
+                ? (IBot)new NormalBot() : new EasyBot();
+            easyBotController.Initialize(this, selectedBot);
 
             DuelHudPrototypeController hudController =
                 GetComponentInChildren<DuelHudPrototypeController>(true);

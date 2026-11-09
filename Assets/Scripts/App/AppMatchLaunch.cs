@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum DuelBotDifficulty { Easy, Normal }
+
 public sealed class AppMatchRequest
 {
     public string matchId;
@@ -13,6 +15,7 @@ public sealed class AppMatchRequest
     public CardData[] playerCards;
     public Sprite avatar;
     public GameObject overlayPrefab;
+    public DuelBotDifficulty difficulty;
 }
 
 // One-use scene handoff; direct Play of SampleScene keeps its original demo.
@@ -22,7 +25,8 @@ public static class AppMatchLaunch
     public static bool ReturningHome { get; set; }
 
     public static void Prepare(LocalPlayerProfile profile, SavedDeck deck,
-        IReadOnlyDictionary<string, CardData> catalog, Sprite avatar, GameObject overlayPrefab)
+        IReadOnlyDictionary<string, CardData> catalog, Sprite avatar, GameObject overlayPrefab,
+        DuelBotDifficulty difficulty = DuelBotDifficulty.Easy)
     {
         var cards = new List<CardData>();
         foreach (string id in deck.cardIds) cards.Add(catalog[id]);
@@ -34,7 +38,8 @@ public static class AppMatchLaunch
             seed = BitConverter.ToUInt32(Guid.NewGuid().ToByteArray(), 0),
             profile = profile,
             deck = new SavedDeck { deckId = deck.deckId, name = deck.name, cardIds = new List<string>(deck.cardIds) },
-            catalog = catalogCopy, playerCards = cards.ToArray(), avatar = avatar, overlayPrefab = overlayPrefab
+            catalog = catalogCopy, playerCards = cards.ToArray(), avatar = avatar, overlayPrefab = overlayPrefab,
+            difficulty = difficulty
         };
     }
 

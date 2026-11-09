@@ -466,10 +466,11 @@ public class DuelHudPrototypeController : MonoBehaviour
         if (easyBotToggleText == null)
             return;
 
+        string botName = easyBotController != null ? easyBotController.BotDisplayName : "Easy Bot";
         easyBotToggleText.text = easyBotController != null &&
             easyBotController.IsEnabled
-            ? "Easy Bot (Player 2): ON"
-            : "Easy Bot (Player 2): OFF";
+            ? botName + " (Player 2): ON"
+            : botName + " (Player 2): OFF";
     }
 
     private void CreateAutoPlayToggle()

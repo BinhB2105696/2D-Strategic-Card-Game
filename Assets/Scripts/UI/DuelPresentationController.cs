@@ -472,6 +472,10 @@ public sealed class DuelPresentationController : MonoBehaviour
             case GameEventType.MonsterMaximumHealthModified:
                 visibleMonsterMaximumHealth.TryGetValue(eventData.CardInstanceId, out int maximum);
                 visibleMonsterMaximumHealth[eventData.CardInstanceId] = Mathf.Max(0, maximum + eventData.Amount);
+                if (visibleMonsterHealth.TryGetValue(eventData.CardInstanceId, out int current))
+                    DuelMonsterZoneStatusView.SetHealthText(
+                        MonsterLabel(eventData.CardInstanceId, "HealthText"), current,
+                        visibleMonsterMaximumHealth[eventData.CardInstanceId]);
                 break;
             case GameEventType.EnergySpent:
                 yield return ChangeEnergy(eventData.PlayerIndex,

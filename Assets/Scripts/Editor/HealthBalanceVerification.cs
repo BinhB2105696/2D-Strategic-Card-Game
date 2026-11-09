@@ -203,14 +203,16 @@ public static class HealthBalanceVerification
             var card = new CardInstance(1, 0, Monster("health_text", hp: 900));
             card.ReceiveDamage(300); view.SetMonster(card);
             var label = zone.transform.Find("RuntimeMonsterStatus/HealthText").GetComponent<TMPro.TMP_Text>();
-            Require(label.text == "HP 600/900", "HP text 600/900");
+            Require(label.text == "HP 600", "current HP text 600");
+            var bar = zone.transform.Find("RuntimeMonsterStatus/HealthBar").GetComponent<DuelMonsterHealthBar>();
+            Require(Mathf.Approximately(bar.Fraction, 600f / 900f), "HP bar damage ratio");
             card.ModifyMaximumHealth(300); view.SetMonster(card);
-            Require(label.text == "HP 900/1200", "HP text 900/1200");
-            Require(label.transform.Find("HealthBar") == null, "no HP bar");
+            Require(label.text == "HP 900", "current HP text 900");
+            Require(Mathf.Approximately(bar.Fraction, 0.75f), "HP bar maximum change ratio");
             Require(label.fontSize == 35 && label.characterSpacing == 5 &&
-                label.alignment == TMPro.TextAlignmentOptions.Center && !label.enableAutoSizing &&
-                label.rectTransform.sizeDelta == new Vector2(210, 40) &&
-                label.rectTransform.anchoredPosition == new Vector2(0, 25), "original HP layout retained");
+                label.alignment == TMPro.TextAlignmentOptions.Right && !label.enableAutoSizing &&
+                label.rectTransform.sizeDelta == new Vector2(-12, 40) &&
+                label.rectTransform.anchoredPosition == new Vector2(0, 25), "right-aligned HP layout");
         }
         finally { UnityEngine.Object.DestroyImmediate(zone); }
     }

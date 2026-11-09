@@ -32,6 +32,7 @@ public sealed partial class DeckBuilderAppController
     private bool detailFromCatalog;
     private Action pendingConfirmation;
     private int draftAvatarIndex;
+    private GameObject duelModePanel;
 
     public bool HasAuthoredUi => canvas != null;
 
@@ -125,7 +126,10 @@ public sealed partial class DeckBuilderAppController
             PersistProfile();
         });
         Bind("MainMenu/DeckBuilding", OpenBuilder);
-        Bind("MainMenu/Pve", StartPve);
+        Bind("MainMenu/Pve", OpenDuelModes);
+        Button duelButton = buttonReferences.Find(item => item.key == "MainMenu/Pve")?.button;
+        if (duelButton != null)
+            duelButton.GetComponentInChildren<TMP_Text>(true).text = "DUEL MODE";
         Bind("MainMenu/Pvp", () => SetMessage("Online PvP is coming later."));
         Bind("MainMenu/Profile", OpenProfile);
         Bind("MainMenu/ProfileShortcut", OpenProfile);
@@ -476,7 +480,23 @@ public sealed partial class DeckBuilderAppController
         ShowPage(homePage);
     }
 
-    private void StartPve()
+    private void OpenDuelModes()
+    {
+        if (duelModePanel == null)
+        {
+            RectTransform panel = Panel(modalLayer.transform, "DuelModePanel", Navy, 70, 520, 940, 850).rectTransform;
+            duelModePanel = panel.gameObject;
+            Label(panel, "Title", "DUEL MODE", 48, Gold, 35, 45, 870, 90);
+            ButtonAt(panel, "Easy", "EASY BOT", 40, 70, 205, 800, 130, Blue,
+                () => StartPve(DuelBotDifficulty.Easy));
+            ButtonAt(panel, "Normal", "NORMAL BOT", 40, 70, 395, 800, 130, Blue,
+                () => StartPve(DuelBotDifficulty.Normal));
+            ButtonAt(panel, "Back", "BACK", 34, 190, 640, 560, 100, Navy, CloseModal);
+        }
+        OpenModalPanel(duelModePanel);
+    }
+
+    private void StartPve(DuelBotDifficulty difficulty)
     {
         if (profile.decks.Count == 0) { SetMessage("Save a valid deck first."); return; }
         SavedDeck deck = profile.decks[profile.selectedDeck];
@@ -484,7 +504,7 @@ public sealed partial class DeckBuilderAppController
         { SetMessage(error); return; }
         if (!PersistProfile()) return;
         if (duelOverlayPrefab == null) { SetMessage("PvE view is missing. Prepare the editable app UI in Edit Mode."); return; }
-        AppMatchLaunch.Prepare(profile, deck, byId, CurrentAvatar(), duelOverlayPrefab);
+        AppMatchLaunch.Prepare(profile, deck, byId, CurrentAvatar(), duelOverlayPrefab, difficulty);
         SceneManager.LoadScene("SampleScene");
     }
 

@@ -199,8 +199,8 @@ public sealed partial class DeckBuilderAppController : MonoBehaviour
             80, 410, 920, 65);
         ButtonAt(parent, "DeckBuilding", "DECK BUILDING", 42,
             90, 610, 900, 135, Blue, OpenBuilder);
-        ButtonAt(parent, "Pve", "PvE - EASY BOT", 42,
-            90, 795, 900, 135, Blue, StartPve);
+        ButtonAt(parent, "Pve", "DUEL MODE", 42,
+            90, 795, 900, 135, Blue, OpenDuelModes);
         ButtonAt(parent, "Pvp", "PvP - COMING SOON", 42,
             90, 980, 900, 135, new Color(.16f, .19f, .24f, 1f),
             () => SetMessage("Online PvP is not connected yet. This is a local guest profile."));
