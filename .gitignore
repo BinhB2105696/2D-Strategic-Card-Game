@@ -68,6 +68,12 @@ ExportedObj/
 .gradle/
 /local.properties
 
+# Headless simulation output and local build/run control
+/SimulationResults/
+/Tools/Simulation/Control/
+/Tools/Simulation/editor-request.txt
+/Tools/Simulation/build-status.json
+
 # Chặn các file rác phát sinh từ thư mục Packages (chỉ giữ lại manifest để Unity tự tải ngầm)
 /Packages/manifest.json.lock
 /Packages/packages-lock.json
