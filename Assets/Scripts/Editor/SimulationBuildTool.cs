@@ -25,6 +25,29 @@ public static class SimulationBuildTool
         File.WriteAllText(Path.Combine(Control, "editor-request.txt"), "build|" + Path.GetFullPath("."));
     }
 
+    [MenuItem("Card Game/Simulation/Export Latest Build Diagnostics")]
+    public static void ExportLatestBuildDiagnostics()
+    {
+        SimulationJson.ResultsRoot(Path.GetFullPath("."));
+        BuildReport report = BuildReport.GetLatestReport();
+        if (report == null) throw new InvalidOperationException("No previous Unity build report is available.");
+        string reportDirectory = Path.Combine(Control, "Control");
+        Directory.CreateDirectory(reportDirectory);
+        var messages = report.steps.SelectMany(step => step.messages
+            .Where(message => message.type == LogType.Warning || message.type == LogType.Error || message.type == LogType.Exception)
+            .Select(message => SimulationJson.Object("step", step.name, "type", message.type.ToString(), "message", message.content))).ToArray();
+        SimulationJson.Atomic(Path.Combine(reportDirectory, "latest-build-report.json"), SimulationJson.Object(
+            "result", report.summary.result.ToString(), "errors", report.summary.totalErrors,
+            "warnings", report.summary.totalWarnings, "messages", messages));
+        Debug.Log("Latest build diagnostics exported to Tools/Simulation/Control/latest-build-report.json");
+    }
+
+    public static void RebuildPreparedRunnerFromCommandLine()
+    {
+        Build();
+        ExportLatestBuildDiagnostics();
+    }
+
     private static void Tick()
     {
         if (EditorApplication.isCompiling || EditorApplication.isUpdating)

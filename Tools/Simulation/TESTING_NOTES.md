@@ -1,6 +1,6 @@
 # Ghi chú rà soát và kiểm thử bộ chạy trận
 
-Ngày rà soát 9 November 2026. Phạm vi gồm runner, thu thập dữ liệu, báo cáo, build và launcher.
+Ngày rà soát 9 November 2026; bổ sung kiểm thử chấp nhận 10 November 2026. Phạm vi gồm runner, thu thập dữ liệu, báo cáo, build và launcher.
 
 ## Kết quả đã quan sát
 
@@ -9,9 +9,11 @@ Ngày rà soát 9 November 2026. Phạm vi gồm runner, thu thập dữ liệu,
 - Lô `SimulationResults/20261109_154612_d2cfce05/` tái lập 6/6 chuỗi hành động và kết quả của cùng seed. Kiểm tra 789 quyết định, gồm 355 quyết định Normal, thấy nước chọn thuộc danh sách hợp lệ và thông tin tay đối thủ được che.
 - Sau các sửa đổi bên dưới, toàn bộ mã runtime liên quan đã biên dịch riêng với assembly Unity thật. Bộ kiểm tra logic chạy bằng Mono đạt PASS tại `SimulationResults/verification_20261109_160054_f0f43bf4/`.
 - Kiểm tra hồi quy launcher cho file tiến độ chứa JSON lỗi đạt PASS. Watchdog dừng tiến trình thử sau khoảng 2,7 giây với ngưỡng 2 giây. Nhật ký kiểm tra ở `Tools/Simulation/Control/Review/`.
-- Bản EXE sau rà soát đã build lại thành công với 0 lỗi, 1 cảnh báo theo BuildReport. Nội dung cảnh báo chưa được trích xuất từ Editor.log trong lần rà soát này.
+- Bản EXE sau rà soát ngày 9 November có 1 cảnh báo: build khi mã Editor thay đổi nhưng chưa biên dịch xong, có thể dùng mã xử lý trước/sau build cũ. Ngày 10 November đã build lại qua điểm gọi CLI sau khi Unity nạp mã Editor: Succeeded, 0 lỗi, 0 cảnh báo. Báo cáo ở `Tools/Simulation/Control/latest-build-report.json`; báo cáo cảnh báo cũ ở `Tools/Simulation/Control/previous-build-report.json`.
 - Lô `SimulationResults/20261109_160625_8f79a86a/` hoàn tất 6/6 trận qua launcher bản mới, trùng actionDigest/resultDigest với dữ liệu gốc. Bộ đếm cặp cùng bot và tên file trong bản ghi end của trace đã khớp.
 - Lô `SimulationResults/20261109_160702_fbd2a424/` ghi đủ 6/6 trận ActionLimit, winner = -2 và 0 lỗi. Cấu hình giữ warmupMatches = 2, xác nhận warm-up bị cắt vẫn cho phép chạy batch.
+- Bộ `Test-Runner.ps1` đạt 10/10 ca: giới hạn lượt/thời gian, tắt trace, 5 đầu vào sai, ngắt batch và lỗi ghi file chỉ đọc. Báo cáo ở `Tools/Simulation/Control/Acceptance/20261110_061854/report.json`. Hai ca giới hạn ghi đủ 2 trận/ca và giữ trace; tắt trace hoàn tất 2 trận và không giữ trace. Batch bị ngắt phục hồi được đủ 3 trận đã xác nhận; lỗi ghi trả mã 1 và giữ nguyên file đích.
+- Bản build không cảnh báo giữ nguyên fingerprint mã runtime `c381754b9d7ade75aabfd188f5cce7e848c4cb12bbdcedab31ac70bfb00c9e46` của bản dùng trong 10 ca trên. Chỉ bổ sung công cụ kiểm thử và xuất báo cáo Editor; không sửa Core, luật, bot hay UI.
 
 ## Những điểm đã sửa trong đợt rà soát
 
@@ -32,21 +34,23 @@ Ngày rà soát 9 November 2026. Phạm vi gồm runner, thu thập dữ liệu,
 4. Giữ lại đường dẫn kết quả mà launcher in ra. Đối chiếu run.json, matches.csv, matches.jsonl, summary.json và traces.
 5. Chỉ đánh dấu đạt khi có kết quả quan sát được. Cột tình trạng bên dưới phản ánh thời điểm ghi chú.
 
+Để chạy lại 10 ca chấp nhận trên bản runner đã build, dùng `powershell -NoProfile -File .\Tools\Simulation\Test-Runner.ps1`. Cấu hình và báo cáo riêng nằm trong `Tools/Simulation/Control/Acceptance/<giờ_máy>/`, kết quả trận vẫn ở `SimulationResults/`. Bộ thử tạo file chỉ đọc của riêng nó, khôi phục cờ ghi sau ca thử và chỉ dừng tiến trình con do nó khởi chạy. Đợi Unity biên dịch xong trước khi build; menu **Card Game > Simulation > Export Latest Build Diagnostics** xuất chi tiết báo cáo build gần nhất.
+
 | Ca kiểm tra | Cách thực hiện và kết quả cần thấy | Tình trạng |
 |---|---|---|
-| Build bản mới | Compiler/BuildReport thành công, chạy từ launcher đúng đường dẫn D | Đã đạt, 0 lỗi và 1 cảnh báo Unity |
+| Build bản mới | Compiler/BuildReport thành công, chạy từ launcher đúng đường dẫn D | Đã đạt; build 10 November: 0 lỗi, 0 cảnh báo |
 | Lô mặc định | 30 dòng kết quả ở CSV và JSONL, summary.matches = 30, mỗi match_id duy nhất | Bản cũ đã đạt, cần xác nhận bản sửa |
 | Cặp cùng bot | Hai nhóm Easy/Easy và Normal/Normal đếm đủ cặp hoàn tất, gồm cả trường hợp cùng loại bot | Logic và tích hợp sau sửa đã đạt với 1 seed mỗi nhóm |
 | Tái lập | Chạy cấu hình cùng Deck/seed/bot hai lần, actionDigest và resultDigest trùng nhau | Bản cũ và bản sau sửa đạt 6/6 |
 | Đổi phía | Với swapBots bật, mỗi pair_id có leg 0/1, giữ Deck theo ô Player, đổi tên bot điều khiển | Đã có trong lô cũ, cần giữ khi hồi quy |
 | Giới hạn hành động | Sao chép cấu hình, đặt maxActions = 1, giữ warmupMatches = 2. Batch ghi các trận ActionLimit, winner = -2 | Logic và tích hợp sau sửa đã đạt 6/6 |
-| Giới hạn lượt/thời gian | Dùng cấu hình nhỏ và giới hạn thấp. Trạng thái ghi TurnLimit hoặc TimeLimit, trace được giữ | Cần chạy tích hợp có chủ đích |
-| Lưu chi tiết tắt | Đặt detailedMatches = 0. Các trận Finished bỏ spool riêng sau khi ghi kết quả | Cần xác nhận ở Player mới |
+| Giới hạn lượt/thời gian | Dùng cấu hình nhỏ và giới hạn thấp. Trạng thái ghi TurnLimit hoặc TimeLimit, trace được giữ | Đã đạt tích hợp, 2 trận/ca, giữ warmupMatches = 2 |
+| Lưu chi tiết tắt | Đặt detailedMatches = 0. Các trận Finished bỏ spool riêng sau khi ghi kết quả | Đã đạt, 2 Finished và 0 trace |
 | Trace và dataset | Chạy cấu hình seedCount = 1, detailedMatches = 6. Nước chọn có trong legalActions, tay đối thủ được che, tên trace ở bản ghi end khớp kết quả | Quan sát bản cũ và logic sau sửa đạt, tên trace bản Player mới đã khớp |
-| Dữ liệu cấu hình sai | Thử bot sai tên, Deck ngoài phạm vi hoặc projectRoot trên C. Nhận lỗi rõ, giữ log chẩn đoán trên D | Kiểm tra chặn ổ C đã đạt, các đầu vào khác cần thử |
+| Dữ liệu cấu hình sai | Thử bot sai tên, Deck ngoài phạm vi, seedCount = 0, projectRoot trên C và JSON sai. Nhận lỗi rõ, giữ log chẩn đoán trên D | Đã đạt cả 5 ca, mã thoát khác 0 và thông báo đúng nguyên nhân |
 | File tiến độ lỗi | File JSON không đọc được vẫn dẫn tới watchdog khi hết ngưỡng | Đã đạt qua tiến trình thử |
-| Quyền ghi/dung lượng | Dùng môi trường thử có giới hạn ghi. Batch báo lỗi, giữ các kết quả đã flush | Đã đạt kiểm tra truyền lỗi quyền, tình huống ổ đầy chưa thử |
-| Ngắt giữa batch | Dừng đúng tiến trình runner thử nghiệm. Kiểm tra các dòng hoàn chỉnh và trace còn lại | Cần thử có chủ đích |
+| Quyền ghi/dung lượng | Dùng file tiến độ chỉ đọc của bộ thử. Batch báo lỗi và không ghi đè file đích | Đã đạt trên Player thật; ổ đầy và lỗi ghi giữa luồng kết quả chưa thử |
+| Ngắt giữa batch | Dừng đúng tiến trình runner thử nghiệm. Đối chiếu các match_id hoàn chỉnh trong CSV/JSONL | Đã đạt, giữ đủ 3/3 trận đã xác nhận; chưa có tự động resume |
 | Thay dữ liệu bài/luật | Rebuild, kiểm tra fingerprint/cấu hình mới và kết quả dùng đúng luật đã sửa | Cần kiểm tra khi thực sự đổi luật |
 | Chỉnh animation | Chỉ đổi trình diễn rồi rebuild runner, so hành động/kết quả với cùng đầu vào | Kiến trúc tách UI, chưa làm phép thử thay animation |
 

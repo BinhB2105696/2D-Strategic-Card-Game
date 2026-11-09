@@ -38,4 +38,6 @@
 
 ## Kiểm thử và lưu ý
 - Xem [TESTING_NOTES.md](TESTING_NOTES.md) để đối chiếu các ca đã đạt, các sửa đổi rà soát và những ca tích hợp còn chờ.
+- Sau khi build runner, chạy `powershell -NoProfile -File .\Tools\Simulation\Test-Runner.ps1` để kiểm tra 10 ca chấp nhận. Cấu hình/log/báo cáo riêng ở `Tools/Simulation/Control/Acceptance/`; dữ liệu trận ở `SimulationResults/`, đều trên D. Bộ thử chỉ dừng tiến trình của chính nó và dùng file riêng để thử lỗi ghi.
+- Đợi Unity biên dịch xong trước khi build. Dùng **Card Game > Simulation > Export Latest Build Diagnostics** để xuất chi tiết lỗi/cảnh báo gần nhất ra `Tools/Simulation/Control/latest-build-report.json`.
 - Summary nhẹ cập nhật mỗi 10 trận và ở trận cuối. Khoảng tin cậy được tính khi batch hoàn tất.
