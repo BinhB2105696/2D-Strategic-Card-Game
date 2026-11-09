@@ -103,6 +103,14 @@ public class DuelHudPrototypeController : MonoBehaviour
         RefreshAutoPlayToggle();
     }
 
+    public void ConfigureDuelLog(DuelLogModel journal, DuelBoardReadOnlyDemo board)
+    {
+        if (duelLogContent == null) return;
+        DuelLogView view = duelLogContent.GetComponent<DuelLogView>();
+        if (view == null) view = duelLogContent.AddComponent<DuelLogView>();
+        view.Initialize(journal, board);
+    }
+
     private void BindButtons()
     {
         AddListener(phaseMenuButton, TogglePhaseChoices);

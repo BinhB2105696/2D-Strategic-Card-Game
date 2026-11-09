@@ -32,11 +32,16 @@ available when animations are skipped or a device cannot keep up.
 `GameSession.TryApply(GameAction)` returns an `ActionResult` with ordered
 `GameEvent` values. The first queue is implemented: it captures the visible
 pre-action board, plays accepted events, then converges to the authoritative
-final `GameState`. Compact log/Fast/Skip and full acceptance remain outstanding.
-The November HP slice adds current/maximum HP snapshots and displays
-`HP current/maximum` in the existing label, preserving font, alignment and position;
-no health bar is added. Recovery animates only the actual capped change; maximum-HP
-events update the denominator without changing gameplay state. No animation
+final `GameState`. As of 9 November, Settings > Duel Log is implemented with
+basic student Play Mode acceptance. It records accepted actions and ordered
+events independently of animation playback, freezes each player's permitted
+information, and retains scrolling position while reading older lines. It is
+match-local only; persistent event history/post-match viewing are not implemented.
+Fast/Skip and full presentation/device acceptance remain outstanding.
+The accepted HP HUD now displays current HP only above a rounded five-color bar
+about one-third of a Monster Zone wide. HP/ATK/DEF are right-aligned; the bar
+shares the status canvas and attack animation clone. Recovery animates only the
+actual capped change; maximum-HP events update bar ratios. No animation
 may submit a hidden extra action or write to `GameState`.
 
 Human controls, response prompts, and bot ticks pause while a blocking event
@@ -51,8 +56,9 @@ Implementation order:
 1. Add one queue/presenter adapter at the existing board `TryApplyAction`
    boundary; map event IDs to existing card/zone/HUD objects. Check hidden-info
    handling and viewpoint mirroring.
-2. Add a compact, text-only duel log from accepted events; verify Auto and
-   human turns. Avoid describing hidden opponent card identities.
+2. Completed at basic acceptance: text-only Settings > Duel Log from accepted
+   actions/events, including Auto and automatic Recovery. Opponent draw/set
+   identities are hidden and old lines do not reveal later-known private cards.
 3. Implement move/fade/scale and number tween for draw, summon, attack,
    damage, destruction, and phase changes using built-in uGUI components and
    `AnimationCurve`. Add small pooled particle bursts only where a basic motion

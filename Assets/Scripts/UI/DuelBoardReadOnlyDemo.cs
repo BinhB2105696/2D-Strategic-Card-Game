@@ -30,6 +30,7 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
     private DuelCardInteractionController cardInteraction;
     private DuelEasyBotController easyBotController;
     private DuelPresentationController presentation;
+    private DuelLogModel duelLog;
     private TMP_FontAsset runtimeFont;
     private bool hasRenderedMatch;
     private AppMatchRequest appMatch;
@@ -94,6 +95,7 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
                 if (appMatch.avatar != null) playerOneAvatarSprite = appMatch.avatar;
             }
             session = GameSession.Create(config, appMatch != null ? appMatch.seed : seed, playerDeck, deck);
+            duelLog = new DuelLogModel(session.State);
 
             presentation = GetComponent<DuelPresentationController>();
             if (presentation == null)
@@ -110,7 +112,10 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
             DuelHudPrototypeController hudController =
                 GetComponentInChildren<DuelHudPrototypeController>(true);
             if (hudController != null)
+            {
                 hudController.ConfigureEasyBot(easyBotController);
+                hudController.ConfigureDuelLog(duelLog, this);
+            }
 
             if (appMatch != null)
             {
@@ -196,9 +201,11 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
 
         if (hasRenderedMatch)
             presentation?.CaptureBeforeAction(session.State);
+        duelLog?.Capture(session.State);
         ActionResult result = session.TryApply(action);
         if (result.Succeeded)
         {
+            duelLog?.Record(action, result.Events, session.State);
             if (hasRenderedMatch)
                 presentation?.Record(result.Events);
             if (refreshBoard)
@@ -226,9 +233,11 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
     {
         if (hasRenderedMatch)
             presentation?.CaptureBeforeAction(session.State);
+        duelLog?.Capture(session.State);
         ActionResult result = session.TryApply(action);
         if (result.Succeeded)
         {
+            duelLog?.Record(action, result.Events, session.State);
             if (hasRenderedMatch)
                 presentation?.Record(result.Events);
             return true;

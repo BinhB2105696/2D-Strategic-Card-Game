@@ -1,6 +1,6 @@
 # PROJECT CONTEXT
 
-> Last updated: 3 November 2026
+> Last updated: 9 November 2026
 >
 > Status tags:
 > - **[CONFIRMED]**: implement as written unless the user changes it.
@@ -388,9 +388,9 @@ accepted `GameEvent` list in order, blocks input while playing, and converges to
 the authoritative final `GameState`. The implemented feedback covers opening
 hands, draws, summon/Set/activation, Field placement, Graveyard movement,
 attack/damage, Monster HP, player LP, Energy, and turn/phase changes. This is a
-functional baseline, not final acceptance: the compact duel-log UI, explicit
-Fast/Skip control, response/chain readability review, all-category Play Mode
-acceptance, and Android touch/performance check are still required.
+functional baseline, not final acceptance. The compact Settings Duel Log now
+has basic student acceptance; explicit Fast/Skip, response/chain readability,
+all-category Play Mode acceptance and Android touch/performance remain pending.
 
 ### Product shell and persistence MVP
 
@@ -413,8 +413,10 @@ current data model. "Newest" is the card asset's recorded edit time at the
 last catalog refresh, not a live online release date. The two local presets
 must be validated against the catalog and current GameConfig. Guest login is
 local only. The subsequent student-approved app-foundation slice connects the
-selected saved 30–40-card deck to PvE against the fixed Easy Bot deck through a
-one-use scene handoff. Direct Play of SampleScene retains its original demo.
+selected saved 30–40-card deck to PvE against the fixed sample opponent deck through a
+one-use scene handoff. As of 9 November, Home's Duel mode selector chooses Easy
+or Normal policy for that opponent deck; Auto uses the same selected policy for
+Player 1. Direct Play of SampleScene retains its original Easy demo.
 For the Home-to-PvE route, an Editor repair adds a Camera to `AppShell` and
 serializes the existing `DuelBoardReadOnlyDemo` component with its fixed deck
 and visual references on `SampleScene/Field_Canvas`. This is the one necessary
@@ -440,7 +442,8 @@ Editor verification passed on 21 October for save/load and migration safety,
 copy/deck validation, selected 30/31/40-card sessions, Easy Bot decisions, and
 authored UI bindings. Deck Builder filter behavior and selected-tab indication
 were committed in checkpoint `c6b8b6c`. A Play Mode acceptance
-pass and an actual Android/Windows build remain separate requirements.
+pass remains separate. The first Android APK now builds successfully; physical
+device acceptance and the Windows build remain pending.
 
 Local schema v2 migrates v1 decks and adds stable local-player/deck IDs, timestamps,
 revision, settings and recent results. Keep the existing save filename and
@@ -453,8 +456,17 @@ in `Docs/APP_FOUNDATION_GUIDE_2026-10-21.md`. No password/backend/network SDK is
 
 - `IBot` receives a safe game-state view and chooses a legal `GameAction`.
 - Easy Bot: fixed rules.
-- Normal Bot: heuristic scoring and short-term evaluation of candidate legal
-  actions using a safe cloned state; define a small number of tunable weights.
+- Normal Bot (implemented 9 November): tactical heuristic scoring for Energy,
+  summoning/tributes, positions and effect benefits, with bounded public-board
+  attack-order forecasts (up to five follow-up attacks and 256 forecast-node
+  budget per candidate). It does not clone/simulate full GameState or train a model.
+- Normal's `Observe` adapter copies owned/public definitions, remaining attacks,
+  public Graveyards and response context without retaining mutable GameState or
+  hidden opponent definitions. The shared BotGameStateView still omits opponent
+  Graveyard details; this is supplemented only for Normal, not fixed globally.
+- Main Menu Duel mode selects Easy/Normal; Auto delegates both sides to the
+  selected policy. Initial Normal-mode Play Mode operation is student-confirmed;
+  comparative strength and all-effect tactical correctness remain to be evaluated.
 - Hard Bot: limited-depth search such as Minimax/Alpha-Beta **[OPTIONAL AFTER TIER 1]**.
 - ML/self-play: optional experiment only, after Normal Bot and the headless
   simulator are reproducible. Train on compact state/action features, not
@@ -513,13 +525,40 @@ Do not install networking packages until local core actions are deterministic an
 
 ## 15. Current Progress
 
-3 November approved implementation slice: capped recovery, damage-preserving
-maximum HP, rank-based KO penalty, 6000 LP trial, seven Monster stat rebalance,
-Stone/Guardian DEF adjustments and current/maximum HP text (no bar; existing
-font, alignment and layout preserved). This is not a Normal Bot,
-new-archetype or networking milestone. Verification status is recorded in
-`Docs/HP_BALANCE_2026-11-03.md`; source completion is not Play Mode acceptance.
-The opponent-Graveyard omission in BotGameStateView remains a known follow-up.
+Checkpoint: **Offline Demo 0.1.0 + Duel Log**, 9 November; previous checkpoint `977a734`.
+The offline APK built in the existing Editor with 0 errors and 0 warnings.
+Verified package: `com.binhb2105696.strategiccardgame.demo`, version 0.1.0/code 1,
+Android API 23 minimum/API 34 target, portrait, IL2CPP, ARMv7 + ARM64. APK signing
+verification passed; this is an Android Debug test signature, not a store release.
+No Internet permission is requested. Local profile/deck/settings/history round-trip,
+backup creation and corrupt-file protection passed against temporary Editor data.
+Physical-device installation, full-match/touch/performance and save-after-restart
+acceptance remain unreported. Keep the same demo package ID/signing key for updates.
+See `Docs/OFFLINE_DEMO_GUIDE.md`; binaries are local ignored build outputs.
+
+Settings > Duel Log is implemented and student-confirmed at a basic Play Mode level.
+It records each accepted action and ordered events, including automatic turn-start
+actions, freezes separate hidden-info views, and reuses text rows for scrolling.
+Privacy, reveal-history, ordering, maximum-HP and duplicate-capture checks passed.
+It is in-memory for the current match, not a persisted event journal or post-match
+viewer. Further Duel Log standardization, detailed effect/chain review and card
+expansion are explicitly deferred by the student. No Google login/cloud sync was added.
+The November balance slice implements capped recovery, damage-preserving maximum
+HP, rank-based KO penalties, the 6000 LP trial, seven Monster stat changes and
+Stone/Guardian DEF adjustments. The student reported HP/KO diagnostic PASS.
+The replacement HUD shows current HP only, with a rounded health bar about
+one-third of the Monster Zone width and five colors in 20% bands. HP/ATK/DEF
+are right-aligned; the bar shares the status layer and attack animation clone.
+The student accepted the HUD in Play Mode. The dated HP balance document is a
+historical slice; its former current/maximum/no-bar HUD status is superseded.
+
+Normal Bot, Duel mode Easy/Normal selection and matching Auto are implemented.
+The Editor test's internal-access issue was fixed without changing Core APIs;
+separate runtime/test compilation, three tactical checks and six synthetic-deck
+automated matches passed outside Unity. The student confirmed Unity compilation
+and initial Normal-mode Play Mode operation. No full card-pool acceptance,
+comparative win-rate results or production batch simulator is claimed.
+No new archetype, networking or platform-build milestone was completed in this slice.
 
 Completed or explored:
 
@@ -630,15 +669,17 @@ Known next gaps:
    Trap set-turn lockout, attack responses, Counter Trap negation,
    two-or-more-link LIFO resolution, insufficient Energy, full zones, pending
    triggers at match end, and the match-result overlay.
-2. Finish acceptance of the implemented GameEvent presentation queue: add the
-   compact duel-log UI and explicit Fast/Skip behavior, review response/chain
-   readability and all event families in Play Mode, then check Android portrait
-   readability, touch input, performance, and an early development build.
-3. Implement Normal Bot heuristic scoring and a headless bot-vs-bot runner with
-   the metrics in section 12. Add deterministic state hashes/replay loading
+2. Test the produced Android demo on physical devices: portrait readability,
+   touch input, full-match flow, performance and local persistence. The basic
+   Duel Log is accepted; detailed polish/effect/chain review is deferred.
+   Explicit Fast/Skip remains pending for a later presentation slice.
+3. Evaluate and tune the implemented Normal Bot across decks, seeds and both
+   starting sides; build a headless batch runner with the metrics in section 12.
+   The six synthetic verification matches are not the evaluation pipeline.
+   Add deterministic state hashes/replay loading
    before networking depends on the action stream.
-4. Run the remaining AppShell Play Mode acceptance and Android/Windows build
-   checks, while performing the short networking feasibility spike from section
+4. Run remaining AppShell/device acceptance and produce the Windows build,
+   while performing the short networking feasibility spike from section
    13. Do not install or commit a networking stack until the result and
    tradeoffs are discussed.
 
@@ -687,12 +728,13 @@ Verified checkpoints:
   lifetime, filtered response windows, and simple LIFO chain resolution are
   connected to the local UI. Focused edge-case regression and the networking
   feasibility decision still remain before Step 5 is complete.
-- Step 6 bot foundation: **Easy Bot implemented and accepted in Play Mode**.
+- Step 6 bot foundation: **Easy and Normal Bot implemented; initial Normal-mode Play Mode operation confirmed 9 November**.
   It consumes an immutable state view plus shared legal actions, submits through
   GameSession, pauses for human response priority, and can be toggled at runtime
   without changing the saved scene. The visible Auto control can assign both
-  players to it for presentation; Normal Bot and headless metrics have not
-  started.
+  players to the selected policy for presentation. Duel mode offers Easy/Normal.
+  Normal's comparative evaluation, full-effect acceptance and headless metrics
+  remain incomplete.
 
 | Step | Target | Content | Verification |
 |---|---|---|---|
@@ -717,7 +759,7 @@ background, avatar, Deck/Graveyard, Auto, and Monster-artwork work. App
 persistence and UI bindings have a focused Editor PASS; presentation and
 AppShell still need their stated Play Mode/device acceptance. The immediate
 critical path is the all-category integration pass, presentation completion,
-Normal Bot, headless metrics, replay/state-hash checks, networking feasibility,
+Normal Bot evaluation/tuning, headless metrics, replay/state-hash checks, networking feasibility,
 and platform builds. Do not substitute more isolated card scripts or smoke
 tests for those milestones. Tests verify each finished slice.
 

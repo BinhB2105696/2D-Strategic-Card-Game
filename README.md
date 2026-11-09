@@ -222,10 +222,11 @@ Game Rules
 New GameState
 ```
 
-### Planned Bot Levels
+### Bot Levels
 
-- **Easy Bot:** simple rule-based decisions.
-- **Normal Bot:** heuristic-based decisions using the current game state.
+- **Easy Bot (implemented):** deterministic rule-based decisions from legal actions.
+- **Normal Bot (implemented):** tactical heuristic scoring plus bounded public-board attack-order forecasts; initial Play Mode operation confirmed on 9 November 2026. Comparative strength is not yet measured.
+- **Duel mode:** the Main Menu offers Easy/Normal selection. Auto uses the selected difficulty for both players; Auto/practice matches do not count toward manual PvE wins/losses.
 - **Advanced Bot:** optional deeper decision-making using search techniques such as Minimax/Alpha-Beta after the core scope is stable.
 - **Optional ML extension:** machine-learning/self-play experiments may be investigated after the core game and non-ML bots are stable.
 
@@ -308,13 +309,16 @@ This structure may change as implementation progresses.
 - [x] Fixed 30-card playable sample deck with a three-copy limit
 - [x] Easy Bot and Human-vs-Bot Play Mode flow
 - [x] Visible Auto duel, portrait background/avatars, and Deck/Graveyard card presentation
-- [ ] Event-driven functional duel animation and compact duel log
-- [ ] Normal Bot
+- [x] Event-driven duel-presentation queue foundation (full presentation/device acceptance pending)
+- [x] In-match Settings > Duel Log (basic student acceptance; frozen hidden-info views and scrollable history)
+- [ ] Explicit Fast/Skip controls and further Duel Log polish
+- [x] Normal Bot, Easy/Normal Duel mode selection, and matching Auto policy (initial Play Mode operation confirmed)
+- [x] November HP/KO verification and current-HP HUD with rounded five-color health bar (student accepted)
 - [ ] Headless bot-vs-bot simulation, replay/state hashes, and evaluation metrics
 - [x] Guest profile, Main Menu, and Deck Builder MVP with local deck saves (Editor verified; device acceptance pending)
 - [ ] Gameplay balancing and testing
 - [ ] Online PvP and player identity/accounts
-- [ ] Android build
+- [x] First offline Android APK demo 0.1.0 (build/signature verified; physical-device acceptance pending)
 - [ ] Windows build
 - [ ] Advanced Bot
 - [ ] Optional ML experiments
@@ -331,11 +335,25 @@ This document is intended to be updated whenever important gameplay, architectur
 
 ## Current Status
 
+Updated 9 November 2026. Checkpoint: **Offline Demo 0.1.0 + Duel Log**.
+Previous checkpoint: `977a734` (Normal Bot, Duel mode, Auto, compact HP display).
+The Android APK built with 0 errors and 0 warnings, is approximately 35.52 MiB,
+supports Android 6.0+ and ARMv7/ARM64, and has a verified test signature.
+Local profile/deck/settings/history save checks passed in the Editor; Android
+install, touch/performance and persistence after app restart still need device testing.
+See [offline demo instructions](Docs/OFFLINE_DEMO_GUIDE.md) for output paths,
+installation, data retention, signing and the APK checksum. APK/ZIP files stay
+under ignored `Build/OfflineDemo/`; they are not stored in source Git history.
+
 The 3 November balance slice uses 6000 starting LP, capped Monster recovery,
 damage-preserving maximum HP and KO penalties of 500/1000/1500/2000 LP by rank,
 replacing the Energy-based penalty. Seven existing Monsters and two DEF buffs
-are rebalanced; no new card designs are added. See
-`Docs/HP_BALANCE_2026-11-03.md` for verification status and Play Mode checks.
+are rebalanced; no new card designs are added. The student reported the HP/KO
+diagnostic PASS and accepted the revised in-match display. Monster HP now shows
+only current HP, with a rounded bar about one-third of a Monster Zone's width.
+The bar changes red/orange/yellow/light green/bright green in 20% bands;
+HP/ATK/DEF are right-aligned and the bar travels with the attack status overlay.
+`Docs/HP_BALANCE_2026-11-03.md` records the earlier balance slice, not the latest HUD acceptance.
 
 The repository and Unity project use Unity 2022.3.62f3 LTS.
 
@@ -350,7 +368,7 @@ Mode prepares or repairs its required sample data before Play Mode.
 The core now exposes one complete legal-action list for the UI and bots. An
 initial deterministic Easy Bot selects only from that list and submits every
 choice through the same GameSession/GameRules path as a human. Runtime Duel
-Settings can switch Player 2 between Easy Bot and local hot-seat control. The
+Settings can switch Player 2 between the selected bot and local hot-seat control. The
 student has accepted the Human-vs-Easy-Bot flow in Play Mode. A compact Auto
 button can additionally hand Player 1 to the same legal-action bot so both
 sides play while the board remains visible. The runtime board also uses the
@@ -362,20 +380,45 @@ implemented in the local board. It captures the board before an accepted action,
 plays ordered `GameEvent` feedback for opening draws, draws, summons, sets,
 activations, attacks, damage, Energy/HP/LP changes, Graveyard movement, and
 turn/phase transitions, blocks input while it is playing, then renders the
-authoritative final state. The compact duel log, an explicit Fast/Skip control,
-all-category presentation acceptance, and Android performance/touch acceptance
-are still incomplete.
+authoritative final state. Settings > Duel Log now records accepted actions and
+ordered events for human, bot and automatic Recovery steps. Frozen per-player
+text hides opponent draws/sets without revealing old private entries later.
+The student confirmed basic Play Mode operation; data checks passed for privacy,
+ordering, HP changes and capture without duplicates. The log is match-local;
+it is not persisted as event history or available as a post-match log viewer.
+Explicit Fast/Skip, all-category presentation acceptance, and Android
+performance/touch acceptance remain incomplete.
 
 A separate AppShell now provides a local guest profile, local deck saves,
 Profile/Settings, Deck Builder, two validated preset decks, and a selected-deck
-PvE handoff against the Easy Bot. Its focused Editor verification passed on 21
+PvE handoff against Easy or Normal Bot through the Main Menu's Duel mode selector.
+Its original focused Editor verification passed on 21
 October for save/load safety, deck validation, selected-deck sessions, Easy Bot
 decisions, and authored UI bindings. This is local-only: it is not online
-authentication, cloud sync, replay playback, or a released platform build.
+authentication, cloud sync or replay playback. The first locally distributed
+Android test APK now exists; it is not a store release or device-accepted build.
 
-Normal Bot, headless simulation metrics, deterministic replay/state-hash
-verification, networking feasibility/online PvP, and Android/Windows builds
-remain incomplete. The revised scope and current gaps are in
+Normal Bot now scores Energy allocation, tributes, positions and effect benefits,
+and forecasts a bounded sequence of public-board attacks. This is not a full
+GameState simulation or trained model. Its dedicated observation supplements the
+shared bot view with owned/public effect data, remaining attacks and public
+Graveyards; the shared view itself still omits opponent Graveyard identities.
+Separate runtime/test compilation and three tactical checks plus six synthetic-deck
+automated matches passed outside Unity. After the Editor test assembly fix, the
+student confirmed Unity compilation and initial Normal-mode Play Mode operation;
+this is not a measured win-rate improvement or full all-card acceptance.
+
+### Important remaining work
+
+- Collect offline-demo device feedback and confirm install, full-match flow and local persistence; card expansion, detailed effect/chain review and Duel Log polish are deferred by the student.
+- Complete remaining AppShell/presentation acceptance and explicit Fast/Skip controls when scheduled.
+- Evaluate/tune Normal versus Easy across decks, seeds and starting sides; add a headless batch runner and CSV metrics (win rate, turns, Energy, decision time, errors).
+- Implement and verify deterministic replay loading and state hashes; existing action archives alone do not complete replay.
+- Complete the networking feasibility spike, then online 1v1 PvP and player identity/account flow.
+- Validate the produced Android demo on physical devices, then produce a Windows build; include touch/readability/performance and complete-match checks.
+- Finish regression/balance work, reproducible thesis experiments, report and final build before defense. Hard/Advanced Bot and ML remain optional.
+
+The revised scope and current gaps are in
 `Docs/PROJECT_CONTEXT.md` and `Docs/DUEL_PRESENTATION_PLAN.md`.
 
 The December thesis schedule and dated milestones are in
