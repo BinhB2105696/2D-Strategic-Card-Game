@@ -20,6 +20,13 @@ public sealed class SimulationRunner : MonoBehaviour
     {
         Application.runInBackground = true;
         Application.targetFrameRate = -1; QualitySettings.vSyncCount = 0;
+        string[] arguments = Environment.GetCommandLineArgs();
+        if (Array.IndexOf(arguments, "--replay-trace") >= 0)
+        {
+            try { SimulationReplay.RunCommandLine(catalog, arguments); }
+            catch (Exception exception) { Debug.LogException(exception); Application.Quit(1); }
+            yield break;
+        }
         if (!Initialize()) yield break;
         var jobs = Jobs().ToArray(); expected = jobs.Length;
         try
@@ -46,7 +53,7 @@ public sealed class SimulationRunner : MonoBehaviour
         {
             csv = new StreamWriter(Path.Combine(runDirectory, "matches.csv"), false, new System.Text.UTF8Encoding(true)) { AutoFlush = true };
             jsonl = new StreamWriter(Path.Combine(runDirectory, "matches.jsonl"), false, new System.Text.UTF8Encoding(false)) { AutoFlush = true };
-            csv.WriteLine("match_id,pair_id,scenario,seed,leg,bot0,bot1,deck0,deck1,first_player,status,winner,turns,actions,decisions0,decisions1,lp0,lp1,energy_spent0,energy_spent1,energy_allocated0,energy_allocated1,unused_at_turn_end0,unused_at_turn_end1,mean_decision_ms0,mean_decision_ms1,median_decision_ms0,median_decision_ms1,p95_decision_ms0,p95_decision_ms1,max_decision_ms0,max_decision_ms1,preparation_ms0,preparation_ms1,apply_ms0,apply_ms1,slow_decisions,wall_seconds,action_digest,result_digest,trace,error");
+            csv.WriteLine("match_id,pair_id,scenario,seed,leg,bot0,bot1,deck0,deck1,first_player,status,winner,turns,actions,decisions0,decisions1,lp0,lp1,energy_spent0,energy_spent1,energy_allocated0,energy_allocated1,unused_at_turn_end0,unused_at_turn_end1,mean_decision_ms0,mean_decision_ms1,median_decision_ms0,median_decision_ms1,p95_decision_ms0,p95_decision_ms1,max_decision_ms0,max_decision_ms1,preparation_ms0,preparation_ms1,apply_ms0,apply_ms1,slow_decisions,wall_seconds,action_digest,result_digest,trace,error,final_state_hash");
         }
         catch (Exception exception)
         {
@@ -111,7 +118,7 @@ public sealed class SimulationRunner : MonoBehaviour
             Directory.CreateDirectory(Path.Combine(runDirectory, "traces"));
             definitions = catalog.cards.ToDictionary(card => card.CardId, CardDataConverter.ToDefinition);
             for (int i = 0; i < catalog.presets.Length; i++) Deck(i);
-            SimulationJson.Atomic(Path.Combine(runDirectory, "run.json"), SimulationJson.Object("schema", 1,
+            SimulationJson.Atomic(Path.Combine(runDirectory, "run.json"), SimulationJson.Object("schema", 2,
                 "createdUtc", DateTime.UtcNow.ToString("o"), "config", config, "rules", GameConfig.CreateDefault(),
                 "rulesVersion", MatchHeader.CurrentRulesVersion, "catalogVersion", MatchHeader.CurrentCardCatalogVersion,
                 "randomVersion", SeededGameRandom.AlgorithmVersion, "sourceRevision", catalog.sourceRevision,
@@ -119,7 +126,9 @@ public sealed class SimulationRunner : MonoBehaviour
                 "unityVersion", Application.unityVersion, "runtime", Environment.Version.ToString(),
                 "machine", Environment.MachineName, "os", SystemInfo.operatingSystem, "cpu", SystemInfo.processorType,
                 "deckDefinitions", catalog.presets, "cardDefinitions", definitions.Values.OrderBy(c => c.CardId).ToArray(),
-                "digestScope", "actionDigest hashes accepted canonical actions; resultDigest hashes final outcome/LP/turns/actions. Neither is a complete internal GameState hash or verified replay.",
+                "traceSchema", SimulationReplayFormat.TraceSchema, "stateHashSchema", SimulationStateHash.Schema,
+                "aiContract", SimulationAiContract.Describe(),
+                "digestScope", "actionDigest/resultDigest keep their legacy scope. finalStateHash and trace stateHash cover the pure private state graph; replay verification is a separate command and report.",
                 "observationSchema", "Shared bot view plus owned/public Normal context. Diagnostic run metadata/seed/deck lists are not policy input."));
             return true;
         }
@@ -203,7 +212,7 @@ public sealed class SimulationRunner : MonoBehaviour
             r.decisions[0],r.decisions[1],r.finalLp[0],r.finalLp[1],r.energySpent[0],r.energySpent[1],r.energyAllocated[0],r.energyAllocated[1],
             r.unusedAtTurnEnd[0],r.unusedAtTurnEnd[1],r.meanDecisionMs[0],r.meanDecisionMs[1],r.medianDecisionMs[0],r.medianDecisionMs[1],
             r.p95DecisionMs[0],r.p95DecisionMs[1],r.maxDecisionMs[0],r.maxDecisionMs[1],r.preparationMs[0],r.preparationMs[1],r.applyMs[0],r.applyMs[1],
-            r.slowDecisions,r.durationSeconds,r.actionDigest,r.resultDigest,r.trace,r.error };
+            r.slowDecisions,r.durationSeconds,r.actionDigest,r.resultDigest,r.trace,r.error,r.finalStateHash };
         return string.Join(",", fields.Select(value => "\"" + Convert.ToString(value, CultureInfo.InvariantCulture).Replace("\"", "\"\"") + "\""));
     }
 }

@@ -240,7 +240,7 @@ The game core is planned to run independently from the visual UI so bots can pla
 
 The project is planned to support online 1v1 PvP with player identity/account support.
 
-The current tentative direction is to evaluate Unity Gaming Services Authentication and Multiplayer Sessions/Relay after the deterministic local game core is stable. No networking package is selected or installed yet.
+The approved first scope is create a room, share its code, and join a 1v1 duel; no matchmaking. On 10 November, the pinned Netcode for GameObjects 1.15.1, Relay 1.2.0, Authentication 3.6.0 and Transport 1.5.0 stack passed Editor package/API verification on Unity 2022.3.62f3. Existing package versions and the Editor version were preserved. The unified Multiplayer Services SDK was not installed because the evaluated versions require a Collections major upgrade. Service configuration and real two-device connectivity remain untested; design the PvP MVP next.
 
 ## Planned Strategic Archetypes
 
@@ -315,7 +315,8 @@ This structure may change as implementation progresses.
 - [x] Normal Bot, Easy/Normal Duel mode selection, and matching Auto policy (initial Play Mode operation confirmed)
 - [x] November HP/KO verification and current-HP HUD with rounded five-color health bar (student accepted)
 - [x] Headless bot-vs-bot runner, CSV/JSONL metrics and paired Easy/Normal evaluation
-- [ ] Verified replay loading and complete internal-state hashes
+- [x] Windows/Mono headless replay verification, full pure-state graph hashes and versioned AI data contract (MVP)
+- [x] Pinned PvP SDK installation/API verification on Unity 2022.3.62f3 (online connectivity pending)
 - [x] Guest profile, Main Menu, and Deck Builder MVP with local deck saves (Editor verified; device acceptance pending)
 - [ ] Gameplay balancing and testing
 - [ ] Online PvP and player identity/accounts
@@ -336,7 +337,8 @@ This document is intended to be updated whenever important gameplay, architectur
 
 ## Current Status
 
-Updated 10 November 2026. Checkpoint: **Normal tactical update and headless evaluation**.
+Updated 10 November 2026. Latest checkpoint scope: **Windows replay/state hashes and AI data contract MVP, plus verified PvP SDK installation**.
+Previous pushed checkpoint: **Normal tactical update and headless evaluation** (`bd5d71d`).
 Earlier checkpoints include `8425b84` (runner acceptance handoff), `0027715`
 (headless runner), and `977a734` (Normal Bot, Duel mode, Auto, compact HP display).
 The Android APK built with 0 errors and 0 warnings, is approximately 35.52 MiB,
@@ -428,8 +430,8 @@ new balance/Normal on Android. Updated Normal/Auto Play Mode acceptance is pendi
 - Collect offline-demo device feedback and confirm install, full-match flow and local persistence; card expansion, detailed effect/chain review and Duel Log polish are deferred by the student.
 - Complete remaining AppShell/presentation acceptance and explicit Fast/Skip controls when scheduled.
 - Keep the accepted Normal reference, verify updated Normal/Auto in Play Mode, and choose the next experiment; the headless runner and initial comparison metrics are implemented.
-- Implement and verify deterministic replay loading and state hashes; existing action archives alone do not complete replay.
-- Complete the networking feasibility spike, then online 1v1 PvP and player identity/account flow.
+- Broaden the replay/hash/AI-contract MVP coverage as cards evolve; UI playback, snapshot cloning for search, training adapter and Android/IL2CPP verification remain separate work.
+- Design the room/create/join-code PvP MVP using the verified SDK pins, then configure services and test Android/Windows connectivity. Online identity recovery/history and trusted results remain separate work; keep Unity 2022.3.62f3 unchanged.
 - Validate the produced Android demo on physical devices, then produce a Windows build; include touch/readability/performance and complete-match checks.
 - Finish regression/balance work, reproducible thesis experiments, report and final build before defense. Hard/Advanced Bot and ML remain optional.
 

@@ -7,7 +7,7 @@ using System.Text;
 
 public sealed class SimulationMatchResult
 {
-    public string matchId, pairId, bot0, bot1, status, error, actionDigest, resultDigest, trace;
+    public string matchId, pairId, bot0, bot1, status, error, actionDigest, resultDigest, finalStateHash, trace;
     public uint seed;
     public int scenario, deck0, deck1, leg, firstPlayer, winner = -2, turns, actions;
     public int[] decisions = new int[2], energySpent = new int[2], energyAllocated = new int[2], unusedAtTurnEnd = new int[2], finalLp = new int[2];
@@ -45,7 +45,12 @@ public static class SimulationEngine
         using (var trace = new StreamWriter(tracePath, false, new UTF8Encoding(false)) { AutoFlush = true })
         {
             trace.WriteLine(SimulationJson.Encode(SimulationJson.Object("record", "start", "matchId", result.matchId,
-                "seed", result.seed, "bot0", result.bot0, "bot1", result.bot1, "detailed", detailed)));
+                "schema", SimulationReplayFormat.TraceSchema, "stateHashSchema", SimulationStateHash.Schema,
+                "aiSchema", SimulationAiContract.Schema, "aiDescriptionHash", SimulationJson.Hash(SimulationJson.Encode(SimulationAiContract.Describe())),
+                "seed", result.seed, "bot0", result.bot0, "bot1", result.bot1, "detailed", detailed,
+                "deck0", deck0.Select(card => card.CardId).ToArray(), "deck1", deck1.Select(card => card.CardId).ToArray(),
+                "rulesHash", SimulationReplayFormat.RulesHash(), "definitionsHash", SimulationReplayFormat.DefinitionsHash(deck0.Concat(deck1)),
+                "stateHash", SimulationStateHash.Capture(session.State))));
             try
             {
                 while (!session.State.IsFinished)
@@ -61,16 +66,12 @@ public static class SimulationEngine
                     }
                     int player = state.InteractionPlayerIndex;
                     int turn = state.TurnNumber; string phase = state.CurrentPhase.ToString();
-                    bool automatic = !state.HasOpenResponseWindow && !state.HasPendingTriggeredEffect &&
-                        (state.CurrentPhase == TurnPhase.Recovery || state.CurrentPhase == TurnPhase.Standby);
-                    GameAction action;
+                    GameAction action = AutomaticAction(state);
+                    bool automatic = action != null;
                     IReadOnlyList<GameAction> legal = null;
                     string observation = null;
                     double preparation = 0, decision = 0;
-                    if (automatic)
-                        action = state.CurrentPhase == TurnPhase.Standby ? GameAction.AdvancePhase(player) :
-                            state.CurrentRecoveryStep == RecoveryStep.Draw ? GameAction.ResolveDrawStep(player) : GameAction.ResolveEnergyRefreshStep(player);
-                    else
+                    if (!automatic)
                     {
                         long start = Stopwatch.GetTimestamp();
                         legal = GameRules.GetLegalActions(state, player);
@@ -86,10 +87,15 @@ public static class SimulationEngine
                         { result.status = "InvalidAction"; throw new InvalidOperationException("Bot must return an action from the supplied list."); }
                     }
                     string encodedAction = SimulationJson.Encode(SimulationJson.Action(action));
+                    string policyInput = detailed && !automatic
+                        ? SimulationJson.Encode(SimulationAiContract.Capture(state, player, legal)) : null;
                     // Attempt is flushed before applying; crashes/rejections retain the proposal.
                     trace.WriteLine(SimulationJson.Encode(SimulationJson.Object("record", "attempt", "sequence", result.actions + 1,
                         "turn", turn, "phase", phase, "automatic", automatic, "action", SimulationJson.Action(action),
                         "observationJson", observation, "legalActions", detailed && legal != null ? legal.Select(SimulationJson.Action).ToArray() : null,
+                        "stateHash", SimulationStateHash.Capture(state), "policyInputJson", policyInput,
+                        "policyHash", policyInput == null ? null : SimulationJson.Hash(policyInput),
+                        "selectedActionIndex", automatic ? -1 : SimulationAiContract.SelectedIndex(legal, action),
                         "preparationMs", preparation, "decisionMs", decision)));
                     int unused = state.Players[player].AvailableEnergy;
                     long applyStart = Stopwatch.GetTimestamp();
@@ -109,6 +115,8 @@ public static class SimulationEngine
                     }
                     trace.WriteLine(SimulationJson.Encode(SimulationJson.Object("record", "accepted", "sequence", result.actions,
                         "events", applied.Events, "terminated", state.IsFinished,
+                        "stateHash", SimulationStateHash.Capture(state),
+                        "eventsHash", SimulationJson.Hash(SimulationJson.Encode(applied.Events)),
                         "reward0", state.IsFinished ? Reward(state.WinnerPlayerIndex, 0) : 0,
                         "reward1", state.IsFinished ? Reward(state.WinnerPlayerIndex, 1) : 0)));
                 }
@@ -123,6 +131,7 @@ public static class SimulationEngine
             }
             result.turns = session.State.TurnNumber;
             result.finalLp = session.State.Players.Select(player => player.Health).ToArray();
+            result.finalStateHash = SimulationStateHash.Capture(session.State);
             result.actionDigest = SimulationJson.Hash(actionText.ToString());
             result.resultDigest = SimulationJson.Hash(SimulationJson.Encode(SimulationJson.Object("status", result.status,
                 "winner", result.winner, "turns", result.turns, "lp", result.finalLp, "actions", result.actions,
@@ -139,6 +148,7 @@ public static class SimulationEngine
             }
             if (detailed || result.status != "Finished") result.trace = Path.GetFileName(tracePath);
             trace.WriteLine(SimulationJson.Encode(SimulationJson.Object("record", "end", "result", result,
+                "stateHash", result.finalStateHash,
                 "terminated", result.status == "Finished", "truncated", IsTruncated(result.status),
                 "reward0", result.status == "Finished" ? Reward(result.winner, 0) : 0,
                 "reward1", result.status == "Finished" ? Reward(result.winner, 1) : 0)));
@@ -148,6 +158,15 @@ public static class SimulationEngine
     }
 
     public static bool IsTruncated(string status) => status == "TurnLimit" || status == "ActionLimit" || status == "TimeLimit";
+    public static GameAction AutomaticAction(GameState state)
+    {
+        if (state.IsFinished || state.HasOpenResponseWindow || state.HasPendingTriggeredEffect) return null;
+        int player = state.InteractionPlayerIndex;
+        if (state.CurrentPhase == TurnPhase.Standby) return GameAction.AdvancePhase(player);
+        if (state.CurrentPhase != TurnPhase.Recovery) return null;
+        return state.CurrentRecoveryStep == RecoveryStep.Draw
+            ? GameAction.ResolveDrawStep(player) : GameAction.ResolveEnergyRefreshStep(player);
+    }
     private static int Reward(int winner, int player) => winner < 0 ? 0 : winner == player ? 1 : -1;
     private static double Percentile(List<double> sorted, double p) => sorted[Math.Max(0, (int)Math.Ceiling(sorted.Count * p) - 1)];
 }

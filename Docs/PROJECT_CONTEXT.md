@@ -488,13 +488,31 @@ in `Docs/APP_FOUNDATION_GUIDE_2026-10-21.md`. No password/backend/network SDK is
   simulator are reproducible. Train on compact state/action features, not
   rendered frames. On the 8 GB development machine, keep heavy training out of
   the Unity Editor process and use offline or remote runs if attempted.
+- Student direction, 10 November: defer Hard Bot and actual AI/ML training until
+  card expansion and hard gameplay rules are stable. Preserve the completed
+  replay/hash/AI-contract foundation. The student subsequently authorized compatible
+  SDK installation first, then room-code PvP MVP design; installation is now verified.
+- Deferred workflow: freeze a versioned card/rule catalog and reference policies;
+  validate replay/observation privacy after expansion; choose Hard/learning method;
+  build the search/training adapter and labeled datasets; separate training/tuning
+  seeds from evaluation seeds; train/version the model and compare against fixed
+  Easy/Normal plus unseen seeds, recording correctness and decision time.
 
 The headless Windows runner now uses the shared legal-action/apply path and writes
 CSV/JSONL, run metadata, selected observation/action traces and paired summaries
 under SimulationResults on D. It runs sequentially. Exact experiments are in
 Tools/Simulation/TESTING_NOTES.md. Baseline and post-update raw data are local,
 ignored outputs, not repository attachments. Reproducible configs are tracked.
-Action/result digests exist; full internal-state hashes/replay loading are pending.
+Windows/Mono replay/hash/AI-contract MVP implemented 10 November: run/trace
+schema 2, read-only full pure-state graph hashes before/after actions, replay
+through GameSession, ordered-event/observation/legality checks and first-divergence
+reports. Reflection stays in the simulation adapter; Core/rules/bots are unchanged.
+AI contract v1 exports masked numeric/categorical observations, local entity/action
+indices and per-player next-decision transitions with both terminal rewards.
+Private diagnostic hashes/seed/deck metadata are excluded from policy input.
+Old schema-1 archives remain unchanged and cannot claim full-state verification.
+Same-version compatibility is strict; no UI playback, state-cloning/search API,
+trainer/Gym adapter or Android/IL2CPP verification is claimed.
 The target metric contract (including the remaining state-hash work) is:
 
 - Winner and matchup.
@@ -511,12 +529,68 @@ and state hashes. Do not let animation playback drive the simulator clock.
 
 ## 13. PvP and Networking
 
+### SDK installation checkpoint — 10 November
+
+- Approved scope: create room, share a join code, enter code to play 1v1;
+  no matchmaking. Unity must remain 2022.3.62f3; never upgrade it automatically.
+- Installed/pinned: Netcode for GameObjects 1.15.1, Relay 1.2.0,
+  Authentication 3.6.0, Transport 1.5.0, Services Core 1.15.1, QoS 1.3.2,
+  Mono Cecil 1.11.6 and Newtonsoft JSON 3.2.1. Existing Collections 1.2.4,
+  Burst 1.8.21 and Mathematics 1.2.6 are pinned without upgrading them.
+- PvpSdkVerification PASS at 2026-11-10T07:30:48Z: all selected packages and
+  required APIs loaded, scripts compiled, 54 pre-existing package versions and
+  ProjectVersion.txt unchanged. Student confirmed Console 0 errors/0 warnings.
+  Verification plan/report are in Tools/Simulation/Control/PvpSdk/plan.json and
+  status.json; these two checkpoint files and the package lock are tracked explicitly.
+- Package downloads initially failed because the Unity login token expired;
+  re-login restored dependency resolution. A PackageInfo name collision in the
+  diagnostic was fixed with an explicit Package Manager type alias.
+- The evaluated unified Multiplayer Services SDK requires Collections 2.2.1;
+  standalone Relay avoids that major dependency upgrade. Relay is a legacy SDK;
+  reassess service support before production release. No Lobby/Matchmaker added.
+- This PASS verifies installation/Editor API availability only. Services were not
+  configured, no online duel/Android build was tested, and no online accounts or
+  cloud history were implemented. Next: discuss the PvP MVP design, then service
+  configuration and a real two-device connectivity test.
+
+- Local guest IDs/profile, recent PvE history and local wins/losses already exist;
+  online identity, cross-device recovery, online match history and trusted PvP
+  statistics do not. Preserve guest data and map it to authenticated identities
+  explicitly; existing offline PvE/Auto results are not rated PvP results.
+- Start with a scoped online 1v1 room/create/join-code prototype on two devices,
+  then integrate the duel UI. Card expansion can continue later if both players
+  use the same negotiated rules/catalog version in each match.
+- Define stable account ID versus editable display name, room ID and match ID;
+  choose a recoverable login/account-link flow before promising durable accounts.
+- Decide the authority/trust model. Host-authoritative Relay is a candidate for
+  a friends/demo MVP, not a claim of competitive anti-cheat. Never broadcast full
+  GameState, both Decks/hands, seeds or diagnostic private-state snapshots as the
+  client synchronization protocol. Send authorized perspective data/events and
+  sequence acknowledgments. Simulator reflection hashes are not a ready-made
+  Android/network protocol; a dedicated view/protocol adapter is required.
+- Define match lifecycle, surrender, disconnect grace, cancellation and host-loss
+  handling; record why a match ended. Keep local PvE, practice/Auto and PvP
+  statistics separate. Default win rate: wins/completed counted matches (including
+  draws); exclude canceled/unfinished matches, and agree forfeits/timeouts first.
+- Define a backend-owned result record keyed by matchId, deduplication and retry
+  rules before updating both profiles/history. Protected writes alone do not
+  prove a host-reported result is true; specify result validation/trust separately.
+  Keep private match diagnostics separate from player-visible history.
+- SDK installation/API compatibility on Unity 2022.3.62f3 has passed. Next design
+  the MVP and verify Android/Windows connectivity, identity recovery, service limits
+  and costs before enabling the online flow or promising persistent accounts.
+  Current MPS installation guidance is Unity-6-oriented; do not infer compatibility
+  or upgrade the Editor automatically: [Unity installation guide](https://docs.unity.com/en-us/mps-sdk/install-and-upgrade).
+- Reference constraints: [Relay forwards traffic](https://docs.unity.com/en-us/mps-sdk/networking/relay-servers);
+  [anonymous account recovery requires linking](https://docs.unity.com/en-us/authentication/use-anon-sign-in);
+  [Cloud Save access classes](https://docs.unity.com/en-us/cloud-save/concepts/player-data).
+
 "Networking solution" means the technology and service used to identify players, create/join matches, carry messages between devices, validate actions, handle disconnects, and optionally save player data.
 
-Current recommendation **[TENTATIVE; requires a feasibility spike and approval before packages are installed]**:
+Selected SDK foundation **[INSTALLED/EDITOR VERIFIED; online behavior pending]**:
 
 - Unity Authentication for player identity. Start with anonymous accounts for testing; add Username & Password or Unity Player Accounts if cross-device recovery is required.
-- Unity Multiplayer Services SDK Sessions for Lobby/Relay room creation and join codes.
+- Standalone Relay SDK allocations and join codes; unified Multiplayer Services SDK Sessions and Lobby are not installed.
 - Unity Relay to connect Android and Windows players without exposing their IP addresses or operating a dedicated server.
 - Netcode for GameObjects as the first transport adapter, sending compact `GameAction` messages rather than synchronizing the entire UI/core as NetworkObjects.
 - Unity Cloud Save only if persistent profiles/decks are needed; it is not required for the first online match.
@@ -697,12 +771,13 @@ Known next gaps:
    Explicit Fast/Skip remains pending for a later presentation slice.
 3. Keep the accepted approximately 7:3 Normal checkpoint and headless evaluation
    pipeline as references; broaden experiments only for the next selected scope.
-   Add deterministic state hashes/replay loading before networking depends on
-   the action stream. Hard/ML remain optional; the next implementation is unselected.
-4. Run remaining AppShell/device acceptance and produce the Windows build,
-   while performing the short networking feasibility spike from section
-   13. Do not install or commit a networking stack until the result and
-   tradeoffs are discussed.
+   The Windows replay/state-hash and AI-contract MVP is implemented; broaden its
+   coverage as needed before networking/search/training depends on it. Hard/ML
+   remain optional and deferred until cards/rules stabilize.
+4. Design the scoped room/create/join-code PvP MVP using the installed SDKs
+   from section 13, then configure services and test two-device connectivity.
+   Keep Unity 2022.3.62f3 unchanged. Remaining AppShell/device acceptance and
+   a playable Windows build are still pending.
 
 ## 16. Roadmap
 

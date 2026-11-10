@@ -1,0 +1,376 @@
+{
+  "targetUnity": "2022.3.62f3",
+  "projectVersionHash": "b51164d22c4d2716ba8aee7f0b59d6b7dd0efa8552fd1db2a8c3b123fae3a1ec",
+  "metadataCompatibilityVerified": true,
+  "pins": [
+    {
+      "name": "com.unity.netcode.gameobjects",
+      "version": "1.15.1"
+    },
+    {
+      "name": "com.unity.services.relay",
+      "version": "1.2.0"
+    },
+    {
+      "name": "com.unity.services.authentication",
+      "version": "3.6.0"
+    },
+    {
+      "name": "com.unity.transport",
+      "version": "1.5.0"
+    },
+    {
+      "name": "com.unity.nuget.mono-cecil",
+      "version": "1.11.6"
+    },
+    {
+      "name": "com.unity.services.qos",
+      "version": "1.3.2"
+    },
+    {
+      "name": "com.unity.services.core",
+      "version": "1.15.1"
+    },
+    {
+      "name": "com.unity.nuget.newtonsoft-json",
+      "version": "3.2.1"
+    },
+    {
+      "name": "com.unity.collections",
+      "version": "1.2.4"
+    },
+    {
+      "name": "com.unity.burst",
+      "version": "1.8.21"
+    },
+    {
+      "name": "com.unity.mathematics",
+      "version": "1.2.6"
+    }
+  ],
+  "preserve": [
+    {
+      "name": "com.unity.2d.animation",
+      "version": "9.2.0"
+    },
+    {
+      "name": "com.unity.2d.aseprite",
+      "version": "1.1.9"
+    },
+    {
+      "name": "com.unity.2d.common",
+      "version": "8.1.0"
+    },
+    {
+      "name": "com.unity.2d.pixel-perfect",
+      "version": "5.1.0"
+    },
+    {
+      "name": "com.unity.2d.psdimporter",
+      "version": "8.1.0"
+    },
+    {
+      "name": "com.unity.2d.sprite",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.2d.spriteshape",
+      "version": "9.1.0"
+    },
+    {
+      "name": "com.unity.2d.tilemap",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.2d.tilemap.extras",
+      "version": "3.1.3"
+    },
+    {
+      "name": "com.unity.burst",
+      "version": "1.8.21"
+    },
+    {
+      "name": "com.unity.collab-proxy",
+      "version": "2.12.4"
+    },
+    {
+      "name": "com.unity.collections",
+      "version": "1.2.4"
+    },
+    {
+      "name": "com.unity.ext.nunit",
+      "version": "1.0.6"
+    },
+    {
+      "name": "com.unity.feature.2d",
+      "version": "2.0.1"
+    },
+    {
+      "name": "com.unity.ide.rider",
+      "version": "3.0.36"
+    },
+    {
+      "name": "com.unity.ide.visualstudio",
+      "version": "2.0.22"
+    },
+    {
+      "name": "com.unity.mathematics",
+      "version": "1.2.6"
+    },
+    {
+      "name": "com.unity.test-framework",
+      "version": "1.1.33"
+    },
+    {
+      "name": "com.unity.textmeshpro",
+      "version": "3.0.7"
+    },
+    {
+      "name": "com.unity.timeline",
+      "version": "1.7.7"
+    },
+    {
+      "name": "com.unity.ugui",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.visualscripting",
+      "version": "1.9.4"
+    },
+    {
+      "name": "com.unity.modules.ai",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.androidjni",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.animation",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.assetbundle",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.audio",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.cloth",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.director",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.imageconversion",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.imgui",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.jsonserialize",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.particlesystem",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.physics",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.physics2d",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.screencapture",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.subsystems",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.terrain",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.terrainphysics",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.tilemap",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.ui",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.uielements",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.umbra",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.unityanalytics",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.unitywebrequest",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.unitywebrequestassetbundle",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.unitywebrequestaudio",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.unitywebrequesttexture",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.unitywebrequestwww",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.vehicles",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.video",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.vr",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.wind",
+      "version": "1.0.0"
+    },
+    {
+      "name": "com.unity.modules.xr",
+      "version": "1.0.0"
+    }
+  ],
+  "packages": [
+    {
+      "name": "com.unity.netcode.gameobjects",
+      "version": "1.15.1",
+      "minimumUnity": "2022.3",
+      "unityRelease": null,
+      "tarball": "https://download.packages.unity.com/com.unity.netcode.gameobjects/-/com.unity.netcode.gameobjects-1.15.1.tgz",
+      "sha1": "c1d4b2936e48ffc997e8d1e60fec40147f43aef8",
+      "dependencies": {
+        "com.unity.transport": "1.5.0",
+        "com.unity.nuget.mono-cecil": "1.11.6"
+      }
+    },
+    {
+      "name": "com.unity.services.relay",
+      "version": "1.2.0",
+      "minimumUnity": "2021.3",
+      "unityRelease": null,
+      "tarball": "https://download.packages.unity.com/com.unity.services.relay/-/com.unity.services.relay-1.2.0.tgz",
+      "sha1": "6899597941afa019230aeb49645108e25d8a71f5",
+      "dependencies": {
+        "com.unity.transport": "1.3.0",
+        "com.unity.services.qos": "1.3.2",
+        "com.unity.services.core": "1.12.5",
+        "com.unity.nuget.newtonsoft-json": "3.0.2",
+        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.unity.services.authentication": "2.7.4",
+        "com.unity.modules.unitywebrequestwww": "1.0.0",
+        "com.unity.modules.unitywebrequestaudio": "1.0.0",
+        "com.unity.modules.unitywebrequesttexture": "1.0.0",
+        "com.unity.modules.unitywebrequestassetbundle": "1.0.0"
+      }
+    },
+    {
+      "name": "com.unity.services.authentication",
+      "version": "3.6.0",
+      "minimumUnity": "2021.3",
+      "unityRelease": null,
+      "tarball": "https://download.packages.unity.com/com.unity.services.authentication/-/com.unity.services.authentication-3.6.0.tgz",
+      "sha1": "862f5b816622565a7390d220aedd6fffee951028",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0",
+        "com.unity.services.core": "1.15.1",
+        "com.unity.nuget.newtonsoft-json": "3.2.1",
+        "com.unity.modules.unitywebrequest": "1.0.0"
+      }
+    },
+    {
+      "name": "com.unity.transport",
+      "version": "1.5.0",
+      "minimumUnity": "2020.3",
+      "unityRelease": "0f1",
+      "tarball": "https://download.packages.unity.com/com.unity.transport/-/com.unity.transport-1.5.0.tgz",
+      "sha1": "cd458b53e61215cb76a13ada7b9b9dc0328a255b",
+      "dependencies": {
+        "com.unity.burst": "1.6.6",
+        "com.unity.collections": "1.2.4",
+        "com.unity.mathematics": "1.2.6"
+      }
+    },
+    {
+      "name": "com.unity.nuget.mono-cecil",
+      "version": "1.11.6",
+      "minimumUnity": "2019.4",
+      "unityRelease": null,
+      "tarball": "https://download.packages.unity.com/com.unity.nuget.mono-cecil/-/com.unity.nuget.mono-cecil-1.11.6.tgz",
+      "sha1": "ecb9724e46fff855c46a4f37f0a3377a3cfffc06",
+      "dependencies": {}
+    },
+    {
+      "name": "com.unity.services.qos",
+      "version": "1.3.2",
+      "minimumUnity": "2020.3",
+      "unityRelease": null,
+      "tarball": "https://download.packages.unity.com/com.unity.services.qos/-/com.unity.services.qos-1.3.2.tgz",
+      "sha1": "07cacd3f2542ededfa60137c178d4f74464eeaa8",
+      "dependencies": {
+        "com.unity.collections": "1.2.4",
+        "com.unity.services.core": "1.12.5",
+        "com.unity.nuget.newtonsoft-json": "3.0.2",
+        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.unity.services.authentication": "2.7.4"
+      }
+    },
+    {
+      "name": "com.unity.services.core",
+      "version": "1.15.1",
+      "minimumUnity": "2021.3",
+      "unityRelease": null,
+      "tarball": "https://download.packages.unity.com/com.unity.services.core/-/com.unity.services.core-1.15.1.tgz",
+      "sha1": "874e9d230d570aadc14c743a9bbdbbfdd89037d3",
+      "dependencies": {
+        "com.unity.modules.androidjni": "1.0.0",
+        "com.unity.nuget.newtonsoft-json": "3.2.1",
+        "com.unity.modules.unitywebrequest": "1.0.0"
+      }
+    },
+    {
+      "name": "com.unity.nuget.newtonsoft-json",
+      "version": "3.2.1",
+      "minimumUnity": "2018.4",
+      "unityRelease": null,
+      "tarball": "https://download.packages.unity.com/com.unity.nuget.newtonsoft-json/-/com.unity.nuget.newtonsoft-json-3.2.1.tgz",
+      "sha1": "74deb55db2a0c29ddfda576608bcb86abbd13ee6",
+      "dependencies": {}
+    }
+  ]
+}

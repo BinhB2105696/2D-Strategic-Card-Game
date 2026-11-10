@@ -33,7 +33,7 @@
 - Cặp seed có hai trận liên quan; khoảng tin cậy lấy mẫu lại cả cặp, loại cặp thiếu kết quả. Pilot nhỏ không chứng minh Normal mạnh hơn.
 - Trace chi tiết lưu thông tin quan sát đã che bài ẩn, lựa chọn hợp lệ, nước chọn và reward cuối trận. Normal có bổ sung thông tin công khai mà Easy hiện không dùng; không gọi đây là hai bộ quan sát giống hệt nhau.
 - Seed, Deck và catalog đầy đủ trong metadata là dữ liệu chẩn đoán, **không** phải đầu vào policy. Không lấy toàn bộ metadata làm observation cho ML.
-- `actionDigest/resultDigest` phục vụ đối chiếu hành động/kết quả; không phải full-state hash hay trình replay đã kiểm chứng. Chưa phải dataset cắm trực tiếp vào một framework ML.
+- `actionDigest/resultDigest` giữ phạm vi đối chiếu hành động/kết quả cũ. Run schema 2 có thêm `finalStateHash`/`final_state_hash`; trace schema 2 có hash trước/sau mỗi hành động. Chỉ báo cáo replay riêng mới xác nhận đã chạy kiểm chứng; việc có hash chưa tự chứng minh replay đạt.
 - Không sửa luật, animation hoặc bot để làm đẹp kết quả. Nếu thay phase/API/kiểu dữ liệu khiến runner không hiểu, công cụ phải báo lỗi rõ để cập nhật adapter.
 - Bộ chạy bắt đầu từ GameConfig.CreateDefault và bộ chuyển đổi dữ liệu bài thật mỗi batch; thay cách chấm điểm trong core được áp dụng sau rebuild. Animation không được nạp.
 
@@ -43,3 +43,28 @@
 - Đợi Unity biên dịch xong trước khi build. Dùng **Card Game > Simulation > Export Latest Build Diagnostics** để xuất chi tiết lỗi/cảnh báo gần nhất ra `Tools/Simulation/Control/latest-build-report.json`.
 - Công cụ build nay yêu cầu biên dịch và chờ assembly reload thành công trước BuildPlayer; lỗi biên dịch chặn build. Lần build đã kiểm chứng sau sửa đạt 0 lỗi/0 cảnh báo.
 - Summary nhẹ cập nhật mỗi 10 trận và ở trận cuối. Khoảng tin cậy được tính khi batch hoàn tất.
+
+## Replay và hợp đồng dữ liệu AI
+
+- Build runner mới, chạy một lô nhỏ với `detailedMatches` đủ cho các trận muốn xuất dữ liệu.
+- Tại thư mục dự án, chạy `powershell -NoProfile -File .\Tools\Simulation\Replay-Simulation.ps1 -RunDirectory .\SimulationResults\<run> -TraceName <match_id>.jsonl -ExportAi`.
+- Ví dụ với lô kiểm thử đã tạo: `powershell -NoProfile -File .\Tools\Simulation\Replay-Simulation.ps1 -RunDirectory .\SimulationResults\20261110_062015_7ab0ec9e -TraceName s0_seed2001_leg0.jsonl -ExportAi`. Thay tên lô/trace khi dùng dữ liệu khác.
+- Mỗi lần kiểm chứng tạo thư mục riêng `<run>/replay/<UTC>_<id>/` trên D: `report.json`, `player.log` và `transitions.jsonl` nếu bật `-ExportAi`. Không sửa trace hay lô nguồn.
+- Replay dựng lại seed/Deck, thực hiện đúng các hành động đã ghi qua GameSession/GameRules; không gọi bot hay animation. Kiểm tra state hash, hành động hợp lệ, thứ tự legal candidates, observation/policy input, payload/thứ tự events, reward và kết quả cuối.
+- Report `verified-match` xác nhận cả trận; `verified-prefix` chỉ xác nhận đoạn đã ghi trước giới hạn. Lỗi trả mã khác 0, có sequence và component đầu tiên lệch. Trace thiếu đoạn/end hoặc khác phiên bản bị từ chối.
+- Run/trace cũ schema 1 giữ nguyên và không có đủ hash để kiểm chứng toàn bộ trạng thái. Không tự nâng cấp hay khẳng định đã xác minh các baseline cũ. Replay v1 yêu cầu cùng runtime source fingerprint, catalog, rules/RNG version và môi trường Unity/runtime; chưa hỗ trợ tương thích ngược khi đổi luật/code.
+- State hash schema 1 đọc toàn bộ trường instance (kể cả private) của đồ thị trạng thái thuần qua reflection chỉ đọc: RNG, thứ tự Deck, damage/stat adjustments, cooldown/effect uses, skip schedules, modifier lifetimes, chain và pending choices. Giữ thứ tự danh sách, chuẩn hóa dictionary/set, ghi quan hệ tham chiếu; bỏ chi tiết triển khai collection như capacity. Kiểu/comparer không hỗ trợ gây lỗi rõ thay vì âm thầm bỏ trạng thái. Chỉ kiểm chứng Windows/Mono; không phải API khôi phục snapshot hay triển khai Android/IL2CPP.
+- Hash nhất quán kiểm chứng tính tái lập trên cùng phiên bản; kiểm thử luật vẫn cần để xác nhận hành vi đúng luật. Thời gian hash/ghi dữ liệu nằm ngoài phép đo bot chọn nước, nhưng có trong wall time và có thể làm chạm giới hạn thời gian sớm hơn.
+
+Hợp đồng AI schema 1 nằm trong `run.json/aiContract` và `SimulationAiContract.Describe()`:
+
+- Chỉ đưa `policyInputJson` cho model: 17 global features, danh sách entity với cardId công khai và 18 features/entity, danh sách hành động hợp lệ với source/target/tribute là chỉ số entity cục bộ. Mỗi action có 4 features; legal mask toàn 1 vì danh sách đã lọc hợp lệ.
+- Numeric scales là hằng số định dạng, không clamp dữ liệu. Mô tả kèm ánh xạ tên/giá trị enum. cardId là nhãn categorical: dùng từ vựng catalog công khai cố định, không suy ra từ Deck riêng của từng trận.
+- Không có seed, thứ tự Deck, danh tính tay đối thủ hay raw instanceId trong policy input. Lựa chọn hợp lệ chưa có định nghĩa trong view được mã hóa opaque; bổ sung thông tin lựa chọn cần phiên bản hợp đồng rõ ràng.
+- `selectedActionIndex` trỏ đúng ứng viên tại thời điểm chọn. Episode transitions nối từ một quyết định đến quyết định tiếp theo của cùng người chơi, đi qua phản ứng đối thủ và bước tự động. Dòng xuất có thể xen kẽ thứ tự sequence giữa hai người; sequence dùng đối chiếu trace.
+- Reward cuối trận: thắng +1, thua -1, hòa 0, các bước chưa kết thúc 0. Transition cuối của cả hai phía nhận reward/terminated đúng. Trận giới hạn có truncated=true, không coi là thua; bước đầu nên dùng episode hoàn tất để train, vì đoạn cắt có thể dừng trước lượt quyết định tiếp của actor.
+- Metadata của `dataset_start` và file run.json là dữ liệu chẩn đoán, không phải đầu vào model. Xuất dataset chỉ từ trace chi tiết đã replay đạt; ghi vào `.tmp` rồi công bố file hoàn chỉnh khi toàn trace hợp lệ. Nếu thất bại, `.tmp` chỉ để chẩn đoán.
+- Nếu học bắt chước một bot cụ thể, lọc player của transition theo bot0/bot1 trong header trace nguồn; giữ nhãn phiên bản và seed đánh giá riêng. Dataset hiện lưu cả hai phía, không mặc định mọi nước đều là của Normal.
+- Chưa có trainer, Gym adapter, model, UI playback hoặc bộ clone trạng thái để Hard tìm kiếm nhánh.
+
+Kiểm tra tập trung: **Card Game > Simulation > Verify Replay State and AI Contract** kiểm tra hash/private state và quyền riêng tư. `powershell -NoProfile -File .\Tools\Simulation\Test-Replay.ps1` tạo 6 trận nhỏ, kiểm chứng/xuất dữ liệu và thử log bị sửa, sai phiên bản, thiếu end, cùng một đoạn ActionLimit; tất cả file thử nằm trên D.

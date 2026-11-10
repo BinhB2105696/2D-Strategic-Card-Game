@@ -36,6 +36,16 @@ Ngày rà soát 9 November 2026; bổ sung kiểm thử chấp nhận 10 Novembe
 - Cấu hình tái lập được theo dõi trong Git: `normal-vs-easy-evaluation.json` và `normal-vs-easy-holdout.json`; chạy qua launcher với `-Config`. Hai trận warm-up/bộ không tính vào số liệu; chạy tuần tự, lưu đủ trace.
 - Đã gỡ các menu tạo/cấu hình/cân bằng bài cũ và nhánh tự ghi đè trong bootstrap/diagnostic; giữ gán artwork và kiểm tra dữ liệu. Build tool nay chủ động yêu cầu biên dịch rồi chờ assembly reload trước BuildPlayer.
 
+## Replay/state hash và AI contract MVP — 10 November
+
+- Thêm SimulationStateHash, SimulationAiContract, SimulationReplayFormat, SimulationReplay và ReplayFoundationVerification; tích hợp vào SimulationEngine/Runner. Không sửa Core, GameRules, Easy hoặc Normal.
+- Runtime/test compilation đạt; ReplayFoundationVerification PASS ngoài Unity với assembly Unity thật: seed/state ổn định, không tiêu RNG, culture independence, latent ATK adjustment, private RNG, dictionary/set order, future skip, modifier lifetime, chain priority, hidden Deck/hand privacy và selected-action index.
+- Runner Windows mới build 0 lỗi/0 cảnh báo. `Test-Replay.ps1` đạt 18/18: 6 trận thật replay/export, 11 bản sao cố ý làm sai (state, action, index, event hash, event payload, observation, seed, thiếu end, result digest, runtime version, legacy schema) bị từ chối đúng component; 1 ActionLimit được xác nhận là verified-prefix/truncated, không tính thua.
+- Sáu trận hoàn tất kiểm chứng 1.222 hành động và 922 quyết định. Dataset kiểm tra đủ selected indices, dimensions/masks và terminal reward của cả hai phía; chỉ xuất file hoàn chỉnh sau khi replay đạt.
+- Báo cáo: `Tools/Simulation/Control/ReplayAcceptance/20261110_132014_b683aa0f/report.json`. Lô nguồn: `SimulationResults/20261110_062015_7ab0ec9e/`; đoạn giới hạn: `SimulationResults/20261110_062116_6c5a775d/`. Report/dataset của từng replay nằm trong thư mục replay của lô tương ứng; bản sửa lỗi thử chỉ nằm trong Control, không sửa trace gốc.
+- Đây là kiểm chứng Windows/Mono cùng phiên bản, không phải chứng minh mọi luật đã đúng, mọi tổ hợp chain đã bao phủ hoặc môi trường ML đã hoàn thiện. Hash/encode làm tăng wall time ngoài phép đo chọn nước; không so tốc độ batch mới/cũ nếu khác chế độ ghi dữ liệu.
+- Hướng dẫn/schema và các giới hạn nằm trong README của công cụ. Không cập nhật hash ngược vào dữ liệu schema-1 hay thay đổi các baseline trước đó.
+
 ## Những điểm đã sửa trong đợt rà soát
 
 - Tính khoảng tin cậy một lần khi batch hoàn tất. Summary nhẹ cập nhật mỗi 10 trận và ở trận cuối, giảm chi phí khi chạy nhiều seed.
@@ -85,7 +95,7 @@ Ngày rà soát 9 November 2026; bổ sung kiểm thử chấp nhận 10 Novembe
 - Summary trong lúc chạy có thể chậm tối đa 9 trận và chưa có khoảng tin cậy. Báo cáo cuối batch mới tính khoảng bootstrap đầy đủ.
 - Báo cáo đã tạo trước lần rà soát giữ nguyên dữ liệu cũ. Hai nhóm cùng bot có thể ghi số cặp hoàn tất bằng 0 do lỗi bộ đếm đã sửa. Bản ghi end của trace cũ có thể chứa trace = null.
 - Đọc cấu hình/rulesVersion/catalogVersion cùng fingerprint nội dung và danh sách Deck trong run.json khi so sánh các đợt phát triển.
-- Hash hiện bao phủ chuỗi hành động và kết quả cuối. Kiểm chứng đầy đủ trạng thái nội bộ thuộc bước phát triển replay.
+- Dữ liệu schema 1 chỉ có hash chuỗi hành động/kết quả cuối. Run/trace schema 2 có full-state hash và lệnh replay riêng như phần MVP ở trên; không diễn giải hash cũ thành kiểm chứng trạng thái đầy đủ.
 
 ## Hiệu năng, lưu trữ và AI
 
