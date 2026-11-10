@@ -16,13 +16,13 @@ MonoBehaviour:
   cardName: Stone Guardian
   category: 0
   artwork: {fileID: 21300000, guid: c43c40d144ff83241a904f15470fc904, type: 3}
-  effectText: 'Once per turn: Pay 1 Energy; this card gains 300 DEF.'
+  effectText: 'Once per turn: Pay 1 Energy; this card gains 100 DEF.'
   monsterAttribute: 4
   monsterRank: 0
   monsterType: 9
   baseHealth: 1000
   baseAttack: 350
-  baseDefense: 450
+  baseDefense: 300
   attackEnergyRequirement: 1
   spellType: 0
   trapType: 0
@@ -41,7 +41,7 @@ MonoBehaviour:
     targets: []
     resolution:
     - component: {fileID: 11400000, guid: b54f8221503aea54aa9d4a28ff51b597, type: 2}
-      amount: 300
+      amount: 100
     continuousModifiers: []
     maxUses: 1
     countBy: 0

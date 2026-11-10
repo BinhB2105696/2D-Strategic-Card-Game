@@ -9,6 +9,8 @@ public sealed class NormalBot : IBot
     {
         public CardDefinition Definition;
         public int RemainingAttacks;
+        public bool CanChangePosition;
+        public CardInstance Projection;
     }
 
     private readonly Dictionary<long, Detail> details = new Dictionary<long, Detail>();
@@ -20,12 +22,14 @@ public sealed class NormalBot : IBot
     private bool canBattle, hostileLink;
     private EffectActivationWindow activationWindow;
     private int searchNodes;
+    private int summonEnergyCost;
     public string DisplayName => "Normal Bot";
 
     public void Observe(GameState state, int player)
     {
         details.Clear(); publicGraveyard.Clear(); penalties.Clear();
         pendingEffect = state.PendingTriggeredEffect?.Effect;
+        summonEnergyCost = state.Config.NormalSummonEnergyCost;
         canBattle = state.TurnNumber != 1 && !state.Players[player].IsBattlePhaseSkipScheduled(state.TurnNumber);
         threatenedId = 0; threatenedDamage = 0; hostileLink = false;
         foreach (PlayerState owner in state.Players)
@@ -66,8 +70,21 @@ public sealed class NormalBot : IBot
 
     private void Remember(CardInstance card)
     {
-        details[card.InstanceId] = new Detail { Definition = card.Definition,
-            RemainingAttacks = Math.Max(0, card.MaxAttacksThisTurn - card.AttacksUsedThisTurn) };
+        // Isolated public/owned projection for the pure continuous-modifier API.
+        var projection = new CardInstance(card.InstanceId, card.OwnerPlayerIndex, card.Definition);
+        projection.MoveToZone(card.Zone, card.IsFaceDown);
+        if (card.Definition.IsMonster)
+        {
+            projection.ModifyMaximumHealth(card.MaximumHealth - projection.MaximumHealth);
+            projection.ReceiveDamage(Math.Max(0, projection.MaximumHealth - card.CurrentHealth));
+        }
+        projection.ModifyAttack(card.CurrentAttack - projection.CurrentAttack);
+        projection.ModifyDefense(card.CurrentDefense - projection.CurrentDefense);
+        projection.AllocateEnergy(card.AllocatedEnergy);
+        if (card.Zone == CardZone.MonsterZone) projection.SetBattlePosition(card.BattlePosition);
+        details[card.InstanceId] = new Detail { Definition = card.Definition, Projection = projection,
+            RemainingAttacks = Math.Max(0, card.MaxAttacksThisTurn - card.AttacksUsedThisTurn),
+            CanChangePosition = !card.HasChangedPositionThisTurn && !card.WasSummonedThisTurn };
     }
 
     public GameAction ChooseAction(BotGameStateView state, IReadOnlyList<GameAction> legalActions)
@@ -78,7 +95,8 @@ public sealed class NormalBot : IBot
         foreach (GameAction action in legalActions)
         {
             double score = Score(state, action);
-            if (score > bestScore) { bestScore = score; best = action; }
+            if (score > bestScore || (score == bestScore && Prefer(state, action, best)))
+            { bestScore = score; best = action; }
         }
         return best;
     }
@@ -92,26 +110,19 @@ public sealed class NormalBot : IBot
         {
             case GameActionType.Attack: return AttackScore(state, action);
             case GameActionType.SummonMonster:
-                double summon = Value(card) * 0.35 + (canBattle ? card.CurrentAttack * 0.12 : 0);
-                foreach (long id in action.TributeInstanceIds) summon -= Value(Find(state, id)) * 0.55;
-                int threat = StrongestAttack(enemy);
-                summon += action.BattlePosition == BattlePosition.Defense
-                    ? Math.Min(card.CurrentDefense, threat) * 0.18
-                    : (canBattle && card.AttackEnergyRequirement <= own.AvailableEnergy ? 180 : 0);
-                return summon;
+                return SummonScore(state, action, card);
             case GameActionType.AllocateEnergy:
                 int needed = card.AttackEnergyRequirement - card.AllocatedEnergy;
-                if (!canBattle || needed <= 0 || action.Amount > needed) return -100;
+                if (!CanPrepareAttack(card, own.AvailableEnergy) || needed <= 0 || action.Amount > needed) return -100;
                 double potential = AttackPotential(card, enemy);
                 return potential <= 0 ? -100 : potential * (action.Amount == needed ? 0.8 : 0.15)
-                    - action.Amount * 35;
+                    - EnergyPrice(state, action, action.Amount);
             case GameActionType.ChangeBattlePosition:
                 if (action.BattlePosition == BattlePosition.Attack)
-                    return canBattle && card.AllocatedEnergy >= card.AttackEnergyRequirement && Remaining(card) > 0
-                        ? AttackPotential(card, enemy) * 0.8 : -50;
-                return Math.Min(card.CurrentDefense, StrongestAttack(enemy)) * 0.2
-                    - (canBattle && Remaining(card) > 0 && card.AllocatedEnergy >= card.AttackEnergyRequirement
-                        ? AttackPotential(card, enemy) : 0) - 30;
+                    return CanPrepareAttack(card, own.AvailableEnergy)
+                        ? AttackPotential(card, enemy) * (card.AllocatedEnergy >= card.AttackEnergyRequirement ? 0.9 : 0.2) : -100;
+                return CanPrepareAttack(card, own.AvailableEnergy) && AttackPotential(card, enemy) > 0
+                    ? -100 : 100 + Math.Min(card.CurrentDefense, StrongestAttack(enemy)) * 0.2;
             case GameActionType.ActivateCard:
             case GameActionType.ActivateNormalSpell:
                 return Activation(state, action, card);
@@ -143,8 +154,13 @@ public sealed class NormalBot : IBot
                 {
                     case EffectCostType.PlayerHealth:
                         score -= cost.Amount * (state.Players[action.PlayerIndex].Health <= cost.Amount * 2 ? 2 : 0.25); break;
-                    case EffectCostType.AvailableEnergy:
-                    case EffectCostType.RemoveAllocatedEnergy: score -= cost.Amount * 80; break;
+                    case EffectCostType.AvailableEnergy: score -= EnergyPrice(state, action, cost.Amount); break;
+                    case EffectCostType.RemoveAllocatedEnergy:
+                        score -= cost.Amount * 20;
+                        if (canBattle && Remaining(card) > 0 && card.AllocatedEnergy >= card.AttackEnergyRequirement &&
+                            card.AllocatedEnergy - cost.Amount < card.AttackEnergyRequirement)
+                            score -= AttackPotential(card, state.Players[1 - action.PlayerIndex]) * 0.8;
+                        break;
                     case EffectCostType.DiscardFromHand: score -= cost.Amount * 350; break;
                     case EffectCostType.TributeMonster: score -= cost.Amount * 700; break;
                 }
@@ -157,15 +173,21 @@ public sealed class NormalBot : IBot
     private double EffectValue(BotGameStateView state, GameAction action, EffectDefinition effect)
     {
         long targetId = action.TargetInstanceIds.Count > 0 ? action.TargetInstanceIds[0] : action.TargetInstanceId;
-        BotCardView target = Find(state, targetId);
+        BotCardView source = Find(state, action.SourceInstanceId);
+        BotCardView target = targetId != 0 ? Find(state, targetId) :
+            effect.TargetType == EffectTargetType.None && source != null && source.Category == CardCategory.Monster ? source : null;
         BotPlayerView own = state.Players[action.PlayerIndex];
         BotPlayerView enemy = state.Players[1 - action.PlayerIndex];
-        double value = effect.ContinuousModifiers.Count > 0 ? 180 : 0;
+        int energy = own.AvailableEnergy;
+        foreach (EffectCostDefinition cost in effect.Costs)
+            if (cost.Type == EffectCostType.AvailableEnergy) energy -= cost.Amount;
+        double value = ContinuousValue(state, source, target, effect, energy, action.PlayerIndex);
         foreach (EffectOperationDefinition op in effect.Operations)
         {
             switch (op.Type)
             {
-                case EffectOperationType.DrawCards: value += Math.Min(op.Amount, own.DeckCount) * 300; break;
+                case EffectOperationType.DrawCards:
+                    value += Math.Min(op.Amount, own.DeckCount) * (own.HandCount >= 6 ? 140 : 280); break;
                 case EffectOperationType.SkipNextOpponentDrawStep: value += 300; break;
                 case EffectOperationType.RestoreMonsterHealth:
                     if (target != null) value += Math.Min(op.Amount, target.MaximumHealth - target.CurrentHealth) * 0.5;
@@ -179,9 +201,7 @@ public sealed class NormalBot : IBot
                     break;
                 case EffectOperationType.IncreaseAttackUntilEndOfTurn:
                 case EffectOperationType.IncreaseAttackByTriggerValue:
-                    if (target != null && canBattle && Remaining(target) > 0 &&
-                        target.AllocatedEnergy >= target.AttackEnergyRequirement)
-                        value += op.Amount * 0.45 + KillUpgrade(target, enemy, op.Amount);
+                    if (target != null) value += AttackBonusValue(target, enemy, op.Amount, energy, false);
                     break;
                 case EffectOperationType.TransferAttackUntilEndOfTurn:
                     if (target != null && action.TargetInstanceIds.Count > 1)
@@ -198,10 +218,12 @@ public sealed class NormalBot : IBot
                     break;
                 case EffectOperationType.IncreaseDefensePermanently:
                 case EffectOperationType.IncreaseDefenseUntilEndOfTurn:
-                    if (target != null && target.BattlePosition == BattlePosition.Defense)
-                        value += Math.Min(op.Amount, StrongestAttack(enemy)) * (targetId == threatenedId ? 0.8 : 0.25);
+                    if (target != null) value += SurvivalValue(target, enemy, 0, op.Amount,
+                        op.Type == EffectOperationType.IncreaseDefensePermanently);
                     break;
-                case EffectOperationType.IncreaseMaximumHealth: value += op.Amount * 0.3; break;
+                case EffectOperationType.IncreaseMaximumHealth:
+                    if (target != null) value += SurvivalValue(target, enemy, op.Amount, 0, true);
+                    break;
                 case EffectOperationType.ReduceMaximumHealth:
                     if (target != null) value += op.Amount * 0.5 + (op.Amount >= target.CurrentHealth ? Value(target) * 0.5 : 0);
                     break;
@@ -218,6 +240,128 @@ public sealed class NormalBot : IBot
         }
         return value;
     }
+
+    private bool CanPrepareAttack(BotCardView card, int energy)
+    {
+        if (card == null || !canBattle || Remaining(card) <= 0 ||
+            Math.Max(0, card.AttackEnergyRequirement - card.AllocatedEnergy) > energy) return false;
+        return card.BattlePosition != BattlePosition.Defense ||
+            (details.TryGetValue(card.InstanceId, out Detail detail) && detail.CanChangePosition);
+    }
+
+    private double EnergyPrice(BotGameStateView state, GameAction action, int amount)
+    {
+        BotPlayerView own = state.Players[action.PlayerIndex], enemy = state.Players[1 - action.PlayerIndex];
+        double opportunity = 0;
+        foreach (BotCardView monster in own.MonsterZones)
+        {
+            if (monster == null || (action.Type == GameActionType.AllocateEnergy && monster.InstanceId == action.SourceInstanceId)) continue;
+            int needed = Math.Max(0, monster.AttackEnergyRequirement - monster.AllocatedEnergy);
+            if (needed > 0 && needed > own.AvailableEnergy - amount && CanPrepareAttack(monster, own.AvailableEnergy))
+                opportunity = Math.Max(opportunity, AttackPotential(monster, enemy) * 0.35);
+        }
+        return amount * (own.AvailableEnergy - amount <= 1 ? 30 : 12) + opportunity;
+    }
+
+    private double SummonScore(BotGameStateView state, GameAction action, BotCardView card)
+    {
+        BotPlayerView own = state.Players[action.PlayerIndex], enemy = state.Players[1 - action.PlayerIndex];
+        int tributeAttack = 0, bonus = 0;
+        double lost = 0, lostPressure = 0;
+        foreach (long id in action.TributeInstanceIds)
+        {
+            BotCardView tribute = Find(state, id);
+            lost += Value(tribute) * 0.45;
+            if (CanPrepareAttack(tribute, own.AvailableEnergy)) lostPressure += AttackPotential(tribute, enemy) * 0.35;
+            if (details.TryGetValue(id, out Detail detail)) tributeAttack += detail.Definition.BaseAttack;
+        }
+        if (details.TryGetValue(card.InstanceId, out Detail summoned))
+            foreach (EffectDefinition effect in summoned.Definition.Effects)
+                if (effect.Trigger == EffectTriggerType.OnSummoned)
+                    foreach (EffectOperationDefinition op in effect.Operations)
+                        if (op.Type == EffectOperationType.IncreaseAttackByTriggerValue) bonus += tributeAttack;
+        bool ready = canBattle && own.AvailableEnergy - summonEnergyCost >= card.AttackEnergyRequirement;
+        double score = (Value(card) + bonus * 0.7) * 0.45 - lost - lostPressure;
+        if (ready) score += Potential(card, enemy, card.CurrentAttack + bonus) * 0.4;
+        if (action.BattlePosition == BattlePosition.Defense)
+            score += ready ? -100 : 180 + Math.Min(card.CurrentDefense, StrongestAttack(enemy)) * 0.2;
+        else score += ready ? 180 : -220;
+        return score;
+    }
+
+    private double AttackBonusValue(BotCardView target, BotPlayerView enemy, int amount, int energy, bool permanent)
+    {
+        if (amount <= 0) return 0;
+        double value = permanent ? amount * 0.2 : 0;
+        if (CanPrepareAttack(target, energy))
+            value += Math.Max(0, Potential(target, enemy, target.CurrentAttack + amount) - AttackPotential(target, enemy)) * 0.8
+                + amount * 0.2 * Math.Max(1, Remaining(target)) + KillUpgrade(target, enemy, amount);
+        return value;
+    }
+
+    private double SurvivalValue(BotCardView target, BotPlayerView enemy, int health, int defense, bool permanent)
+    {
+        if (health <= 0 && defense <= 0) return 0;
+        bool defending = target.BattlePosition == BattlePosition.Defense;
+        double value = health * 0.22 + defense * (defending ? 0.22 : permanent ? 0.06 : 0);
+        foreach (BotCardView attacker in enemy.MonsterZones)
+        {
+            if (attacker == null) continue;
+            int before = Damage(attacker.CurrentAttack, target);
+            int after = defending ? Math.Max(0, before - defense) : before;
+            if (before >= target.CurrentHealth && after < target.CurrentHealth + health)
+                value = Math.Max(value, Value(target) * 0.55 + KnockoutPenalty(target) * 0.5);
+        }
+        if (target.InstanceId == threatenedId && threatenedDamage > 0)
+        {
+            int after = Math.Max(0, threatenedDamage - (defending ? target.CurrentDefense + defense : 0));
+            if (after < target.CurrentHealth + health) value += Value(target) * 0.5;
+        }
+        return value;
+    }
+
+    private double ContinuousValue(BotGameStateView state, BotCardView source, BotCardView target,
+        EffectDefinition effect, int energy, int player)
+    {
+        if (source == null || effect.ContinuousModifiers.Count == 0 || !details.TryGetValue(source.InstanceId, out Detail sourceDetail)) return 0;
+        double value = 0;
+        BotPlayerView own = state.Players[player], enemy = state.Players[1 - player];
+        foreach (BotCardView monster in own.MonsterZones)
+        {
+            if (monster == null || (target != null && monster.InstanceId != target.InstanceId) ||
+                !details.TryGetValue(monster.InstanceId, out Detail targetDetail)) continue;
+            foreach (IContinuousModifier modifier in effect.ContinuousModifiers)
+            {
+                int attack = modifier.ModifyAttack(sourceDetail.Projection, targetDetail.Projection);
+                int defense = modifier.ModifyDefense(sourceDetail.Projection, targetDetail.Projection);
+                int health = modifier.ModifyHealth(sourceDetail.Projection, targetDetail.Projection);
+                value += AttackBonusValue(monster, enemy, attack, energy, true)
+                    + SurvivalValue(monster, enemy, health, defense, true);
+            }
+        }
+        return value;
+    }
+
+    private bool Prefer(BotGameStateView state, GameAction action, GameAction best)
+    {
+        if (best == null) return true;
+        bool ending = action.Type == GameActionType.EnterEndPhase || action.Type == GameActionType.PassResponse;
+        bool bestEnding = best.Type == GameActionType.EnterEndPhase || best.Type == GameActionType.PassResponse;
+        if (ending != bestEnding) return ending;
+        if (action.Type == GameActionType.Attack && best.Type == GameActionType.Attack)
+        {
+            int attack = Find(state, action.SourceInstanceId).CurrentAttack;
+            int bestAttack = Find(state, best.SourceInstanceId).CurrentAttack;
+            if (attack != bestAttack) return attack < bestAttack;
+        }
+        if (action.Type != best.Type) return (int)action.Type < (int)best.Type;
+        if (action.Amount != best.Amount) return action.Amount < best.Amount;
+        if (action.SourceInstanceId != best.SourceInstanceId) return action.SourceInstanceId < best.SourceInstanceId;
+        if (action.TargetInstanceId != best.TargetInstanceId) return action.TargetInstanceId < best.TargetInstanceId;
+        return action.ZoneIndex < best.ZoneIndex;
+    }
+
+    private int KnockoutPenalty(BotCardView card) => penalties.TryGetValue(card.MonsterRank, out int amount) ? amount : 0;
 
     // Bounded public-board forecast: sequence damage/KO/direct attacks only.
     // Real chains/effects are resolved by GameRules; replan after every action.
@@ -281,29 +425,32 @@ public sealed class NormalBot : IBot
     private double Hit(BotCardView attacker, BotCardView target, int[] hp, int index, ref int lp)
     {
         int damage = Damage(attacker.CurrentAttack, target);
-        double gain = Math.Min(hp[index], damage) * 0.2;
+        double gain = Math.Min(hp[index], damage) * 0.25;
         hp[index] -= damage;
         if (hp[index] <= 0)
         {
-            int penalty = penalties.TryGetValue(target.MonsterRank, out int amount) ? amount : 0;
+            int penalty = KnockoutPenalty(target);
             lp -= penalty;
-            gain += penalty + Value(target) * 0.4;
+            gain += penalty * 1.2 + Value(target) * 0.4 + target.CurrentAttack * 0.55;
         }
         return gain;
     }
 
     private double AttackPotential(BotCardView card, BotPlayerView enemy)
+        => Potential(card, enemy, card.CurrentAttack);
+
+    private double Potential(BotCardView card, BotPlayerView enemy, int attack)
     {
         double best = 0; bool any = false;
         foreach (BotCardView target in enemy.MonsterZones)
         {
             if (target == null) continue;
             any = true;
-            int damage = Damage(card.CurrentAttack, target);
+            int damage = Damage(attack, target);
             best = Math.Max(best, Math.Min(damage, target.CurrentHealth) * 0.3 +
-                (damage >= target.CurrentHealth ? Value(target) * 0.4 + 300 : 0));
+                (damage >= target.CurrentHealth ? Value(target) * 0.4 + KnockoutPenalty(target) + target.CurrentAttack * 0.4 : 0));
         }
-        return any ? best : card.CurrentAttack;
+        return any ? best : attack;
     }
 
     private double KillUpgrade(BotCardView card, BotPlayerView enemy, int bonus)

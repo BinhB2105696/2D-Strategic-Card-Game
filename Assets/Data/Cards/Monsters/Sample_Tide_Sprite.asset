@@ -16,12 +16,12 @@ MonoBehaviour:
   cardName: Tide Sprite
   category: 0
   artwork: {fileID: 21300000, guid: 7c3bd80ba40bad44faa6528192df7efd, type: 3}
-  effectText: 'Once per turn: Pay 1 Energy; this card gains 300 maximum HP, preserving
+  effectText: 'Once per turn: Pay 1 Energy; this card gains 200 maximum HP, preserving
     damage already taken.'
   monsterAttribute: 3
   monsterRank: 0
   monsterType: 9
-  baseHealth: 900
+  baseHealth: 600
   baseAttack: 450
   baseDefense: 200
   attackEnergyRequirement: 1
@@ -42,7 +42,7 @@ MonoBehaviour:
     targets: []
     resolution:
     - component: {fileID: 11400000, guid: 6a3559e0e235e6d4486b6ac07687fcb4, type: 2}
-      amount: 300
+      amount: 200
     continuousModifiers: []
     maxUses: 1
     countBy: 0

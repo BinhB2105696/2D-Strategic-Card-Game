@@ -16,14 +16,14 @@ MonoBehaviour:
   cardName: Sky Sage
   category: 0
   artwork: {fileID: 21300000, guid: 78fa0ecdb4eaaa34ab40a1de01c44a89, type: 3}
-  effectText: 'Pay 2 Energy: Draw 1 card.'
+  effectText: 'Pay 2 Energy: Draw 2 cards.'
   monsterAttribute: 5
   monsterRank: 2
   monsterType: 2
   baseHealth: 2500
-  baseAttack: 1400
+  baseAttack: 1600
   baseDefense: 600
-  attackEnergyRequirement: 3
+  attackEnergyRequirement: 2
   spellType: 0
   trapType: 0
   effects:
@@ -41,7 +41,7 @@ MonoBehaviour:
     targets: []
     resolution:
     - component: {fileID: 11400000, guid: 6907c02ae32e40218146ba8a36426674, type: 2}
-      amount: 1
+      amount: 2
     continuousModifiers: []
     maxUses: 1
     countBy: 0

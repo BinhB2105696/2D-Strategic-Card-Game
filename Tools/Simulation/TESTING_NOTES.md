@@ -15,6 +15,27 @@ Ngày rà soát 9 November 2026; bổ sung kiểm thử chấp nhận 10 Novembe
 - Bộ `Test-Runner.ps1` đạt 10/10 ca: giới hạn lượt/thời gian, tắt trace, 5 đầu vào sai, ngắt batch và lỗi ghi file chỉ đọc. Báo cáo ở `Tools/Simulation/Control/Acceptance/20261110_061854/report.json`. Hai ca giới hạn ghi đủ 2 trận/ca và giữ trace; tắt trace hoàn tất 2 trận và không giữ trace. Batch bị ngắt phục hồi được đủ 3 trận đã xác nhận; lỗi ghi trả mã 1 và giữ nguyên file đích.
 - Bản build không cảnh báo giữ nguyên fingerprint mã runtime `c381754b9d7ade75aabfd188f5cce7e848c4cb12bbdcedab31ac70bfb00c9e46` của bản dùng trong 10 ca trên. Chỉ bổ sung công cụ kiểm thử và xuất báo cáo Editor; không sửa Core, luật, bot hay UI.
 
+## Normal tactical update — checkpoint 10 November
+
+- Student chấp nhận khoảng 7:3 là mốc Normal hiện tại; 8:2 là mục tiêu nghiên cứu lý tưởng, không cần tiếp tục ép tỷ lệ lúc này. Giữ Easy/Normal làm đối thủ tham chiếu.
+- Đã sửa chấm điểm hiệu ứng tự thân/Equip, giá trị ATK sau hiến tế, thế thủ khi không chuẩn bị được đòn đánh, ưu tiên mục tiêu ATK/rank cao, chi phí Energy theo cơ hội và hòa điểm ổn định. Core, Easy và luật không đổi trong đợt sửa bot.
+- NormalBotVerification đạt PASS ngoài Unity với assembly Unity thật: hiệu ứng tự thân, không làm đổi dữ liệu lá đang sống khi quan sát, Equip, thế thủ/chuẩn bị Energy, hiến tế, mục tiêu, thứ tự đánh, hồi HP và 6 trận fixture. Unity build runner mới: 0 lỗi/0 cảnh báo.
+
+| Bộ dữ liệu | Seed | Normal thắng | D0/D0; D1/D1; D0/D1 |
+|---|---|---|---|
+| Trước cải tiến | 1001–1025 | 88/150 = 58,67% | 30/50; 27/50; 31/50 |
+| Normal mới, cùng đầu vào | 1001–1025 | 108/150 = 72% | 37/50; 38/50; 33/50 |
+| Normal mới, seed chưa dùng | 1026–1050 | 107/150 = 71,33% | 36/50; 39/50; 32/50 |
+
+- Mỗi bộ gồm ba cách ghép hai preset Deck, 25 seed, đổi bot giữa hai phía. Các trận cùng seed/cặp đổi phía có liên hệ; không diễn giải như 150 seed độc lập. Kết quả chỉ áp dụng phạm vi Deck hiện tại.
+- Cùng đầu vào: 26 trận đổi sang Normal thắng, 6 trận đổi sang Easy thắng. Normal mới có dùng Fire Dragon 294, Tide Sprite 255, Stone Guardian 23 lần và triệu hồi Legendary Fighter 41 lần; 184/184 lượt triệu hồi của Normal ở turn 1 chọn thế thủ. Đây là quan sát kết hợp các thay đổi, chưa tách tác động từng thay đổi.
+- Cả 300 trận Normal mới đều Finished, không lỗi/chạm giới hạn; đủ CSV/JSONL và 300 trace. Không có quyết định vượt ngưỡng 1.000 ms. Play Mode Normal/Auto mới và APK cập nhật chưa nghiệm thu; APK 0.1.0 có trước thay đổi này.
+- Baseline đã gom (giữ bản gốc): `SimulationResults/Experiments/20261110_NormalEasy_Baseline150/`, gồm bảng chung, 150 trace, config/control logs, manifest và SHA-256.
+- Kết quả Normal mới: `SimulationResults/20261110_042425_7622edfb/` (cùng seed, 276,66 MiB) và `SimulationResults/20261110_042629_d98dd7ff/` (seed mới, 288,34 MiB). Tất cả là file local trên D, không được push vào Git.
+- Runtime fingerprint cũ `c381754b9d7ade75aabfd188f5cce7e848c4cb12bbdcedab31ac70bfb00c9e46`; mới `e2a5c1332e2fb8d90cd292d03bcca2d6d407bd2d799b3c9526d21346e1137a1a`. Cùng catalog fingerprint `4aa47bf6904b0201fc74ab6bb4838e4be8a16032e3d38ad50f0a534a6f14eb6b`. Các lần đo được tạo trước commit; đọc fingerprint và cardDefinitions trong run.json cùng sourceRevision.
+- Cấu hình tái lập được theo dõi trong Git: `normal-vs-easy-evaluation.json` và `normal-vs-easy-holdout.json`; chạy qua launcher với `-Config`. Hai trận warm-up/bộ không tính vào số liệu; chạy tuần tự, lưu đủ trace.
+- Đã gỡ các menu tạo/cấu hình/cân bằng bài cũ và nhánh tự ghi đè trong bootstrap/diagnostic; giữ gán artwork và kiểm tra dữ liệu. Build tool nay chủ động yêu cầu biên dịch rồi chờ assembly reload trước BuildPlayer.
+
 ## Những điểm đã sửa trong đợt rà soát
 
 - Tính khoảng tin cậy một lần khi batch hoàn tất. Summary nhẹ cập nhật mỗi 10 trận và ở trận cuối, giảm chi phí khi chạy nhiều seed.

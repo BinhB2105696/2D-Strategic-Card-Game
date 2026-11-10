@@ -12,17 +12,6 @@ public static class HealthBalanceVerification
 {
     private static int checks;
 
-    [MenuItem("Card Game/Diagnostics/Apply and Verify November HP Balance")]
-    public static void ApplyAndVerifyBatch()
-    {
-        CardSampleTool.ApplyNovemberBalance();
-        Run();
-        GameStateDiagnostics.RunBattleRulesSmokeTest();
-        GameStateDiagnostics.RunTributeSummonSmokeTest();
-        GameStateDiagnostics.RunTurnFlowSmokeTest();
-        NormalSpellDiagnostics.RunNormalSpellSmokeTest();
-    }
-
     [MenuItem("Card Game/Diagnostics/Verify November HP and KO Balance")]
     public static void Run()
     {
@@ -46,8 +35,8 @@ public static class HealthBalanceVerification
     {
         string[] names = { "Dawnwing_Fairy", "Gravebound_Imp", "Sample_Tide_Sprite",
             "Sample_Stone_Guardian", "Fire_Dragon", "Sample_Sky_Sage", "Legendary_Fighter" };
-        int[,] stats = { {700,400,150}, {800,500,200}, {900,450,200}, {1000,350,450},
-            {1600,1000,300}, {2500,1400,600}, {3500,1000,800} };
+        int[,] stats = { {700,400,150}, {800,500,200}, {600,450,200}, {1000,350,300},
+            {1600,1000,300}, {2500,1600,600}, {3500,1000,800} };
         for (int i = 0; i < names.Length; i++)
         {
             CardData card = LoadMonster(names[i]);
@@ -58,7 +47,7 @@ public static class HealthBalanceVerification
         Require(tide.Effects[0].Operations[0].Type == EffectOperationType.IncreaseMaximumHealth,
             "Tide is max HP, not healing");
         Require(CardDataConverter.ToDefinition(LoadMonster("Sample_Stone_Guardian"))
-            .Effects[0].Operations[0].Amount == 300, "Stone +300 DEF");
+            .Effects[0].Operations[0].Amount == 100, "Stone +100 DEF");
         CardData trap = AssetDatabase.LoadAssetAtPath<CardData>("Assets/Data/Cards/Traps/Guardian_Shift.asset");
         Require(CardDataConverter.ToDefinition(trap).Effects[0].Operations[0].Amount == 500, "Guardian +500 DEF");
         Require(GameConfig.CreateDefault().StartingPlayerHealth == 6000, "6000 starting LP");
@@ -84,8 +73,8 @@ public static class HealthBalanceVerification
         CardInstance tide = Place(session, session.State.CurrentPlayerIndex, "sample_tide_sprite");
         tide.ReceiveDamage(300);
         ActionResult activation = Apply(session, GameAction.ActivateCard(tide.OwnerPlayerIndex, tide.InstanceId));
-        Require(tide.CurrentHealth == 900 && tide.MaximumHealth == 1200, "authored Tide activation");
-        Require(activation.Events.Any(e => e.Type == GameEventType.MonsterMaximumHealthModified && e.Amount == 300),
+        Require(tide.CurrentHealth == 500 && tide.MaximumHealth == 800, "authored Tide activation");
+        Require(activation.Events.Any(e => e.Type == GameEventType.MonsterMaximumHealthModified && e.Amount == 200),
             "maximum HP event");
         Require(!session.TryApply(GameAction.ActivateCard(tide.OwnerPlayerIndex, tide.InstanceId)).Succeeded,
             "Tide once per turn retained");

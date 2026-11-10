@@ -281,7 +281,7 @@ Initial deck direction:
 - Recovery restores current HP only, capped at current maximum HP; it cannot
   revive a KO. Legendary Fighter removes all allocated Energy and recovers
   500 HP per Energy, with excess recovery discarded. Tide Sprite instead gains
-  300 maximum HP permanently while on the field, preserving damage.
+  200 maximum HP permanently while on the field, preserving damage (10 November revision).
 - Reference HP bands: Basic 500–1200; Advanced 1200–2000 (typical 1600);
   Supreme 2000–3000 (typical 2500); Ultimate 3000–4000 (typical 3500).
   These overlap intentionally and are design guidance, not asset-validation limits.
@@ -296,6 +296,11 @@ Initial deck direction:
   Legendary Fighter 3500/1000/800 (HP/ATK/DEF). Other base fields unchanged.
   Stone's persistent DEF gain is now 300; Guardian Shift's is 500. See
   `Docs/HP_BALANCE_2026-11-03.md` for verification and acceptance steps.
+- Student rebalance, 10 November (supersedes the affected values above): Tide
+  600/450/200, +200 maximum HP; Stone 1000/350/300, +100 permanent DEF;
+  Sky Sage 2500/1600/600, attack Energy 2, pay 2 Energy to draw 2 cards.
+  Legacy sample-generation/balance commands and automatic data rewrites were
+  removed; artwork assignment and read-only validation remain available.
 
 ## 10. Card UI
 
@@ -466,14 +471,31 @@ in `Docs/APP_FOUNDATION_GUIDE_2026-10-21.md`. No password/backend/network SDK is
   Graveyard details; this is supplemented only for Normal, not fixed globally.
 - Main Menu Duel mode selects Easy/Normal; Auto delegates both sides to the
   selected policy. Initial Normal-mode Play Mode operation is student-confirmed;
-  comparative strength and all-effect tactical correctness remain to be evaluated.
+  the updated policy still needs Play Mode acceptance and full all-effect coverage.
+- Normal tactical update, 10 November: self-effect/Equip valuation, projected
+  tribute ATK, defense when an attack cannot be prepared, high-ATK/rank KO priority,
+  situational Energy cost and deterministic tie handling. Core/Easy are unchanged.
+  Tactical verification and six automated fixture matches passed; runner build:
+  0 errors/0 warnings. Baseline 88/150 wins (58.67%); updated same-input set
+  108/150 (72%); unseen-seed set 107/150 (71.33%). All 300 updated matches Finished.
+- Student decision: approximately 7:3 is sufficient for the current Normal
+  milestone; 8:2 is an optional ideal, not a requirement to keep tuning now.
+  Freeze Easy/Normal as reference policies for card expansion, Hard or ML research.
+  These results cover two preset Decks; do not claim universal bot strength or
+  require each later bot to achieve 80% against its predecessor.
 - Hard Bot: limited-depth search such as Minimax/Alpha-Beta **[OPTIONAL AFTER TIER 1]**.
 - ML/self-play: optional experiment only, after Normal Bot and the headless
   simulator are reproducible. Train on compact state/action features, not
   rendered frames. On the 8 GB development machine, keep heavy training out of
   the Unity Editor process and use offline or remote runs if attempted.
 
-The headless simulator must run matches without UI and record at least:
+The headless Windows runner now uses the shared legal-action/apply path and writes
+CSV/JSONL, run metadata, selected observation/action traces and paired summaries
+under SimulationResults on D. It runs sequentially. Exact experiments are in
+Tools/Simulation/TESTING_NOTES.md. Baseline and post-update raw data are local,
+ignored outputs, not repository attachments. Reproducible configs are tracked.
+Action/result digests exist; full internal-state hashes/replay loading are pending.
+The target metric contract (including the remaining state-hash work) is:
 
 - Winner and matchup.
 - Random seed and who went first.
@@ -483,7 +505,7 @@ The headless simulator must run matches without UI and record at least:
 - Invalid-action or timeout count.
 - Rules/configuration version and final-state hash for reproducibility.
 
-CSV output will support thesis tables and charts. A replay record should also
+CSV output supports thesis tables and charts. A replay record should also
 capture schema version, seed, deck IDs, first player, ordered accepted actions,
 and state hashes. Do not let animation playback drive the simulator clock.
 
@@ -673,11 +695,10 @@ Known next gaps:
    touch input, full-match flow, performance and local persistence. The basic
    Duel Log is accepted; detailed polish/effect/chain review is deferred.
    Explicit Fast/Skip remains pending for a later presentation slice.
-3. Evaluate and tune the implemented Normal Bot across decks, seeds and both
-   starting sides; build a headless batch runner with the metrics in section 12.
-   The six synthetic verification matches are not the evaluation pipeline.
-   Add deterministic state hashes/replay loading
-   before networking depends on the action stream.
+3. Keep the accepted approximately 7:3 Normal checkpoint and headless evaluation
+   pipeline as references; broaden experiments only for the next selected scope.
+   Add deterministic state hashes/replay loading before networking depends on
+   the action stream. Hard/ML remain optional; the next implementation is unselected.
 4. Run remaining AppShell/device acceptance and produce the Windows build,
    while performing the short networking feasibility spike from section
    13. Do not install or commit a networking stack until the result and
@@ -759,7 +780,7 @@ background, avatar, Deck/Graveyard, Auto, and Monster-artwork work. App
 persistence and UI bindings have a focused Editor PASS; presentation and
 AppShell still need their stated Play Mode/device acceptance. The immediate
 critical path is the all-category integration pass, presentation completion,
-Normal Bot evaluation/tuning, headless metrics, replay/state-hash checks, networking feasibility,
+replay/state-hash checks, networking feasibility, follow-up evaluation after card changes,
 and platform builds. Do not substitute more isolated card scripts or smoke
 tests for those milestones. Tests verify each finished slice.
 

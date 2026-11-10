@@ -144,10 +144,9 @@ public static class DuelBoardReadOnlyDemoBootstrap
         {
             if (!IsPlayableDeckReady())
             {
-                CardSampleTool.PrepareFixedPlayableDemoDeck();
-                Debug.Log(
-                    "The fixed playable demo deck was prepared " +
-                    "automatically. Play Mode is ready.");
+                Debug.LogError(
+                    "The demo deck has missing cards or effects. Restore or edit the " +
+                    "authored card assets; automatic sample configuration has been removed.");
             }
             else
             {

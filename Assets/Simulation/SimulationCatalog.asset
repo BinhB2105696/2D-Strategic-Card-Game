@@ -98,6 +98,6 @@ MonoBehaviour:
     - sample_ambush
     - sample_divine_reversal
     - temporal_lock
-  sourceRevision: 306bcc39e32d9081de910a761664b3dbd246b9bd
-  sourceFingerprint: c381754b9d7ade75aabfd188f5cce7e848c4cb12bbdcedab31ac70bfb00c9e46
-  catalogFingerprint: 0edd12b56bd2b823030c0065ed7c4cb8c6aaab1d677708b597ed6fe8d4ef166d
+  sourceRevision: 8425b84a23df9778a26280cc3c1921b9b40e9f8a
+  sourceFingerprint: e2a5c1332e2fb8d90cd292d03bcca2d6d407bd2d799b3c9526d21346e1137a1a
+  catalogFingerprint: 4aa47bf6904b0201fc74ab6bb4838e4be8a16032e3d38ad50f0a534a6f14eb6b

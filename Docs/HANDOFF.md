@@ -1,55 +1,54 @@
-# Handoff — Headless runner acceptance checkpoint
+# Handoff — Normal approximately 7:3 checkpoint
 Updated: 10 November 2026. Unity 2022.3.62f3; Android first, Windows second.
-Read root AGENTS.md, then this file only; consult other sections as needed.
+Read root AGENTS.md, then this file only; inspect other sections as needed.
 
 ## Current goal
-Checkpoint accepted runner tests and discuss the next major project milestone.
-No next implementation selected yet.
+Save the accepted Normal milestone and discuss the next scope; no next task selected.
+Student accepts approximately 7:3 vs Easy; 8:2 is optional research, not required now.
 
 ## Done
-- Offline demo 0.1.0: APK build/signature verified; guest profile, decks,
-  settings and match archives persist locally. Physical-device acceptance pending.
-- Easy/Normal Duel mode and matching Auto work; current-HP health bar accepted.
-- Basic in-match Settings > Duel Log accepted; detailed polish deferred.
-- 0027715: headless Windows runner, same GameSession/GameRules, isolated scene,
-  seed/deck metadata, CSV/JSONL, sampled traces and paired summary statistics.
-- Original 30-match batch finished; post-review 6/6 action/result digests matched.
-- 4f468e2: Test-Runner.ps1, Editor build diagnostics and updated testing notes.
-- Acceptance 10/10: turn/time limits, trace off, five invalid configurations,
-  interrupted batch and readonly progress-file failure. Three acknowledged
-  matches survived interruption; write failure exited nonzero, destination intact.
-- Latest runner build succeeded with 0 errors/0 warnings. Previous warning was
-  building while changed Editor code had not finished compiling.
-- No Core/rule/bot/UI changes in this acceptance slice. Runtime fingerprint:
-  c381754b9d7ade75aabfd188f5cce7e848c4cb12bbdcedab31ac70bfb00c9e46
-
-## Next / pending
-- Choose next scope: measured Easy/Normal baseline and tuning, then verified
-  deterministic replay/state hashes; discuss networking feasibility promptly.
-- PvP/account flow is unimplemented; the menu reports coming soon.
-- Device acceptance, playable Windows build and thesis experiments remain open.
-- README roadmap/remaining work and PROJECT_CONTEXT sections 12/15 still describe
-  building the headless runner as future work; it now exists and passed checks.
-- Card expansion, detailed effects/chain review and Duel Log polish stay deferred.
-- No automatic batch resume, between-match checkpoint recovery UI or ML adapter.
-- Disk-full and result-stream mid-write faults have not been tested.
+- NormalBot.cs: self-effect/Equip valuation, projected tribute ATK, defense when
+  an attack cannot be prepared, ATK/rank target priority, situational Energy cost
+  and deterministic tie handling. Normal Auto uses the same policy.
+- NormalBotVerification.cs: tactical PASS and 6 automated fixture matches.
+- Runner build 0 errors/0 warnings. Updated Normal completed 300/300 matches,
+  no errors/truncations, no decision above 1,000 ms; CSV/JSONL/trace counts matched.
+- Before: 88/150 wins (58.67%). Same seeds after: 108/150 (72%).
+  Unseen seeds: 107/150 (71.33%). Two preset Decks, three pairings, swapped bots.
+- Student balance: Tide HP 600/+200 max HP; Stone DEF 300/+100 DEF;
+  Sky ATK 1600, attack Energy 2, pay 2 Energy to draw 2.
+- Removed legacy sample generation/balance and automatic rewrite paths in
+  CardSampleTool, bootstrap and HP verification; artwork/validation preserved.
+- SimulationBuildTool now compiles and waits for assembly reload before building.
+- README, PROJECT_CONTEXT and simulation notes reflect the current milestone.
+- Prior: offline APK 0.1.0, guest profile/decks/settings/history, Duel Log,
+  Easy/Normal modes and compact HP bar. Physical-device acceptance pending.
 
 ## Decisions / limits
-- Do not change Core/rules/unrelated files without discussing essential changes.
-- Action/result digests are not complete internal-state hashes or verified replay.
-- swapBots swaps policies, keeping Decks in Player slots; not an independent
-  first-player or Deck-swap control. Design evaluation comparisons accordingly.
-- Default detailed traces cover early Easy/Easy jobs; sample Normal separately.
-- Keep generated outputs on D: SimulationResults and Tools/Simulation/Control.
-- No Google login/cloud sync. Normal is heuristic, not trained ML.
-- PvP, replay and platform verification outrank optional Hard Bot/ML in thesis scope.
+- Freeze Easy/Normal as references; Hard/ML optional and measured fairly.
+- Core/rules/Easy unchanged by this bot update; preserve unrelated changes.
+- No claim of full all-effect acceptance or strength on arbitrary decks.
+- New Normal/Auto Play Mode acceptance pending. Existing APK predates this update;
+  rebuild before Android testing of current card balance/Normal.
+- Full state hashes/verified replay, PvP/accounts, playable Windows build open.
+- Card expansion, effects/chain review and Duel Log polish await a selected scope.
+- No automatic batch resume, dataset storage limit or ML adapter yet.
 - Feature freeze target 25 November; defense expected early December.
-- Preserve unrelated font edits, root AGENTS.md and dated older handoff.
 
-## Quick verification / artifacts
-- Tools/Simulation/TESTING_NOTES.md records observed passes and remaining limits.
-- powershell -NoProfile -File .\Tools\Simulation\Test-Runner.ps1
-- Acceptance report: Tools/Simulation/Control/Acceptance/20261110_061854/report.json
-- Build diagnostics: Tools/Simulation/Control/latest-build-report.json
-- Build runner: Card Game > Simulation > Build Headless Windows Runner.
-- Do not repeat passed tests without changes or a new reason.
+## Artifacts / next
+- SimulationResults/Experiments/20261110_NormalEasy_Baseline150/ preserves the
+  pre-improvement experiment, including raw copies, combined tables and SHA-256.
+- Updated same-seed run: SimulationResults/20261110_042425_7622edfb/
+- Updated unseen-seed run: SimulationResults/20261110_042629_d98dd7ff/
+- Raw results/Control/Build outputs remain ignored local files on D, not in Git.
+- Runtime fingerprint: e2a5c1332e2fb8d90cd292d03bcca2d6d407bd2d799b3c9526d21346e1137a1a
+- Tools/Simulation/TESTING_NOTES.md has counts, group results, limits and provenance.
+- Discuss replay/state-hash foundation, scoped card expansion, Hard/ML preparation;
+  networking/device thesis commitments remain open, not silently removed.
+
+## Quick verification
+- Card Game > Diagnostics > Verify Normal Bot; Play Mode Normal and Auto.
+- Card Game > Simulation > Build Headless Windows Runner.
+- powershell -NoProfile -File .\Tools\Simulation\Run-Simulation.ps1 -Config .\Tools\Simulation\normal-vs-easy-evaluation.json
+- Use normal-vs-easy-holdout.json for seeds 1026–1050; both sets have 150 matches.
+- Do not repeat passed checks without a change/new reason. No commit/push unless asked.

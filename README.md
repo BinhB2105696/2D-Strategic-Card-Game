@@ -314,7 +314,8 @@ This structure may change as implementation progresses.
 - [ ] Explicit Fast/Skip controls and further Duel Log polish
 - [x] Normal Bot, Easy/Normal Duel mode selection, and matching Auto policy (initial Play Mode operation confirmed)
 - [x] November HP/KO verification and current-HP HUD with rounded five-color health bar (student accepted)
-- [ ] Headless bot-vs-bot simulation, replay/state hashes, and evaluation metrics
+- [x] Headless bot-vs-bot runner, CSV/JSONL metrics and paired Easy/Normal evaluation
+- [ ] Verified replay loading and complete internal-state hashes
 - [x] Guest profile, Main Menu, and Deck Builder MVP with local deck saves (Editor verified; device acceptance pending)
 - [ ] Gameplay balancing and testing
 - [ ] Online PvP and player identity/accounts
@@ -335,8 +336,9 @@ This document is intended to be updated whenever important gameplay, architectur
 
 ## Current Status
 
-Updated 9 November 2026. Checkpoint: **Offline Demo 0.1.0 + Duel Log**.
-Previous checkpoint: `977a734` (Normal Bot, Duel mode, Auto, compact HP display).
+Updated 10 November 2026. Checkpoint: **Normal tactical update and headless evaluation**.
+Earlier checkpoints include `8425b84` (runner acceptance handoff), `0027715`
+(headless runner), and `977a734` (Normal Bot, Duel mode, Auto, compact HP display).
 The Android APK built with 0 errors and 0 warnings, is approximately 35.52 MiB,
 supports Android 6.0+ and ARMv7/ARM64, and has a verified test signature.
 Local profile/deck/settings/history save checks passed in the Editor; Android
@@ -403,16 +405,29 @@ and forecasts a bounded sequence of public-board attacks. This is not a full
 GameState simulation or trained model. Its dedicated observation supplements the
 shared bot view with owned/public effect data, remaining attacks and public
 Graveyards; the shared view itself still omits opponent Graveyard identities.
-Separate runtime/test compilation and three tactical checks plus six synthetic-deck
-automated matches passed outside Unity. After the Editor test assembly fix, the
-student confirmed Unity compilation and initial Normal-mode Play Mode operation;
-this is not a measured win-rate improvement or full all-card acceptance.
+The 10 November tactical update fixes self-effect/Equip valuation, accounts for
+ATK gained from tributes, prefers defense when no attack can be prepared, values
+high-ATK/high-rank targets, and adjusts Energy cost by opportunity. Matching Auto
+uses the same policy. Focused tactical checks plus six synthetic matches passed;
+the Windows runner built with 0 errors/0 warnings. Core rules and Easy were unchanged.
+
+On the same 150 match inputs, Normal improved from 88 wins (58.67%) to 108 (72%).
+A separate 150-match set using new seeds yielded 107 wins (71.33%). All 300 updated
+matches finished without errors/truncation; CSV/JSONL and retained traces matched.
+Both sets cover two preset decks, three Deck pairings and swapped bot sides;
+these are not 300 independent seeds or acceptance of every card/effect.
+The student accepts approximately 7:3 as the current Normal milestone; 8:2 remains
+an optional research target. Keep Easy/Normal fixed as reference opponents for later work.
+See [experiment notes](Tools/Simulation/TESTING_NOTES.md) for exact seeds, paths,
+group results and reproduction commands. Large raw results remain local on D.
+The existing offline-demo APK predates this update; rebuild it before testing the
+new balance/Normal on Android. Updated Normal/Auto Play Mode acceptance is pending.
 
 ### Important remaining work
 
 - Collect offline-demo device feedback and confirm install, full-match flow and local persistence; card expansion, detailed effect/chain review and Duel Log polish are deferred by the student.
 - Complete remaining AppShell/presentation acceptance and explicit Fast/Skip controls when scheduled.
-- Evaluate/tune Normal versus Easy across decks, seeds and starting sides; add a headless batch runner and CSV metrics (win rate, turns, Energy, decision time, errors).
+- Keep the accepted Normal reference, verify updated Normal/Auto in Play Mode, and choose the next experiment; the headless runner and initial comparison metrics are implemented.
 - Implement and verify deterministic replay loading and state hashes; existing action archives alone do not complete replay.
 - Complete the networking feasibility spike, then online 1v1 PvP and player identity/account flow.
 - Validate the produced Android demo on physical devices, then produce a Windows build; include touch/readability/performance and complete-match checks.

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
+using UnityEditor.Callbacks;
+using UnityEditor.Compilation;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -17,6 +19,13 @@ public static class SimulationBuildTool
     private static double nextPoll;
     private static double targetStableSince;
     static SimulationBuildTool() { EditorApplication.update += Tick; }
+
+    [DidReloadScripts]
+    private static void OnScriptsReloaded()
+    {
+        if (SessionState.GetString(Stage, "") == "waiting-build-compilation")
+            SessionState.SetString(Stage, "ready-to-build");
+    }
 
     [MenuItem("Card Game/Simulation/Build Headless Windows Runner")]
     public static void RequestBuild()
@@ -56,6 +65,20 @@ public static class SimulationBuildTool
         nextPoll = EditorApplication.timeSinceStartup + 1;
         try
         {
+            string stage = SessionState.GetString(Stage, "");
+            if (stage == "waiting-build-compilation")
+            {
+                if (EditorUtility.scriptCompilationFailed)
+                    throw new InvalidOperationException("Editor script compilation failed. Resolve the Console errors before retrying the simulator build.");
+                return;
+            }
+            if (stage == "ready-to-build")
+            {
+                CheckReady();
+                SessionState.SetString(Stage, "");
+                Build();
+                return;
+            }
             if (SessionState.GetString(Stage, "") == "waiting-target")
             {
                 if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.StandaloneWindows64) return;
@@ -63,7 +86,12 @@ public static class SimulationBuildTool
                 // Build only after a stable idle interval, not on that first tick.
                 if (targetStableSince == 0) targetStableSince = EditorApplication.timeSinceStartup;
                 if (EditorApplication.timeSinceStartup - targetStableSince < 5) return;
-                SessionState.SetString(Stage, ""); Build(); return;
+                Status("compiling", "Refreshing changed files and recompiling Editor scripts; build resumes only after a successful assembly reload.");
+                SessionState.SetString(Stage, "waiting-build-compilation");
+                AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+                // Force a real compilation/reload even when Unity reports no changed assemblies.
+                CompilationPipeline.RequestScriptCompilation(RequestScriptCompilationOptions.CleanBuildCache);
+                return;
             }
             string requestPath = Path.Combine(Control, "editor-request.txt");
             if (!File.Exists(requestPath)) return;
