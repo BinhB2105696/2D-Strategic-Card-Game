@@ -23,7 +23,7 @@ Players use cards with different attributes, statistics, effects, and strategic 
 The project is planned to include:
 
 - **PvE mode** against multi-tiered bots with different decision-making approaches.
-- **Online PvP mode** for two players.
+- **Online PvP mode** for two players (prototype retained; deferred until the offline priorities are complete and time permits).
 - A compact Deck Builder and local/guest profile for selecting playable decks.
 - A modular card system that can be extended with additional cards and effects.
 - A turn-based combat system with strategic resource management.
@@ -225,22 +225,22 @@ New GameState
 ### Bot Levels
 
 - **Easy Bot (implemented):** deterministic rule-based decisions from legal actions.
-- **Normal Bot (implemented):** tactical heuristic scoring plus bounded public-board attack-order forecasts; initial Play Mode operation confirmed on 9 November 2026. Comparative strength is not yet measured.
+- **Normal Bot (implemented):** tactical heuristic scoring plus bounded public-board attack-order forecasts. The accepted reference won 108/150 matches (72%) against Easy and 107/150 (71.33%) on unseen seeds, using the evaluated preset decks; these are not universal strength claims.
 - **Duel mode:** the Main Menu offers Easy/Normal selection. Auto uses the selected difficulty for both players; Auto/practice matches do not count toward manual PvE wins/losses.
-- **Advanced Bot:** optional deeper decision-making using search techniques such as Minimax/Alpha-Beta after the core scope is stable.
-- **Optional ML extension:** machine-learning/self-play experiments may be investigated after the core game and non-ML bots are stable.
+- **Hard Bot (planned):** advanced decision-making after offline presentation and the expanded card/rule catalog are stable; the search method remains to be selected.
+- **ML/AI experiments (planned research direction):** prepare reproducible data and an evaluation protocol, then select and train a policy after the card/rule version is frozen. No trained model exists yet.
 
-The Advanced Bot and optional ML component must not block completion of the stable core game, Easy/Normal bots, or PvP.
+The 11 November direction prioritizes a stable offline game, diverse strategic decks, Easy/Normal/Hard bot comparisons and ML/AI research preparation. PvP and online accounts come last if time permits; training must not destabilize the playable offline baseline.
 
 ### Bot Evaluation
 
-The game core is planned to run independently from the visual UI so bots can play automated matches for thesis evaluation. Planned metrics include win rate, average turn count, Energy usage, and decision time per move.
+The implemented headless runner supports automated bot matches and CSV/JSONL results; replay/state hashes and a versioned AI data contract provide a Windows/Mono verification foundation. Extend evaluation to versioned strategic decks, paired seeds with swapped seats/first player, held-out evaluation seeds, win/draw rates, turn counts, Energy usage, decision time and resource use. Preserve fixed Easy/Normal references and keep training/tuning data separate from final evaluation.
 
 ## PvP
 
-The project is planned to support online 1v1 PvP with player identity/account support.
+**Deferred — student decision, 11 November 2026:** retain the room-code PvP prototype, but schedule further online/account work last, only if time remains. This is a development-priority change, not a change to the registered thesis title; confirm any formal scope reduction with the supervisor.
 
-The approved first scope is create a room, share its code, and join a 1v1 duel; no matchmaking. On 10 November, the pinned Netcode for GameObjects 1.15.1, Relay 1.2.0, Authentication 3.6.0 and Transport 1.5.0 stack passed Editor package/API verification on Unity 2022.3.62f3. Existing package versions and the Editor version were preserved. The unified Multiplayer Services SDK was not installed because the evaluated versions require a Collections major upgrade. Service configuration and real two-device connectivity remain untested; design the PvP MVP next.
+The prototype supports create/join by room code without matchmaking. The student reached a duel between Editor and Android, but reported that effects and card movement were below the offline experience; presentation is not accepted as complete. PvP shares the rules and many visual components with PvE, but still uses a separate snapshot-based presentation coordinator rather than the full PvE event queue. Future work should unify the presentation contract/ordered events before further online polish. The verified SDK pins remain Netcode for GameObjects 1.15.1, Relay 1.2.0, Authentication 3.6.0 and Transport 1.5.0 on Unity 2022.3.62f3; do not upgrade Unity or dependencies automatically. Recoverable online accounts/cloud saves and trusted cross-device results remain unfinished.
 
 ## Planned Strategic Archetypes
 
@@ -316,15 +316,16 @@ This structure may change as implementation progresses.
 - [x] November HP/KO verification and current-HP HUD with rounded five-color health bar (student accepted)
 - [x] Headless bot-vs-bot runner, CSV/JSONL metrics and paired Easy/Normal evaluation
 - [x] Windows/Mono headless replay verification, full pure-state graph hashes and versioned AI data contract (MVP)
-- [x] Pinned PvP SDK installation/API verification on Unity 2022.3.62f3 (online connectivity pending)
+- [x] Pinned PvP SDK verification and room-code duel prototype (Editor/Android connection reported; presentation not accepted)
 - [x] Guest profile, Main Menu, and Deck Builder MVP with local deck saves (Editor verified; device acceptance pending)
 - [ ] Gameplay balancing and testing
-- [ ] Online PvP and player identity/accounts
+- [ ] Finished online PvP and player identity/accounts (deferred to last, time permitting)
 - [x] First offline Android APK demo 0.1.0 (build/signature verified; physical-device acceptance pending)
 - [ ] Windows build
-- [ ] Advanced Bot
-- [ ] Optional ML experiments
-- [ ] UI/UX and visual polish
+- [ ] Hard Bot after expanded cards/rules stabilize
+- [ ] ML/AI data preparation, training experiment and comparative thesis evaluation
+- [ ] Offline in-match UI/animation polish (immediate priority)
+- [ ] Expanded cards and diverse strategic decks with balance/interaction checks
 - [ ] Thesis documentation and final build
 
 ## Documentation
@@ -337,11 +338,11 @@ This document is intended to be updated whenever important gameplay, architectur
 
 ## Current Status
 
-Updated 10 November 2026. Latest checkpoint scope: **Windows replay/state hashes and AI data contract MVP, plus verified PvP SDK installation**.
-Previous pushed checkpoint: **Normal tactical update and headless evaluation** (`bd5d71d`).
+Updated 11 November 2026. Current direction: **offline UI/animation first, card/deck diversity next, then Hard Bot and reproducible ML/AI research**. PvP/accounts are deferred until last if time permits. The connected PvP prototype is retained, but its presentation has not met student expectations; this documentation update does not implement new gameplay or training.
+Latest pushed checkpoint: **Windows replay/state hashes and AI data contract MVP, plus verified PvP SDK installation** (`f51a4e6`). The earlier Normal tactical/evaluation checkpoint is `bd5d71d`; later PvP work is not described as a pushed checkpoint.
 Earlier checkpoints include `8425b84` (runner acceptance handoff), `0027715`
 (headless runner), and `977a734` (Normal Bot, Duel mode, Auto, compact HP display).
-The Android APK built with 0 errors and 0 warnings, is approximately 35.52 MiB,
+The original offline 0.1.0 Android APK built with 0 errors and 0 warnings, is approximately 35.52 MiB,
 supports Android 6.0+ and ARMv7/ARM64, and has a verified test signature.
 Local profile/deck/settings/history save checks passed in the Editor; Android
 install, touch/performance and persistence after app restart still need device testing.
@@ -427,13 +428,12 @@ new balance/Normal on Android. Updated Normal/Auto Play Mode acceptance is pendi
 
 ### Important remaining work
 
-- Collect offline-demo device feedback and confirm install, full-match flow and local persistence; card expansion, detailed effect/chain review and Duel Log polish are deferred by the student.
-- Complete remaining AppShell/presentation acceptance and explicit Fast/Skip controls when scheduled.
-- Keep the accepted Normal reference, verify updated Normal/Auto in Play Mode, and choose the next experiment; the headless runner and initial comparison metrics are implemented.
-- Broaden the replay/hash/AI-contract MVP coverage as cards evolve; UI playback, snapshot cloning for search, training adapter and Android/IL2CPP verification remain separate work.
-- Design the room/create/join-code PvP MVP using the verified SDK pins, then configure services and test Android/Windows connectivity. Online identity recovery/history and trusted results remain separate work; keep Unity 2022.3.62f3 unchanged.
-- Validate the produced Android demo on physical devices, then produce a Windows build; include touch/readability/performance and complete-match checks.
-- Finish regression/balance work, reproducible thesis experiments, report and final build before defense. Hard/Advanced Bot and ML remain optional.
+- First polish offline in-match UI, input locking and the ordered animation/feedback for draw, summon, attacks, damage, destruction and effect/chain resolution. Verify a readable full-match flow on Editor and Android; retain the accepted basic Duel Log, with further polish scheduled separately.
+- Expand cards and usable decks with distinct strategic roles and interactions; check balance and representative effect/chain cases, then freeze a versioned card/rule catalog for experiments.
+- Preserve the accepted Easy/Normal references and the approximately 7:3 Normal results. Build and evaluate Hard after the expanded rules/catalog stabilize; do not require a fixed win-rate gap between every bot tier.
+- Extend the existing runner/replay/hash/AI contract for the chosen search/training method. Separate training/tuning and evaluation seeds/decks; record versions, reproducible commands, outcomes, decision time and resource use for the thesis. Training has not started.
+- Validate offline Android touch/readability/performance, saves and complete matches; prepare a Windows build and report/final-build evidence.
+- Leave PvP, online accounts, recovery/cloud history and trusted online results until the offline/research priorities are complete and time permits. Preserve the prototype and Unity 2022.3.62f3; agree a shared presentation/event contract before resuming online work.
 
 The revised scope and current gaps are in
 `Docs/PROJECT_CONTEXT.md` and `Docs/DUEL_PRESENTATION_PLAN.md`.

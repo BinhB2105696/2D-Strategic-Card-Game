@@ -61,6 +61,95 @@ public sealed class DuelCardInteractionController : MonoBehaviour
     private Button targetConfirmButton;
     private GameAction selectedEnergyAction;
     private Button energyConfirmButton;
+    private IReadOnlyList<CardInstance> networkPile;
+    private string networkPileTitle;
+    private Action<CardInstance> networkPileChoice;
+    public Action NetworkClosed;
+    public bool HasNetworkWindow => (actionPanel != null && actionPanel.activeSelf) ||
+        (detailPanel != null && detailPanel.activeSelf) || (energyPanel != null && energyPanel.activeSelf);
+    private Func<CardInstance, string> networkTargetLabel;
+
+    public void ShowNetworkTargets(string title, IReadOnlyList<CardInstance> cards,
+        Func<CardInstance, string> label, Action<CardInstance> choose, int page = 0)
+    {
+        ClearSelectionWindows(); detailPanel.SetActive(true); detailText.text = title;
+        networkTargetLabel = label;
+        int count = Math.Min(4, cards.Count - page * 4);
+        for (int index = 0; index < count; index++)
+        {
+            CardInstance card = cards[page * 4 + index];
+            Image target = CreateTargetCard(card, index, count);
+            Button button = target.GetComponent<Button>(); button.onClick = new Button.ButtonClickedEvent();
+            button.onClick.AddListener(() => choose(card));
+        }
+        networkTargetLabel = null;
+        if (page > 0) AddPanelButton(detailButtonArea, detailButtons, "PREVIOUS",
+            () => ShowNetworkTargets(title, cards, label, choose, page - 1));
+        if ((page + 1) * 4 < cards.Count) AddPanelButton(detailButtonArea, detailButtons, "NEXT",
+            () => ShowNetworkTargets(title, cards, label, choose, page + 1));
+        AddPanelButton(detailButtonArea, detailButtons, "CANCEL", () => { CloseDetailPanel(); NetworkClosed?.Invoke(); });
+        LayoutPanelButtons(detailButtons);
+    }
+
+    public void ShowNetworkActions(string title, IReadOnlyList<PvpUiOption> options)
+    {
+        ClearSelectionWindows();
+        actionText.text = title; actionText.richText = false;
+        SetPanelVisible(true);
+        foreach (PvpUiOption option in options) AddButton(option.label, () => option.click());
+        AddButton("CLOSE", () => { CloseAllCardWindows(); NetworkClosed?.Invoke(); });
+        LayoutButtons();
+    }
+
+    public void ShowNetworkDetail(CardInstance card, string title, Action back = null)
+    {
+        ClearSelectionWindows();
+        detailPanel.SetActive(true); detailText.text = title; detailText.richText = false;
+        CreateCardInformation(card);
+        if (back != null) AddPanelButton(detailButtonArea, detailButtons, "BACK", () => back());
+        AddPanelButton(detailButtonArea, detailButtons, "CLOSE", () => { CloseDetailPanel(); NetworkClosed?.Invoke(); });
+        LayoutPanelButtons(detailButtons);
+    }
+
+    public void ShowNetworkPile(string title, IReadOnlyList<CardInstance> cards)
+    {
+        ClearSelectionWindows();
+        networkPile = cards; networkPileTitle = title;
+        networkPileChoice = null;
+        detailPanel.SetActive(true); detailText.text = title + " — newest to oldest";
+        if (cards.Count > 0) CreateGraveyardScroller(cards, 0);
+        else detailText.text += "\nNo cards yet.";
+        AddPanelButton(detailButtonArea, detailButtons, "CLOSE", CloseDetailPanel);
+        LayoutPanelButtons(detailButtons);
+    }
+
+    public void ShowNetworkCardChoices(string title, IReadOnlyList<CardInstance> cards, Action<CardInstance> choice)
+    {
+        ShowNetworkPile(title, cards);
+        detailText.text = title;
+        networkPileChoice = choice;
+    }
+
+    public void ShowNetworkEnergy(string title, IReadOnlyList<int> amounts, Action<int> confirm,
+        int page = 0, int selected = 0)
+    {
+        ClearSelectionWindows(); energyPanel.SetActive(true); energyText.text = title;
+        for (int index = page * 12; index < Math.Min(amounts.Count, page * 12 + 12); index++)
+        {
+            int amount = amounts[index];
+            Button button = AddPanelButton(energyAmountButtonArea, energyAmountButtons, amount.ToString(),
+                () => ShowNetworkEnergy(title, amounts, confirm, page, amount));
+            if (selected == amount) SetButtonColor(button, new Color32(145, 105, 35, 255));
+        }
+        if (page > 0) AddPanelButton(energyFooterButtonArea, energyFooterButtons, "PREVIOUS",
+            () => ShowNetworkEnergy(title, amounts, confirm, page - 1, selected));
+        if ((page + 1) * 12 < amounts.Count) AddPanelButton(energyFooterButtonArea, energyFooterButtons, "NEXT",
+            () => ShowNetworkEnergy(title, amounts, confirm, page + 1, selected));
+        Button accept = AddPanelButton(energyFooterButtonArea, energyFooterButtons, "CONFIRM", () => confirm(selected));
+        accept.interactable = selected > 0;
+        AddPanelButton(energyFooterButtonArea, energyFooterButtons, "CANCEL", () => { CloseEnergyPanel(); NetworkClosed?.Invoke(); });
+        LayoutPanelButtons(energyAmountButtons); LayoutPanelButtons(energyFooterButtons);
+    }
 
     public void Initialize(DuelBoardReadOnlyDemo duelBoard)
     {
@@ -189,6 +278,12 @@ public sealed class DuelCardInteractionController : MonoBehaviour
     private void ShowGraveyardCardInformation(
         CardInstance card, int playerIndex)
     {
+        if (networkPile != null)
+        {
+            if (networkPileChoice != null) { networkPileChoice(card); return; }
+            ShowNetworkDetail(card, "Graveyard card details", () => ShowNetworkPile(networkPileTitle, networkPile));
+            return;
+        }
         ClearDetailRuntime();
         detailPanel.SetActive(true);
         detailText.text = "Graveyard card details";
@@ -1754,8 +1849,8 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         TMP_Text label = CreatePanelLabel(
             slot,
             "TargetLabel",
-            ownerLabel + " " +
-            GetZonePositionName(GetScreenZoneIndex(target)),
+            networkTargetLabel != null ? networkTargetLabel(target) : ownerLabel + " " +
+                GetZonePositionName(GetScreenZoneIndex(target)),
             24f);
         RectTransform labelRect = label.rectTransform;
         labelRect.anchorMin = new Vector2(0f, 0f);

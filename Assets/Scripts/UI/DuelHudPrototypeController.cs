@@ -103,6 +103,41 @@ public class DuelHudPrototypeController : MonoBehaviour
         RefreshAutoPlayToggle();
     }
 
+    // Runtime PvP adapter: reuse the authored controls without running local-rule input.
+    public PvpHudBindings BindNetworkView()
+    {
+        enabled = false;
+        if (easyBotToggleButton != null) easyBotToggleButton.gameObject.SetActive(false);
+        if (autoPlayButton == null)
+        {
+            foreach (Button old in transform.parent.GetComponentsInChildren<Button>(true))
+                if (old.name == "AutoPlayButton_Runtime" || old.name == "EasyBotToggleButton_Runtime")
+                { old.enabled = false; old.gameObject.SetActive(false); }
+            CreateAutoPlayToggle();
+        }
+        autoPlayButton.gameObject.SetActive(true);
+        autoPlayButton.onClick.RemoveAllListeners();
+        autoPlayButton.enabled = false;
+        autoPlayButton.gameObject.name = "PvpTurnTimer";
+        autoPlayText.text = "02:00";
+        autoPlayText.fontSize = 25;
+        var bindings = new PvpHudBindings
+        {
+            phase = phaseMenuButton, battle = battlePhaseButton, end = endPhaseButton,
+            settings = settingsButton, closeSettings = closeSettingsButton,
+            surrender = surrenderButton, phases = phaseChoices, settingsPanel = settingsOverlay,
+            tabs = new[] { duelLogTabButton, deckInfoTabButton, duelSettingsTabButton },
+            contents = new[] { duelLogContent, deckInfoContent, duelSettingsContent },
+            confirmation = confirmationPopup, confirmationText = confirmationMessageText,
+            accept = confirmationAcceptButton, cancel = confirmationCancelButton, timer = autoPlayText
+        };
+        foreach (Button button in new[] { bindings.phase, bindings.battle, bindings.end, bindings.settings,
+            bindings.closeSettings, bindings.surrender, bindings.accept, bindings.cancel,
+            duelLogTabButton, deckInfoTabButton, duelSettingsTabButton })
+            if (button != null) button.onClick = new Button.ButtonClickedEvent();
+        return bindings;
+    }
+
     public void ConfigureDuelLog(DuelLogModel journal, DuelBoardReadOnlyDemo board)
     {
         if (duelLogContent == null) return;

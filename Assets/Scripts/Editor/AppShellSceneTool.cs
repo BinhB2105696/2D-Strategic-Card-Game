@@ -28,6 +28,11 @@ public static class AppShellSceneTool
                 EditorApplication.delayCall += RepairScenesIfSafe;
                 EditorApplication.delayCall += PrepareEditableUi;
             }
+            else
+            {
+                EditorApplication.delayCall -= RepairScenesIfSafe;
+                EditorApplication.delayCall -= PrepareEditableUi;
+            }
         };
     }
 
@@ -134,15 +139,18 @@ public static class AppShellSceneTool
     [MenuItem("Card Game/App Shell/Repair Camera and PvE Launch")]
     public static void RepairScenesIfSafe()
     {
-        if (EditorApplication.isPlayingOrWillChangePlaymode ||
-            EditorApplication.isCompiling || !File.Exists(AppScenePath) ||
+        if (!CanEditScenesNow || !File.Exists(AppScenePath) ||
             !File.Exists(DuelScenePath))
             return;
 
         RepairAppShellCamera();
         ConnectDemoToSampleScene();
-        EnsureBuildScenes();
+        if (CanEditScenesNow) EnsureBuildScenes();
     }
+
+    private static bool CanEditScenesNow => !Application.isPlaying &&
+        !EditorApplication.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode &&
+        !EditorApplication.isCompiling && !EditorApplication.isUpdating;
 
     private static void CreateScene()
     {
@@ -172,6 +180,7 @@ public static class AppShellSceneTool
 
     private static void RepairAppShellCamera()
     {
+        if (!CanEditScenesNow) return;
         Scene previous = SceneManager.GetActiveScene();
         Scene scene = SceneManager.GetSceneByPath(AppScenePath);
         bool openedHere = !scene.IsValid() || !scene.isLoaded;
@@ -225,6 +234,7 @@ public static class AppShellSceneTool
 
     private static void ConnectDemoToSampleScene()
     {
+        if (!CanEditScenesNow) return;
         Scene previous = SceneManager.GetActiveScene();
         Scene scene = SceneManager.GetSceneByPath(DuelScenePath);
         bool openedHere = !scene.IsValid() || !scene.isLoaded;

@@ -201,9 +201,8 @@ public sealed partial class DeckBuilderAppController : MonoBehaviour
             90, 610, 900, 135, Blue, OpenBuilder);
         ButtonAt(parent, "Pve", "DUEL MODE", 42,
             90, 795, 900, 135, Blue, OpenDuelModes);
-        ButtonAt(parent, "Pvp", "PvP - COMING SOON", 42,
-            90, 980, 900, 135, new Color(.16f, .19f, .24f, 1f),
-            () => SetMessage("Online PvP is not connected yet. This is a local guest profile."));
+        ButtonAt(parent, "Pvp", "PVP - ONLINE", 42,
+            90, 980, 900, 135, Blue, OpenPvpRoom);
         ButtonAt(parent, "Profile", "CHANGE GUEST NAME", 34,
             200, 1210, 680, 95, Navy, () => ShowPage(entryPage));
         Label(parent, "BuildNote",

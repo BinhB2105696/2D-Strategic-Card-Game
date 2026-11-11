@@ -1,0 +1,34 @@
+<linker>
+  <!-- PvP compatibility hashes inspect immutable rule definition members via reflection.
+       Preserve the same metadata on IL2CPP/Android as in the Editor. No live state is serialized. -->
+  <assembly fullname="Assembly-CSharp">
+    <type fullname="GameConfig" preserve="all" />
+    <type fullname="CardDefinition" preserve="all" />
+    <type fullname="EffectDefinition" preserve="all" />
+    <type fullname="EffectConditionDefinition" preserve="all" />
+    <type fullname="EffectCostDefinition" preserve="all" />
+    <type fullname="EffectOperationDefinition" preserve="all" />
+    <type fullname="AttackContinuousModifier" preserve="all" />
+    <type fullname="DefenseContinuousModifier" preserve="all" />
+    <type fullname="AttackPerTargetEnergyContinuousModifier" preserve="all" />
+    <type fullname="CardCategory" preserve="all" />
+    <type fullname="MonsterAttribute" preserve="all" />
+    <type fullname="MonsterRank" preserve="all" />
+    <type fullname="MonsterType" preserve="all" />
+    <type fullname="SpellType" preserve="all" />
+    <type fullname="TrapType" preserve="all" />
+    <type fullname="CardSpeed" preserve="all" />
+    <type fullname="EffectKind" preserve="all" />
+    <type fullname="EffectTurnScope" preserve="all" />
+    <type fullname="EffectActivationWindow" preserve="all" />
+    <type fullname="EffectActivationSource" preserve="all" />
+    <type fullname="EffectUsageScope" preserve="all" />
+    <type fullname="EffectUsageReset" preserve="all" />
+    <type fullname="EffectPhaseMask" preserve="all" />
+    <type fullname="EffectTriggerType" preserve="all" />
+    <type fullname="EffectConditionType" preserve="all" />
+    <type fullname="EffectCostType" preserve="all" />
+    <type fullname="EffectTargetType" preserve="all" />
+    <type fullname="EffectOperationType" preserve="all" />
+  </assembly>
+</linker>

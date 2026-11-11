@@ -153,6 +153,21 @@ public sealed class DuelMonsterZoneStatusView : MonoBehaviour
             : FontStyles.Bold;
     }
 
+    public void SetNetworkMonster(PvpPublicCard monster)
+    {
+        if (root == null) return;
+        root.SetActive(monster != null && monster.monster && !monster.faceDown);
+        if (!root.activeSelf) return;
+        SetHealthText(healthText, monster.hp, monster.maxHp);
+        attackText.text = "ATK " + monster.atk; defenseText.text = "DEF " + monster.def;
+        energyText.text = "E " + monster.energy + "/" + monster.attackRequirement;
+        bool attack = monster.position == BattlePosition.Attack.ToString();
+        attackText.color = attack ? ActiveStatColor : InactiveStatColor;
+        defenseText.color = attack ? InactiveStatColor : ActiveStatColor;
+        attackText.fontStyle = attack ? FontStyles.Bold : FontStyles.Normal;
+        defenseText.fontStyle = attack ? FontStyles.Normal : FontStyles.Bold;
+    }
+
     // Update either the stationary HUD or its complete animation clone.
     public static void SetHealthText(TMP_Text label, int current, int maximum)
     {

@@ -1,4 +1,5 @@
 using TMPro;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -17,6 +18,21 @@ public sealed class AppDuelFlow : MonoBehaviour
     private CardData[] opponentDeck;
     private bool resultShown, saved, usedAuto, pendingExit;
     private string outcome;
+
+    public void InitializeNetwork(Action returnHome)
+    {
+        enabled = false;
+        panel.SetActive(false); cancel.gameObject.SetActive(false);
+        home.onClick.RemoveAllListeners(); home.onClick.AddListener(() => returnHome());
+    }
+
+    public void ShowNetworkResult(PvpMatchView view, string warning)
+    {
+        panel.SetActive(true);
+        title.text = view.outcome == "Win" ? "VICTORY" : view.outcome == "Loss" ? "DEFEAT" : "DRAW";
+        description.text = "PvP vs " + view.names[1 - view.seat] + "\nTurns: " + view.turn +
+            "\n" + view.reason + (string.IsNullOrEmpty(warning) ? "" : "\n" + warning);
+    }
 
     public void Initialize(DuelBoardReadOnlyDemo duelBoard, AppMatchRequest match, CardData[] opponent)
     {

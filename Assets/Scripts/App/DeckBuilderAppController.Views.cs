@@ -130,7 +130,14 @@ public sealed partial class DeckBuilderAppController
         Button duelButton = buttonReferences.Find(item => item.key == "MainMenu/Pve")?.button;
         if (duelButton != null)
             duelButton.GetComponentInChildren<TMP_Text>(true).text = "DUEL MODE";
-        Bind("MainMenu/Pvp", () => SetMessage("Online PvP is coming later."));
+        Bind("MainMenu/Pvp", OpenPvpRoom);
+        Button pvpButton = buttonReferences.Find(item => item.key == "MainMenu/Pvp")?.button;
+        if (pvpButton != null)
+        {
+            pvpButton.GetComponentInChildren<TMP_Text>(true).text = "PVP - ONLINE";
+            pvpButton.GetComponent<Image>().color = Blue;
+            pvpButton.interactable = true;
+        }
         Bind("MainMenu/Profile", OpenProfile);
         Bind("MainMenu/ProfileShortcut", OpenProfile);
         Bind("MainMenu/SettingsShortcut", OpenSettings);

@@ -29,16 +29,16 @@ The registered description promises:
 - PvP between two human players.
 - A scalable core that can be extended with more cards, mechanics, and strategies.
 
-The registration does **not** require exactly three bot difficulties. Current priorities are:
+The registration does **not** require exactly three bot difficulties. The student selected Easy/Normal/Hard and ML/AI research as the offline development direction on 11 November. Current priorities are:
 
-1. Stable complete game, rules, and a readable event-driven duel presentation.
-2. Easy Bot and Normal Bot, plus deterministic replay/simulation support.
-3. A small product shell: local/guest profile, Main Menu, PvE/PvP entry points,
-   and a Deck Builder MVP.
-4. Online PvP and Android/Windows builds.
-5. Headless bot-vs-bot simulation and thesis metrics.
-6. Hard Bot using advanced search if time permits.
-7. Machine learning/self-play only if the core product is already stable.
+1. Polish offline in-match UI, input flow and ordered animation/feedback; stabilize the complete match experience.
+2. Expand cards and strategically distinct decks, verify interactions/balance, then freeze a versioned card/rule catalog.
+3. Preserve Easy/Normal references and build Hard after the expanded catalog/rules stabilize.
+4. Extend headless simulation/replay and prepare reproducible ML/AI data and experiments for thesis evaluation; select the learning method before training.
+5. Maintain the local/guest profile, Main Menu and Deck Builder; verify offline Android first, Windows second.
+6. Resume PvP and online accounts last, only if time remains. Preserve the prototype; do not treat online polish as the next task.
+
+This changes development priorities, not the registered title. Any formal removal of PvP from thesis commitments needs supervisor agreement; no claim of graduation acceptance is implied.
 
 The project now has enough card designs to justify a limited Deck Builder MVP.
 It is a product-completeness requirement, not permission to build a collection,
@@ -113,7 +113,7 @@ After each development step, report:
   Energy, phase/turn, and chain resolution without reading the Console.
 - Easy rule-based bot.
 - Normal heuristic bot.
-- Online 1v1 PvP with player identity/account support.
+- Expanded cards and playable strategic decks with representative interaction/balance checks before research experiments.
 - Android build, then Windows build.
 - Deterministic replay/state-hash support, headless bot-vs-bot simulation, and
   metrics for thesis evaluation.
@@ -127,17 +127,18 @@ After each development step, report:
   enforce deck size and copy limits, save/select a small number of local decks,
   and provide at least two usable preset decks.
 - Tier 1B work may proceed in a separate UI slice, but it must yield to Tier 1A
-  correctness, online feasibility, and platform-build risks.
+  correctness, offline presentation and platform-build risks. Preserve existing local saves.
 
-### Tier 2: build if Tier 1 is stable
+### Tier 2: offline research after the card/rule baseline is stable
 
 - Hard Bot using Minimax/Alpha-Beta or another suitable advanced algorithm.
-- More cards and decks, balancing, richer VFX, cosmetic animation, and audio
-  beyond the functional feedback required by Tier 1A.
+- Prepare ML/AI observations/actions, datasets and a reproducible training/evaluation protocol; then select and run a bounded learning experiment.
+- Compare fixed Easy/Normal, Hard and any trained policy using paired seeds, swapped seats/first player and held-out evaluations; report strength, decision time and resource use, including limitations.
+- Richer VFX, cosmetic animation and audio beyond the readable functional feedback required by Tier 1A remain secondary.
 
-### Tier 3: only if time remains
+### Tier 3: last, only if time remains (11 November decision)
 
-- Machine learning/self-play experiments.
+- Online room-code PvP completion/polish and recoverable online accounts/cloud data. Keep the existing prototype; it is not accepted as a finished experience.
 - Expanded account/profile, collection, filtering, crafting, reward, or gacha
   systems beyond the Deck Builder MVP.
 
@@ -483,15 +484,16 @@ in `Docs/APP_FOUNDATION_GUIDE_2026-10-21.md`. No password/backend/network SDK is
   Freeze Easy/Normal as reference policies for card expansion, Hard or ML research.
   These results cover two preset Decks; do not claim universal bot strength or
   require each later bot to achieve 80% against its predecessor.
-- Hard Bot: limited-depth search such as Minimax/Alpha-Beta **[OPTIONAL AFTER TIER 1]**.
-- ML/self-play: optional experiment only, after Normal Bot and the headless
-  simulator are reproducible. Train on compact state/action features, not
+- Hard Bot: planned after offline presentation and expanded cards/rules stabilize; limited-depth search such as Minimax/Alpha-Beta is a candidate, not a finalized algorithm.
+- ML/self-play: planned research direction after the catalog/rules and headless
+  simulator are reproducible; no trained model exists yet. Train on compact state/action features, not
   rendered frames. On the 8 GB development machine, keep heavy training out of
   the Unity Editor process and use offline or remote runs if attempted.
-- Student direction, 10 November: defer Hard Bot and actual AI/ML training until
-  card expansion and hard gameplay rules are stable. Preserve the completed
-  replay/hash/AI-contract foundation. The student subsequently authorized compatible
-  SDK installation first, then room-code PvP MVP design; installation is now verified.
+- Student direction, 11 November (supersedes the earlier PvP-first sequence):
+  defer PvP and online accounts to last if time permits. First polish offline UI/animation,
+  expand cards and strategic decks, then develop Hard and prepare/train ML/AI against
+  a stable versioned catalog/rule baseline. Preserve the completed replay/hash/AI-contract
+  foundation and fixed Easy/Normal reference policies; ML does not replace UI/rule engineering.
 - Deferred workflow: freeze a versioned card/rule catalog and reference policies;
   validate replay/observation privacy after expansion; choose Hard/learning method;
   build the search/training adapter and labeled datasets; separate training/tuning
@@ -529,6 +531,15 @@ and state hashes. Do not let animation playback drive the simulator clock.
 
 ## 13. PvP and Networking
 
+### Current decision — 11 November: deferred to last
+
+- The student reached an online duel between Editor and Android, but reported that card movement/effects were substantially worse than offline. Connectivity is no longer merely untested; the complete presentation is not accepted.
+- The prototype shares Core rules and scene/prefab/panel components with PvE, but uses a separate snapshot/last-action presentation coordinator. PvE consumes the full accepted-event sequence. The online view keeps only the newest queued snapshot while busy, which can omit intermediate visual states; this is not evidence that Core actions were skipped.
+- Shared asset changes may benefit both modes; PvE interaction/animation sequencing fixes do not automatically reach the separate PvP coordinator. Before resuming PvP polish, agree a common perspective-safe, ordered presentation-event contract and renderer, with snapshots for initialization/resynchronization. This is future design work, not an authorized refactor now.
+- Current prototype policy: no Auto, 120 seconds per turn with legal turn progression on expiry; leaving/detected disconnection is a loss and closes the room, with no reconnect grace. Network partitions and trusted cross-device results remain limitations without a trusted authority/backend.
+- Preserve the SDK pins, existing prototype and local user data. Do not implement more online/accounts or remove SDKs/code as part of the offline priority change. Recoverable accounts/cloud saves remain unfinished; local history is not trusted online ranking.
+- Resume only after offline UI/animation, card/deck expansion and bot/research priorities, if time permits. The following SDK checkpoint describes the state on 10 November; remaining architecture/service recommendations are deferred, not the immediate task.
+
 ### SDK installation checkpoint — 10 November
 
 - Approved scope: create room, share a join code, enter code to play 1v1;
@@ -548,16 +559,16 @@ and state hashes. Do not let animation playback drive the simulator clock.
 - The evaluated unified Multiplayer Services SDK requires Collections 2.2.1;
   standalone Relay avoids that major dependency upgrade. Relay is a legacy SDK;
   reassess service support before production release. No Lobby/Matchmaker added.
-- This PASS verifies installation/Editor API availability only. Services were not
+- At that SDK-only checkpoint, PASS verified installation/Editor API availability only. Services were not
   configured, no online duel/Android build was tested, and no online accounts or
-  cloud history were implemented. Next: discuss the PvP MVP design, then service
-  configuration and a real two-device connectivity test.
+  cloud history were implemented. Subsequent room/duel work and the student's
+  two-device test are recorded above; online polish/accounts are now deferred.
 
 - Local guest IDs/profile, recent PvE history and local wins/losses already exist;
   online identity, cross-device recovery, online match history and trusted PvP
   statistics do not. Preserve guest data and map it to authenticated identities
   explicitly; existing offline PvE/Auto results are not rated PvP results.
-- Start with a scoped online 1v1 room/create/join-code prototype on two devices,
+- When resuming, retain the scoped online 1v1 room/create/join-code prototype on two devices,
   then integrate the duel UI. Card expansion can continue later if both players
   use the same negotiated rules/catalog version in each match.
 - Define stable account ID versus editable display name, room ID and match ID;
@@ -576,8 +587,8 @@ and state hashes. Do not let animation playback drive the simulator clock.
   rules before updating both profiles/history. Protected writes alone do not
   prove a host-reported result is true; specify result validation/trust separately.
   Keep private match diagnostics separate from player-visible history.
-- SDK installation/API compatibility on Unity 2022.3.62f3 has passed. Next design
-  the MVP and verify Android/Windows connectivity, identity recovery, service limits
+- SDK installation/API compatibility on Unity 2022.3.62f3 has passed. Before future online completion, verify
+  full-match Android/Windows behavior, identity recovery, service limits
   and costs before enabling the online flow or promising persistent accounts.
   Current MPS installation guidance is Unity-6-oriented; do not infer compatibility
   or upgrade the Editor automatically: [Unity installation guide](https://docs.unity.com/en-us/mps-sdk/install-and-upgrade).
@@ -587,7 +598,7 @@ and state hashes. Do not let animation playback drive the simulator clock.
 
 "Networking solution" means the technology and service used to identify players, create/join matches, carry messages between devices, validate actions, handle disconnects, and optionally save player data.
 
-Selected SDK foundation **[INSTALLED/EDITOR VERIFIED; online behavior pending]**:
+Selected SDK foundation **[INSTALLED/EDITOR VERIFIED; connected prototype, final presentation/online acceptance pending; deferred]**:
 
 - Unity Authentication for player identity. Start with anonymous accounts for testing; add Username & Password or Unity Player Accounts if cross-device recovery is required.
 - Standalone Relay SDK allocations and join codes; unified Multiplayer Services SDK Sessions and Lobby are not installed.
@@ -620,6 +631,8 @@ Do not install networking packages until local core actions are deterministic an
 | Networking stack | Tentative UGS stack in section 13; decide after spike |
 
 ## 15. Current Progress
+
+Updated direction, 11 November: prioritize offline in-match UI/animation, expanded cards and strategic decks, then Hard and ML/AI research preparation. Easy/Normal, the headless runner and Windows/Mono replay/hash/AI-contract foundation exist; Hard and actual model training are not implemented. The student tested a connected Editor/Android PvP duel but did not accept its presentation. PvP/accounts are retained as unfinished prototypes/future work and scheduled last if time remains. No code/assets are changed by this documentation update.
 
 Checkpoint: **Offline Demo 0.1.0 + Duel Log**, 9 November; previous checkpoint `977a734`.
 The offline APK built in the existing Editor with 0 errors and 0 warnings.
@@ -760,26 +773,32 @@ Completed or explored:
 
 Known next gaps:
 
-1. Run a focused Play-mode acceptance pass for the newly assigned Monster
+1. Polish offline in-match UI, input locking and animation/event order, then run a focused Play-mode acceptance pass for the newly assigned Monster
    artwork and remaining all-category edge cases: Equip cleanup, Field replacement/maintenance,
    Trap set-turn lockout, attack responses, Counter Trap negation,
    two-or-more-link LIFO resolution, insufficient Energy, full zones, pending
    triggers at match end, and the match-result overlay.
 2. Test the produced Android demo on physical devices: portrait readability,
    touch input, full-match flow, performance and local persistence. The basic
-   Duel Log is accepted; detailed polish/effect/chain review is deferred.
-   Explicit Fast/Skip remains pending for a later presentation slice.
+   Duel Log is accepted; further log polish remains separate. Review representative
+   effect/chain interactions as needed for presentation and card expansion.
+   Explicit Fast/Skip remains pending for a selected presentation slice.
 3. Keep the accepted approximately 7:3 Normal checkpoint and headless evaluation
    pipeline as references; broaden experiments only for the next selected scope.
    The Windows replay/state-hash and AI-contract MVP is implemented; broaden its
-   coverage as needed before networking/search/training depends on it. Hard/ML
-   remain optional and deferred until cards/rules stabilize.
-4. Design the scoped room/create/join-code PvP MVP using the installed SDKs
-   from section 13, then configure services and test two-device connectivity.
-   Keep Unity 2022.3.62f3 unchanged. Remaining AppShell/device acceptance and
-   a playable Windows build are still pending.
+   coverage as cards evolve. Expand diverse strategic cards/decks and freeze a
+   catalog/rule version before Hard search and actual ML/AI training. Prepare
+   datasets/protocol, separate training/tuning/evaluation seeds, and record versions,
+   paired-seat results, decision time and resource use for thesis evidence.
+4. Keep the connected room-code PvP prototype and online accounts deferred until
+   last, only if time permits. Before resuming, address the shared presentation/event
+   contract in section 13 rather than polishing two independent animation flows.
+   Keep Unity 2022.3.62f3 unchanged. Remaining offline AppShell/device acceptance
+   and a playable Windows build are still pending.
 
 ## 16. Roadmap
+
+**11 November override:** the dated October/early-November entries below are historical planning. The current sequence is offline UI/animation -> card/deck expansion and versioned rule baseline -> Hard and ML/AI preparation/experiments -> final offline builds and thesis evidence. PvP/accounts come last if time remains; they are not a required next milestone. Formal thesis scope changes still need supervisor agreement.
 
 ### 21-31 October temporary sequence (student-approved direction)
 
@@ -829,8 +848,9 @@ Verified checkpoints:
   GameSession, pauses for human response priority, and can be toggled at runtime
   without changing the saved scene. The visible Auto control can assign both
   players to the selected policy for presentation. Duel mode offers Easy/Normal.
-  Normal's comparative evaluation, full-effect acceptance and headless metrics
-  remain incomplete.
+  Normal's comparative/headless evaluation is now recorded in section 12
+  (108/150 baseline-input wins; 107/150 unseen-seed wins). Broader card/effect
+  acceptance and evaluation across expanded decks remain work.
 
 | Step | Target | Content | Verification |
 |---|---|---|---|
@@ -840,11 +860,11 @@ Verified checkpoints:
 | 4 | ~27 Oct | Complete local duel acceptance, event queue, functional animation and duel log; early Android development build | Full local match reaches a winner and each key action is visually understandable |
 | 5 | ~3 Nov | All-category edge pass, Normal Bot/headless runner foundation, replay/state hash, networking feasibility spike | Complete local match with all categories; bot batches start; networking choice discussed |
 | 6 | ~10 Nov | Normal Bot metrics, guest profile/Main Menu/PvE entry, Deck Builder MVP and local deck saves | Human-vs-bot, batch metrics, and selection of a valid saved deck work |
-| 7 | ~17 Nov | Online host-authoritative PvP and account flow using approved solution | Android/Windows devices complete an online match |
-| 8 | ~24 Nov | Android build first, Windows build, regression/balancing; Hard Bot only if Tier 1A is stable | Stable builds and thesis experiment data |
+| 7 | Revised 11 Nov; date to agree | Offline UI/animation polish, strategic card/deck expansion and interaction/balance checks | Readable complete offline match and versioned playable deck/catalog baseline |
+| 8 | After stable baseline; date to agree | Hard Bot, ML/AI data/protocol and bounded experiments; Android/Windows regression | Reproducible bot comparisons, held-out results, decision-time/resource metrics and stable builds |
 | 9 | 25 Nov-early Dec | Feature freeze, final experiments, report, defense preparation | Final build and thesis materials |
 
-If schedule slips, reduce extra cards, cosmetic polish, Hard Bot, and ML first.
+If schedule slips, leave PvP/accounts last; bound card expansion and research experiments while preserving a stable offline game and reproducible thesis evidence. Do not promise a trained model's strength or a fixed bot win-rate gap in advance.
 Discuss any change to the Tier 1A/1B commitments with the student; do not
 silently remove them. As of 19 October, the core Step 4 local-play slice and the expanded executable
 card-flow portion of Step 5 have initial Play Mode acceptance. The complete

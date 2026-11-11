@@ -77,6 +77,54 @@ public sealed class DuelPresentationController : MonoBehaviour
     public bool HasPendingEvents => pendingEvents.Count > 0;
     public bool IsBusy => IsPlaying || HasPendingEvents;
 
+    // Shared timing/curve for accepted online snapshots; no remote GameState is reconstructed.
+    public IEnumerator PlayNetworkMotion(RectTransform visual, Vector3 target, Vector3 scale, bool attack, bool fast = false)
+    {
+        Vector3 origin = visual.position, originalScale = visual.localScale;
+        float duration = attack ? attackSeconds * .5f : fast ? fastDrawSeconds : cardMoveSeconds;
+        for (float elapsed = 0; elapsed < duration; elapsed += Time.unscaledDeltaTime)
+        {
+            float t = motionCurve.Evaluate(Mathf.Clamp01(elapsed / duration));
+            visual.position = Vector3.LerpUnclamped(origin, target, t);
+            visual.localScale = Vector3.LerpUnclamped(originalScale, scale, t);
+            yield return null;
+        }
+        visual.position = target; visual.localScale = scale;
+        if (!attack) yield break;
+        for (float elapsed = 0; elapsed < duration; elapsed += Time.unscaledDeltaTime)
+        {
+            float t = motionCurve.Evaluate(Mathf.Clamp01(elapsed / duration));
+            visual.position = Vector3.LerpUnclamped(target, origin, t);
+            visual.localScale = Vector3.LerpUnclamped(scale, originalScale, t);
+            yield return null;
+        }
+        visual.position = origin; visual.localScale = originalScale;
+    }
+
+    public IEnumerator PlayNetworkBanner(string message) { yield return ShowBanner(message); }
+
+    public IEnumerator PlayNetworkRotation(RectTransform visual, Quaternion rotation)
+    {
+        Quaternion before = visual.rotation;
+        for (float elapsed = 0; elapsed < cardFlipSeconds; elapsed += Time.unscaledDeltaTime)
+        { visual.rotation = Quaternion.Slerp(before, rotation, elapsed / cardFlipSeconds); yield return null; }
+        visual.rotation = rotation;
+    }
+
+    public IEnumerator PlayNetworkNumber(TMP_Text label, string prefix, int before, int after, int maximum = -1)
+    {
+        if (label == null || before == after) yield break;
+        for (float elapsed = 0; elapsed < numberSeconds; elapsed += Time.unscaledDeltaTime)
+        {
+            int current = Mathf.RoundToInt(Mathf.Lerp(before, after, elapsed / numberSeconds));
+            if (maximum >= 0) DuelMonsterZoneStatusView.SetHealthText(label, current, maximum);
+            else label.text = prefix + current;
+            yield return null;
+        }
+        if (maximum >= 0) DuelMonsterZoneStatusView.SetHealthText(label, after, maximum);
+        else label.text = prefix + after;
+    }
+
     public void Initialize(DuelBoardReadOnlyDemo duelBoard)
     {
         board = duelBoard;

@@ -37,6 +37,48 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
     public AppDuelFlow AppFlow { get; private set; }
 
     public GameSession Session => session;
+    public Sprite NetworkCardBack => cardBackSprite;
+    public TMP_FontAsset NetworkFont => runtimeFont;
+    public void SetNetworkAvatar(string side, Sprite sprite)
+    {
+        Transform hud = transform.Find("SafeAreaRoot/HudLayer");
+        if (hud != null && sprite != null) ApplyAvatar(hud, side, sprite);
+    }
+
+    public void InitializeNetworkAssets(IReadOnlyDictionary<string, CardData> catalog, Sprite avatar)
+    {
+        enabled = false;
+        cardsById.Clear();
+        foreach (var card in catalog) cardsById[card.Key] = card.Value;
+        Transform hud = transform.Find("SafeAreaRoot/HudLayer");
+        TMP_Text sample = hud != null ? hud.GetComponentInChildren<TMP_Text>(true) : null;
+        runtimeFont = sample != null ? sample.font : TMP_Settings.defaultFontAsset;
+        Transform boardLayer = transform.Find("SafeAreaRoot/BoardLayer");
+        Transform overlay = transform.Find("SafeAreaRoot/OverlayLayer");
+        if (boardLayer != null && hud != null && overlay != null) ConfigureRuntimeSorting(boardLayer, hud, overlay);
+        ApplyBoardBackground();
+        if (hud != null)
+        {
+            ApplyAvatar(hud, "Player", avatar != null ? avatar : playerOneAvatarSprite);
+            ApplyAvatar(hud, "Opp", playerTwoAvatarSprite);
+        }
+    }
+
+    public GameObject CreateNetworkCard(CardData data, Transform parent, float scale, bool faceDown, bool defense)
+    {
+        if (data == null)
+            foreach (CardData candidate in cardsById.Values) { data = candidate; break; }
+        if (data == null || parent == null) return null;
+        GameObject card = Instantiate(data.Category == CardCategory.Monster ? monsterCardPrefab : spellTrapCardPrefab, parent);
+        RectTransform rect = card.GetComponent<RectTransform>();
+        rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(.5f, .5f);
+        rect.anchoredPosition = Vector2.zero; rect.sizeDelta = new Vector2(250, 350);
+        rect.localScale = Vector3.one * scale;
+        rect.localRotation = Quaternion.Euler(0, 0, defense ? 90 : 0);
+        CardView view = card.GetComponent<CardView>();
+        view.SetCardData(data); view.SetFaceDown(faceDown);
+        return card;
+    }
     public bool IsPresenting => presentation != null && presentation.IsBusy;
     public bool IsEasyBotEnabled =>
         easyBotController != null && easyBotController.IsEnabled;

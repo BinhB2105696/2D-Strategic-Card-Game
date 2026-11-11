@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,6 +18,14 @@ public sealed class DuelLogView : MonoBehaviour
     private int revision = -1, viewer = -1;
     private float width = -1;
     private bool initialized;
+    private Func<IReadOnlyList<string>> networkLines;
+    private Func<int> networkRevision;
+
+    public void InitializeNetwork(Func<IReadOnlyList<string>> lines, Func<int> version)
+    {
+        Initialize(null, null);
+        networkLines = lines; networkRevision = version;
+    }
 
     public void Initialize(DuelLogModel model, DuelBoardReadOnlyDemo duelBoard)
     {
@@ -59,18 +68,19 @@ public sealed class DuelLogView : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (journal == null || viewport.rect.width <= 0) return;
-        int perspective = board.ViewingPlayerIndex;
-        bool changed = viewer != perspective || revision != journal.Revision ||
+        if ((journal == null && networkLines == null) || viewport == null || viewport.rect.width <= 0) return;
+        int perspective = networkLines != null ? 0 : board.ViewingPlayerIndex;
+        int currentRevision = networkRevision != null ? networkRevision() : journal.Revision;
+        bool changed = viewer != perspective || revision != currentRevision ||
             Mathf.Abs(width - viewport.rect.width) > 0.5f;
         if (changed)
         {
-            bool rebuild = viewer != perspective || Mathf.Abs(width - viewport.rect.width) > 0.5f || offsets.Count == 0;
+            bool rebuild = networkLines != null || viewer != perspective || Mathf.Abs(width - viewport.rect.width) > 0.5f || offsets.Count == 0;
             bool bottom = viewer < 0 || viewer != perspective || content.rect.height <= viewport.rect.height ||
                 content.rect.height - viewport.rect.height - content.anchoredPosition.y < 36;
             float oldY = content.anchoredPosition.y;
-            viewer = perspective; revision = journal.Revision; width = viewport.rect.width;
-            messages = journal.Lines(viewer);
+            viewer = perspective; revision = currentRevision; width = viewport.rect.width;
+            messages = networkLines != null ? networkLines() : journal.Lines(viewer);
             if (rebuild) { offsets.Clear(); offsets.Add(8); }
             for (int i = offsets.Count - 1; i < messages.Count; i++)
             {
