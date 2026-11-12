@@ -18,6 +18,8 @@ public sealed class DuelPresentationController : MonoBehaviour
         public bool FaceDown;
         public int Health;
         public int MaximumHealth;
+        public int Attack;
+        public int Defense;
         public int Energy;
         public RectTransform Visual;
     }
@@ -41,7 +43,7 @@ public sealed class DuelPresentationController : MonoBehaviour
     [SerializeField, Range(0.3f, 1f)] private float recoveryStepSeconds = 0.65f;
     [SerializeField, Range(0.08f, 0.8f)] private float cardFlipSeconds = 0.24f;
     [SerializeField, Range(0.08f, 0.8f)] private float attackSeconds = 0.32f;
-    [SerializeField, Range(0.08f, 1f)] private float numberSeconds = 0.42f;
+    [SerializeField, Range(0.08f, 1f)] private float numberSeconds = 0.5f;
     [SerializeField, Range(0.08f, 1f)] private float bannerSeconds = 0.38f;
     [SerializeField] private AnimationCurve motionCurve =
         AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
@@ -56,6 +58,9 @@ public sealed class DuelPresentationController : MonoBehaviour
     private readonly List<GameObject> hiddenGraveStatuses =
         new List<GameObject>();
     private readonly Dictionary<long, int> visibleMonsterMaximumHealth = new Dictionary<long, int>();
+    private readonly Dictionary<long, int> visibleMonsterAttack = new Dictionary<long, int>();
+    private readonly Dictionary<long, int> visibleMonsterDefense = new Dictionary<long, int>();
+    private readonly List<long>[] visibleHands = { new List<long>(), new List<long>() };
     private readonly int[] visibleHealth = new int[2];
     private readonly int[] visibleEnergy = new int[2];
     private DuelBoardReadOnlyDemo board;
@@ -67,6 +72,8 @@ public sealed class DuelPresentationController : MonoBehaviour
     private long pendingAttackerId;
     private long pendingAttackTargetId;
     private bool pendingAttackLunged;
+    private int pendingAttackerPlayerIndex;
+    private RectTransform attackDeclarationArrow;
     private float recoveryStepStartedAt;
     private int displayedTurnNumber;
     private float phaseHudBaseFontSize;
@@ -208,6 +215,9 @@ public sealed class DuelPresentationController : MonoBehaviour
             PlayerState player = state.Players[playerIndex];
             before.Health[playerIndex] = player.Health;
             before.Energy[playerIndex] = player.AvailableEnergy;
+            visibleHands[playerIndex].Clear();
+            foreach (CardInstance card in player.Hand)
+                visibleHands[playerIndex].Add(card.InstanceId);
             AddCards(player.Deck, CardZone.Deck, playerIndex);
             AddCards(player.Hand, CardZone.Hand, playerIndex);
             AddCards(player.Graveyard, CardZone.Graveyard, playerIndex);
@@ -250,11 +260,15 @@ public sealed class DuelPresentationController : MonoBehaviour
         visibleMonsterHealth.Clear();
         visibleMonsterMaximumHealth.Clear();
         visibleMonsterEnergy.Clear();
+        visibleMonsterAttack.Clear();
+        visibleMonsterDefense.Clear();
         foreach (KeyValuePair<long, CardBefore> pair in before.Cards)
         {
             visibleMonsterHealth[pair.Key] = pair.Value.Health;
             visibleMonsterMaximumHealth[pair.Key] = pair.Value.MaximumHealth;
             visibleMonsterEnergy[pair.Key] = pair.Value.Energy;
+            visibleMonsterAttack[pair.Key] = pair.Value.Attack;
+            visibleMonsterDefense[pair.Key] = pair.Value.Defense;
         }
         StartCoroutine(PlaySequence(events, finalState, onComplete));
     }
@@ -265,6 +279,8 @@ public sealed class DuelPresentationController : MonoBehaviour
             return;
 
         CaptureBeforeAction(state);
+        visibleHands[0].Clear();
+        visibleHands[1].Clear();
         List<CardInstance> dealtCards = new List<CardInstance>();
         int firstPlayer = before.ViewingPlayer;
         int maxCards = Mathf.Max(
@@ -327,6 +343,8 @@ public sealed class DuelPresentationController : MonoBehaviour
                 (zone == CardZone.Hand && playerIndex != before.ViewingPlayer),
             Health = card.CurrentHealth,
             MaximumHealth = card.MaximumHealth,
+            Attack = card.CurrentAttack,
+            Defense = card.CurrentDefense,
             Energy = card.AllocatedEnergy,
             Visual = board.FindRenderedCard(card.InstanceId)
         };
@@ -377,10 +395,13 @@ public sealed class DuelPresentationController : MonoBehaviour
         IsPlaying = false;
         if (finalState.ActiveChain == null)
         {
+            ClearAttackDeclaration();
             pendingAttackerId = 0;
             pendingAttackTargetId = 0;
             pendingAttackLunged = false;
         }
+        else if (pendingAttackerId != 0 && !pendingAttackLunged)
+            ShowAttackDeclaration(true);
         onComplete?.Invoke();
     }
 
@@ -498,20 +519,34 @@ public sealed class DuelPresentationController : MonoBehaviour
             case GameEventType.AttackDeclared:
                 pendingAttackerId = eventData.CardInstanceId;
                 pendingAttackTargetId = eventData.TargetInstanceId;
+                pendingAttackerPlayerIndex = eventData.PlayerIndex;
                 pendingAttackLunged = false;
+                ShowAttackDeclaration();
                 yield return Pulse(CardPosition(pendingAttackerId),
                     new Color32(255, 210, 45, 220));
                 break;
+            case GameEventType.MonsterAttackModified:
+                yield return ChangeMonsterStat(eventData.CardInstanceId,
+                    eventData.Amount, false);
+                break;
+            case GameEventType.MonsterDefenseModified:
+                yield return ChangeMonsterStat(eventData.CardInstanceId,
+                    eventData.Amount, true);
+                break;
+            case GameEventType.BattlePositionChanged:
+                yield return ChangeBattlePosition(eventData.CardInstanceId,
+                    (BattlePosition)eventData.Amount);
+                break;
             case GameEventType.MonsterDamaged:
-                yield return LungeForDamage(eventData.CardInstanceId);
-                yield return ChangeMonsterHealth(eventData.CardInstanceId,
-                    -eventData.Amount);
+                yield return LungeForDamage(eventData.CardInstanceId,
+                    ChangeMonsterHealth(eventData.CardInstanceId, -eventData.Amount));
                 break;
             case GameEventType.PlayerDamaged:
                 if (pendingAttackTargetId == 0)
-                    yield return LungeForDamage(0);
-                yield return ChangePlayerHealth(eventData.PlayerIndex,
-                    -eventData.Amount);
+                    yield return LungeForDamage(0,
+                        ChangePlayerHealth(eventData.PlayerIndex, -eventData.Amount));
+                else
+                    yield return ChangePlayerHealth(eventData.PlayerIndex, -eventData.Amount);
                 break;
             case GameEventType.MonsterHealthModified:
                 yield return ChangeMonsterHealth(eventData.CardInstanceId,
@@ -537,7 +572,7 @@ public sealed class DuelPresentationController : MonoBehaviour
             case GameEventType.AllocatedEnergyRemoved:
                 int delta = eventData.Type == GameEventType.EnergyAllocated
                     ? eventData.Amount : -eventData.Amount;
-                ChangeMonsterEnergy(eventData.CardInstanceId, delta);
+                yield return ChangeMonsterEnergy(eventData.CardInstanceId, delta);
                 break;
             case GameEventType.PhaseChanged:
                 if (eventData.Phase == TurnPhase.Recovery)
@@ -629,6 +664,27 @@ public sealed class DuelPresentationController : MonoBehaviour
             ghost.GetComponent<CardView>()?.SetFaceDown(true);
         }
 
+        List<RectTransform> handNeighbours = new List<RectTransform>();
+        List<Vector2> handStarts = new List<Vector2>();
+        List<Vector2> handEnds = new List<Vector2>();
+        if (zone == CardZone.Hand)
+        {
+            if (!visibleHands[playerIndex].Contains(instanceId))
+                visibleHands[playerIndex].Add(instanceId);
+            foreach (long handId in visibleHands[playerIndex])
+            {
+                if (handId == instanceId) continue;
+                RectTransform neighbour = GetGhost(handId);
+                if (neighbour == null) continue;
+                handNeighbours.Add(neighbour);
+                handStarts.Add(neighbour.anchoredPosition);
+                handEnds.Add(HandPosition(playerIndex, handId));
+            }
+            ghost.SetAsLastSibling();
+        }
+        else
+            visibleHands[playerIndex].Remove(instanceId);
+
         Vector2 start = ghost.anchoredPosition;
         Vector2 end = zone == CardZone.Hand
             ? HandPosition(playerIndex, instanceId)
@@ -638,9 +694,17 @@ public sealed class DuelPresentationController : MonoBehaviour
             zone == CardZone.MonsterZone || zone == CardZone.SpellTrapZone ||
             zone == CardZone.Graveyard || zone == CardZone.Deck
                 ? 0.6f : 1f;
+        if (zone == CardZone.FieldZone)
+        {
+            Transform anchor = ZoneAnchor(playerIndex, zone, zoneIndex);
+            if (anchor != null)
+                endScale = visualRoot.InverseTransformVector(
+                    anchor.TransformVector(Vector3.right)).magnitude;
+        }
         CardInstance card = FindCard(instanceId);
-        float endAngle = zone == CardZone.MonsterZone && card != null &&
-            card.BattlePosition == BattlePosition.Defense ? 90f : 0f;
+        float endAngle = board.CardPresentationAngle(playerIndex,
+            zone == CardZone.MonsterZone && card != null &&
+            card.BattlePosition == BattlePosition.Defense);
         float startAngle = ghost.localEulerAngles.z;
         CardView view = ghost.GetComponent<CardView>();
         bool flip = view != null && view.IsFaceDown != faceDown;
@@ -651,6 +715,9 @@ public sealed class DuelPresentationController : MonoBehaviour
             elapsed += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(elapsed / moveSeconds);
             float curved = motionCurve.Evaluate(t);
+            for (int index = 0; index < handNeighbours.Count; index++)
+                handNeighbours[index].anchoredPosition =
+                    Vector2.LerpUnclamped(handStarts[index], handEnds[index], curved);
             ghost.anchoredPosition = Vector2.LerpUnclamped(start, end, curved) +
                 (zone == CardZone.Graveyard ? Vector2.zero :
                     Vector2.up * Mathf.Sin(t * Mathf.PI) * 35f);
@@ -670,6 +737,8 @@ public sealed class DuelPresentationController : MonoBehaviour
         ghost.anchoredPosition = end;
         ghost.localScale = Vector3.one * endScale;
         ghost.localRotation = Quaternion.Euler(0f, 0f, endAngle);
+        for (int index = 0; index < handNeighbours.Count; index++)
+            handNeighbours[index].anchoredPosition = handEnds[index];
         if (view != null)
             view.SetFaceDown(faceDown);
     }
@@ -698,42 +767,156 @@ public sealed class DuelPresentationController : MonoBehaviour
         view.SetFaceDown(faceDown);
     }
 
-    private IEnumerator LungeForDamage(long targetId)
+    private IEnumerator LungeForDamage(long targetId, IEnumerator damageAnimation)
     {
         if (pendingAttackerId == 0 || pendingAttackLunged ||
             (pendingAttackTargetId != targetId && targetId != 0))
+        {
+            yield return damageAnimation;
             yield break;
+        }
 
         RectTransform ghost = GetGhost(pendingAttackerId);
         if (ghost == null)
+        {
+            yield return damageAnimation;
             yield break;
+        }
         pendingAttackLunged = true;
+        ClearAttackDeclaration();
         Vector2 start = ghost.anchoredPosition;
-        CardInstance attacker = FindCard(pendingAttackerId);
-        if (targetId == 0 && attacker == null)
-            yield break;
-        Vector2 target = targetId != 0
-            ? CardPosition(targetId)
-            : LabelPosition(PlayerLpLabel(1 - attacker.OwnerPlayerIndex));
-        Vector2 impact = Vector2.Lerp(start, target, 0.72f);
+        Vector2 target = AttackTargetPosition(targetId);
+        Vector2 direction = target - start;
+        Quaternion originalRotation = ghost.localRotation;
+        Quaternion facing = direction.sqrMagnitude > .01f
+            ? Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f)
+            : originalRotation;
+        // The top-edge midpoint makes contact; the attacker's center stops short.
+        Vector3 nose = new Vector3(ghost.rect.center.x, ghost.rect.yMax, 0f);
+        Vector2 contactCenter = target - (Vector2)(facing * Vector3.Scale(nose, ghost.localScale));
         AttachMovingMonsterStatus(pendingAttackerId, start);
+        yield return PlayNetworkRotation(ghost, ghost.parent.rotation * facing);
         float elapsed = 0f;
-        while (elapsed < attackSeconds)
+        float outwardSeconds = attackSeconds * .55f;
+        while (elapsed < outwardSeconds)
         {
             elapsed += Time.unscaledDeltaTime;
-            float t = Mathf.Clamp01(elapsed / attackSeconds);
-            float travel = t < 0.55f
-                ? Mathf.SmoothStep(0f, 1f, t / 0.55f)
-                : Mathf.SmoothStep(1f, 0f, (t - 0.55f) / 0.45f);
-            ghost.anchoredPosition = Vector2.Lerp(start, impact, travel);
+            float travel = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / outwardSeconds));
+            ghost.anchoredPosition = Vector2.Lerp(start, contactCenter, travel);
             if (movingStatus != null)
                 movingStatus.GetComponent<RectTransform>().anchoredPosition =
                     ghost.anchoredPosition;
             yield return null;
         }
-        ghost.anchoredPosition = start;
-        RestoreMovingMonsterStatus();
+        ghost.anchoredPosition = contactCenter;
         yield return Pulse(target, new Color32(255, 230, 145, 245));
+        yield return damageAnimation;
+        elapsed = 0f;
+        float returnSeconds = attackSeconds * .45f;
+        while (elapsed < returnSeconds)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / returnSeconds));
+            ghost.anchoredPosition = Vector2.Lerp(contactCenter, start, t);
+            ghost.localRotation = Quaternion.Slerp(facing, originalRotation, t);
+            if (movingStatus != null)
+                movingStatus.GetComponent<RectTransform>().anchoredPosition = ghost.anchoredPosition;
+            yield return null;
+        }
+        ghost.anchoredPosition = start;
+        ghost.localRotation = originalRotation;
+        RestoreMovingMonsterStatus();
+    }
+
+    private Vector2 AttackTargetPosition(long targetId)
+    {
+        if (targetId != 0) return CardPosition(targetId);
+        string side = 1 - pendingAttackerPlayerIndex == board.ViewingPlayerIndex ? "Player" : "Opp";
+        RectTransform strip = transform.Find("SafeAreaRoot/HudLayer/" + side + "_HUD/LpText")
+            as RectTransform;
+        if (strip != null)
+        {
+            // Aim at the LP strip's end facing the playfield, not the avatar.
+            float tipX = side == "Opp" ? strip.rect.xMax : strip.rect.xMin;
+            return visualRoot.InverseTransformPoint(strip.TransformPoint(
+                new Vector3(tipX, strip.rect.center.y, 0f)));
+        }
+        Transform avatar = transform.Find("SafeAreaRoot/HudLayer/" + side + "_HUD/AvatarFrame");
+        return avatar != null ? Position(avatar) : Vector2.zero;
+    }
+
+    private void ShowAttackDeclaration(bool renderedBoard = false)
+    {
+        ClearAttackDeclaration();
+        RectTransform attacker = renderedBoard
+            ? board.FindRenderedCard(pendingAttackerId) : null;
+        RectTransform defender = renderedBoard && pendingAttackTargetId != 0
+            ? board.FindRenderedCard(pendingAttackTargetId) : null;
+        if (renderedBoard && (attacker == null ||
+            (pendingAttackTargetId != 0 && defender == null)))
+            return;
+
+        Vector2 start = renderedBoard ? Position(attacker) : CardPosition(pendingAttackerId);
+        Vector2 end;
+        if (pendingAttackTargetId != 0)
+            end = renderedBoard ? Position(defender) : CardPosition(pendingAttackTargetId);
+        else
+            end = AttackTargetPosition(0);
+        Vector2 direction = end - start;
+        float length = direction.magnitude - 70f;
+        if (length <= 0f) return;
+        GameObject arrow = new GameObject("RuntimeAttackDeclarationArrow",
+            typeof(RectTransform), typeof(CanvasRenderer), typeof(DuelAttackDeclarationArrow));
+        arrow.layer = visualRoot.gameObject.layer;
+        attackDeclarationArrow = arrow.GetComponent<RectTransform>();
+        attackDeclarationArrow.SetParent(visualRoot, false);
+        attackDeclarationArrow.anchorMin = attackDeclarationArrow.anchorMax = new Vector2(.5f, .5f);
+        attackDeclarationArrow.pivot = new Vector2(0f, .5f);
+        attackDeclarationArrow.sizeDelta = new Vector2(length, 40f);
+        attackDeclarationArrow.anchoredPosition = start + direction.normalized * 38f;
+        attackDeclarationArrow.localRotation = Quaternion.Euler(0f, 0f,
+            Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
+        DuelAttackDeclarationArrow graphic = arrow.GetComponent<DuelAttackDeclarationArrow>();
+        graphic.color = new Color(1f, .82f, .18f, .32f);
+        graphic.raycastTarget = false;
+    }
+
+    private void ClearAttackDeclaration()
+    {
+        if (attackDeclarationArrow == null) return;
+        attackDeclarationArrow.gameObject.SetActive(false);
+        Destroy(attackDeclarationArrow.gameObject);
+        attackDeclarationArrow = null;
+    }
+
+    private IEnumerator ChangeBattlePosition(long instanceId, BattlePosition position)
+    {
+        RectTransform ghost = GetGhost(instanceId);
+        if (ghost == null) yield break;
+        Quaternion start = ghost.localRotation;
+        CardInstance card = FindCard(instanceId);
+        Quaternion end = Quaternion.Euler(0f, 0f, board.CardPresentationAngle(
+            card != null ? card.OwnerPlayerIndex : before.ViewingPlayer,
+            position == BattlePosition.Defense));
+        for (float elapsed = 0f; elapsed < cardFlipSeconds; elapsed += Time.unscaledDeltaTime)
+        {
+            ghost.localRotation = Quaternion.Slerp(start, end,
+                motionCurve.Evaluate(Mathf.Clamp01(elapsed / cardFlipSeconds)));
+            yield return null;
+        }
+        ghost.localRotation = end;
+    }
+
+    private IEnumerator ChangeMonsterStat(long instanceId, int delta, bool defense)
+    {
+        Dictionary<long, int> values = defense ? visibleMonsterDefense : visibleMonsterAttack;
+        if (!values.TryGetValue(instanceId, out int oldValue)) yield break;
+        int newValue = Mathf.Max(0, oldValue + delta);
+        values[instanceId] = newValue;
+        TMP_Text label = MonsterLabel(instanceId, defense ? "DefenseText" : "AttackText");
+        if (label == null) yield break;
+        yield return AnimateNumber(label, defense ? "DEF " : "ATK ", oldValue, newValue,
+            CardPosition(instanceId) + Vector2.up * 70f, LabelPosition(label));
     }
 
     private void AttachMovingMonsterStatus(long instanceId, Vector2 start)
@@ -824,17 +1007,18 @@ public sealed class DuelPresentationController : MonoBehaviour
             LabelPosition(label));
     }
 
-    private void ChangeMonsterEnergy(long instanceId, int delta)
+    private IEnumerator ChangeMonsterEnergy(long instanceId, int delta)
     {
         if (!visibleMonsterEnergy.TryGetValue(instanceId, out int oldValue))
-            return;
+            yield break;
         int newValue = Mathf.Max(0, oldValue + delta);
         visibleMonsterEnergy[instanceId] = newValue;
         TMP_Text label = MonsterLabel(instanceId, "EnergyText");
         CardInstance card = FindCard(instanceId);
-        if (label != null && card != null)
-            label.text = "E " + newValue + "/" +
-                card.Definition.AttackEnergyRequirement;
+        if (label == null || card == null) yield break;
+        yield return AnimateNumber(label, "E ", oldValue, newValue,
+            CardPosition(instanceId) + Vector2.up * 70f, LabelPosition(label),
+            value => label.text = "E " + value + "/" + card.Definition.AttackEnergyRequirement);
     }
 
     private IEnumerator AnimateNumber(
@@ -855,7 +1039,7 @@ public sealed class DuelPresentationController : MonoBehaviour
 
         TextMeshProUGUI flying = CreateText(
             "RuntimeValueChange",
-            (change > 0 ? "+" : "−") + Mathf.Abs(change),
+            prefix + (change > 0 ? "+" : "−") + Mathf.Abs(change),
             change > 0
                 ? new Color32(108, 255, 160, 255)
                 : new Color32(255, 105, 95, 255),
@@ -869,7 +1053,7 @@ public sealed class DuelPresentationController : MonoBehaviour
             float t = Mathf.Clamp01(elapsed / numberSeconds);
             rect.anchoredPosition = Vector2.Lerp(source, target, motionCurve.Evaluate(t));
             flying.color = new Color(flying.color.r, flying.color.g,
-                flying.color.b, 1f - 0.65f * t);
+                flying.color.b, 1f - 0.35f * t);
             if (label != null)
                 label.text = prefix + Mathf.RoundToInt(
                     Mathf.Lerp(oldValue, newValue, t));
@@ -1030,6 +1214,8 @@ public sealed class DuelPresentationController : MonoBehaviour
         rect.sizeDelta = new Vector2(250f, 350f);
         rect.anchoredPosition = CardPosition(instanceId);
         rect.localScale = Vector3.one * CardScale(instanceId);
+        rect.localRotation = Quaternion.Euler(0f, 0f,
+            board.CardPresentationAngle(instance.OwnerPlayerIndex, false));
         if (before.Cards.TryGetValue(instanceId, out CardBefore old))
         {
             preview.GetComponent<CardView>()?.SetFaceDown(old.FaceDown);
@@ -1085,6 +1271,12 @@ public sealed class DuelPresentationController : MonoBehaviour
 
     private Vector2 ZonePosition(int playerIndex, CardZone zone, int index)
     {
+        Transform target = ZoneAnchor(playerIndex, zone, index);
+        return target != null ? Position(target) : Vector2.zero;
+    }
+
+    private Transform ZoneAnchor(int playerIndex, CardZone zone, int index)
+    {
         string side = playerIndex == before.ViewingPlayer ? "Player" : "Opp";
         string prefix = "SafeAreaRoot/BoardLayer/";
         string path;
@@ -1111,8 +1303,7 @@ public sealed class DuelPresentationController : MonoBehaviour
                 path = side + "_HandArea/HandContent";
                 break;
         }
-        Transform target = transform.Find(prefix + path);
-        return target != null ? Position(target) : Vector2.zero;
+        return transform.Find(prefix + path);
     }
 
     private Vector2 HandPosition(int playerIndex, long instanceId)
@@ -1124,15 +1315,8 @@ public sealed class DuelPresentationController : MonoBehaviour
         if (content == null)
             return Vector2.zero;
 
-        IReadOnlyList<CardInstance> hand =
-            board.Session.State.Players[playerIndex].Hand;
-        int index = -1;
-        for (int i = 0; i < hand.Count; i++)
-            if (hand[i].InstanceId == instanceId)
-            {
-                index = i;
-                break;
-            }
+        List<long> hand = visibleHands[playerIndex];
+        int index = hand.IndexOf(instanceId);
         if (index < 0)
             return Position(content);
 
@@ -1141,8 +1325,8 @@ public sealed class DuelPresentationController : MonoBehaviour
                 Mathf.Max(0f, content.rect.width - 175f) / (hand.Count - 1))
             : 0f;
         int visualIndex = side == "Opp" ? hand.Count - 1 - index : index;
-        return Position(content) +
-            Vector2.right * ((visualIndex - (hand.Count - 1) * 0.5f) * step);
+        Vector3 localOffset = Vector3.right * ((visualIndex - (hand.Count - 1) * 0.5f) * step);
+        return visualRoot.InverseTransformPoint(content.TransformPoint((Vector3)content.rect.center + localOffset));
     }
 
     private TMP_Text MonsterLabel(long instanceId, string labelName)
@@ -1222,6 +1406,10 @@ public sealed class DuelPresentationController : MonoBehaviour
 
     private void OnDisable()
     {
+        ClearAttackDeclaration();
+        pendingAttackerId = 0;
+        pendingAttackTargetId = 0;
+        pendingAttackLunged = false;
         ClearGhosts();
         foreach (GameObject status in hiddenGraveStatuses)
             if (status != null)
@@ -1236,6 +1424,29 @@ public sealed class DuelPresentationController : MonoBehaviour
         IsPlaying = false;
         if (blocker != null)
             blocker.SetActive(false);
+    }
+}
+
+// A translucent, input-transparent intention marker, separate from the attack motion.
+public sealed class DuelAttackDeclarationArrow : MaskableGraphic
+{
+    protected override void OnPopulateMesh(VertexHelper mesh)
+    {
+        mesh.Clear();
+        float length = rectTransform.rect.width;
+        if (length <= 0f) return;
+        float head = Mathf.Min(34f, length * .3f);
+        float neck = length - head;
+        Color tail = color; tail.a *= .2f;
+        mesh.AddVert(new Vector3(0f, -5f), tail, Vector2.zero);
+        mesh.AddVert(new Vector3(0f, 5f), tail, Vector2.zero);
+        mesh.AddVert(new Vector3(neck, 5f), color, Vector2.zero);
+        mesh.AddVert(new Vector3(neck, -5f), color, Vector2.zero);
+        mesh.AddTriangle(0, 1, 2); mesh.AddTriangle(2, 3, 0);
+        mesh.AddVert(new Vector3(neck, 19f), color, Vector2.zero);
+        mesh.AddVert(new Vector3(length, 0f), color, Vector2.zero);
+        mesh.AddVert(new Vector3(neck, -19f), color, Vector2.zero);
+        mesh.AddTriangle(4, 5, 6);
     }
 }
 

@@ -515,7 +515,7 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         if (player.Deck.Count > 0 && deckAnchor != null &&
             cardBackSprite != null)
         {
-            CreateDeckBack(deckAnchor);
+            CreateDeckBack(deckAnchor, side == "Opp");
         }
 
         Transform graveyardZone = pileColumn.Find(
@@ -562,7 +562,7 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         displayedCards.Add(target);
     }
 
-    private void CreateDeckBack(Transform parent)
+    private void CreateDeckBack(Transform parent, bool opponent)
     {
         GameObject backObject = new GameObject(
             "RuntimeDeckCardBack",
@@ -579,6 +579,7 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         rect.anchoredPosition = Vector2.zero;
         rect.sizeDelta = new Vector2(250f, 350f);
 
+        rect.localRotation = Quaternion.Euler(0f, 0f, opponent ? 180f : 0f);
         Image image = backObject.GetComponent<Image>();
         image.sprite = cardBackSprite;
         image.color = Color.white;
@@ -745,13 +746,20 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
         rect.anchoredPosition = Vector2.zero;
         rect.sizeDelta = new Vector2(250f, 350f);
         rect.localScale = Vector3.one * scale;
-        rect.localRotation = Quaternion.Euler(0f, 0f, defense ? 90f : 0f);
+        rect.localRotation = Quaternion.Euler(0f, 0f,
+            CardPresentationAngle(instance.OwnerPlayerIndex, defense));
         renderedCardRects[instance.InstanceId] = rect;
 
         CardView view = card.GetComponent<CardView>();
         view.SetCardData(cardData);
         view.SetFaceDown(faceDown);
         cardInteraction?.BindCard(instance, card, allowInteraction);
+    }
+
+    public float CardPresentationAngle(int ownerPlayerIndex, bool defense)
+    {
+        return (ownerPlayerIndex == ViewingPlayerIndex ? 0f : 180f) +
+            (defense ? 90f : 0f);
     }
 
     public GameObject CreateRuntimeCardPreview(
