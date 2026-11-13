@@ -16,9 +16,9 @@ MonoBehaviour:
   cardName: Legendary Fighter
   category: 0
   artwork: {fileID: 21300000, guid: ba84fbbbee6d4ec44803855026bfe177, type: 3}
-  effectText: When summoned, gains ATK equal to the original ATK of its 3 tributes.
-    When it KOs a monster by battle, remove all Energy from this card; recover 500
-    HP for each Energy removed, up to its current maximum HP.
+  effectText: 'When summoned, gains ATK equal to the original ATK of its 3 tributes.
+    When this card KOs a monster by battle: You can remove all Energy from this card;
+    recover 500 HP for each Energy removed, up to its current maximum HP.'
   monsterAttribute: 0
   monsterRank: 3
   monsterType: 1

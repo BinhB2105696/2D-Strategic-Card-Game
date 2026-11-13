@@ -528,7 +528,7 @@ public sealed partial class DeckBuilderAppController : MonoBehaviour
         if (detailCard == null || editingDeck == null) return;
         if (detailFromCatalog)
         {
-            if (!LocalDeckStore.CanAdd(editingDeck, detailCard.CardId, out string reason))
+            if (!LocalDeckStore.CanAdd(editingDeck, detailCard.CardId, out string reason, detailCard.MaxCopiesPerDeck))
             { SetMessage(reason); return; }
             editingDeck.cardIds.Add(detailCard.CardId);
         }
@@ -590,7 +590,7 @@ public sealed partial class DeckBuilderAppController : MonoBehaviour
     {
         if (profile.decks.Count >= LocalDeckStore.MaximumSavedDecks)
         {
-            SetMessage("Maximum 3 saved decks. Select one to edit.");
+            SetMessage("Maximum " + LocalDeckStore.MaximumSavedDecks + " saved decks. Select one to edit.");
             return;
         }
         if (!LocalDeckStore.Validate(editingDeck, byId,
@@ -668,7 +668,7 @@ public sealed partial class DeckBuilderAppController : MonoBehaviour
         }
         if (inCatalog && copies > 0)
         {
-            Label(wrapper, "Count", copies + "/3", 27, Gold,
+            Label(wrapper, "Count", copies + "/" + card.MaxCopiesPerDeck, 27, Gold,
                 88, 173, 60, 35);
         }
     }

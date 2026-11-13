@@ -40,6 +40,7 @@ public sealed class CardInstance
         0,
         Definition.BaseDefense + defenseAdjustment);
     public int AllocatedEnergy { get; private set; }
+    public int AttackPriority => CardExpansion.PassiveAmount(this, EffectOperationType.AttackPriority);
 
     public CardZone Zone { get; private set; }
     public BattlePosition BattlePosition { get; private set; }

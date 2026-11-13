@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16dd375991f5bc849a6fa38eb27a9288, type: 3}
+  m_Name: Veil_Strategist
+  m_EditorClassIdentifier: 
+  cardId: veil_strategist
+  cardName: Veil Strategist
+  category: 0
+  artwork: {fileID: 0}
+  effectText: 'When this card is summoned: You can add 1 Normal Trap from your Graveyard
+    to your hand. That card must be Set normally and cannot be activated during the
+    turn it is Set.'
+  copyLimitOverride: 0
+  monsterAttribute: 5
+  monsterRank: 1
+  monsterType: 2
+  baseHealth: 1600
+  baseAttack: 700
+  baseDefense: 450
+  attackEnergyRequirement: 2
+  spellType: 0
+  trapType: 0
+  effects:
+  - effectId: veil_strategist.recover
+    effectKind: 0
+    trigger: 1
+    allowedPhases: 4
+    allowedTurn: 0
+    activationWindow: 0
+    activationSource: 0
+    conditions: []
+    costs: []
+    targets:
+    - component: {fileID: 11400000, guid: 856179c1dd85697429ef483260756f43, type: 2}
+      amount: 1
+    resolution:
+    - component: {fileID: 11400000, guid: 489091783b2d5a44a916a45065c231e3, type: 2}
+      amount: 1
+    continuousModifiers: []
+    maxUses: 0
+    countBy: 0
+    reset: 0

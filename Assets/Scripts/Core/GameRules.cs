@@ -99,7 +99,10 @@ public static class GameRules
         ActionResult result = ApplyValidatedAction(state, action);
         if (!result.Succeeded) return result;
         List<GameEvent> events = new List<GameEvent>(result.Events);
+        state.RefreshMonsterAuras(events);
         ResolveKnockouts(state, events);
+        state.RefreshMonsterAuras(events);
+        state.CleanRetaliationMarks();
         return ActionResult.Success(events);
     }
 
@@ -364,16 +367,17 @@ public static class GameRules
         state.SetCurrentPhase(nextPhase);
         events.Add(
             GameEvent.PhaseChanged(state.CurrentPlayerIndex, nextPhase));
+        if (nextPhase == TurnPhase.End)
+            ResolveEndPhaseEffects(state, events);
         return ActionResult.Success(events);
     }
 
     private static ActionResult EndTurn(GameState state)
     {
         int completedTurn = state.TurnNumber;
-        int endingPlayerIndex = state.CurrentPlayerIndex;
         List<GameEvent> events = new List<GameEvent>();
-        ResolveFieldMaintenance(state, endingPlayerIndex, events);
         state.ExpireTemporaryModifiers(completedTurn, events);
+        state.CleanRetaliationMarks(completedTurn);
         ResolveKnockouts(state, events);
         if (state.IsFinished) return ActionResult.Success(events);
         state.StartNextTurn();
@@ -402,6 +406,7 @@ public static class GameRules
 
         state.SetCurrentPhase(TurnPhase.End);
         events.Add(GameEvent.PhaseChanged(playerIndex, TurnPhase.End));
+        ResolveEndPhaseEffects(state, events);
         return ActionResult.Success(events);
     }
 
@@ -648,6 +653,10 @@ public static class GameRules
         CardInstance attacker =
             attackerOwner.MonsterZones[attackerZoneIndex];
 
+        if (attacker.WasSummonedThisTurn &&
+            CardExpansion.PassiveAmount(attacker, EffectOperationType.CannotAttackOnSummonTurn) > 0)
+            return "This Monster cannot attack during the turn it was summoned.";
+
         if (attacker.BattlePosition != BattlePosition.Attack)
         {
             return "Only a Monster in Attack Position can attack.";
@@ -673,9 +682,13 @@ public static class GameRules
                 : string.Empty;
         }
 
-        return defenderOwner.FindMonsterZoneIndex(action.TargetInstanceId) >= 0
-            ? string.Empty
-            : "The attack target is not an opponent field Monster.";
+        int targetZone = defenderOwner.FindMonsterZoneIndex(action.TargetInstanceId);
+        if (targetZone < 0) return "The attack target is not an opponent field Monster.";
+        int priority = 0;
+        foreach (CardInstance monster in defenderOwner.MonsterZones)
+            if (monster != null) priority = System.Math.Max(priority, monster.AttackPriority);
+        return defenderOwner.MonsterZones[targetZone].AttackPriority == priority
+            ? string.Empty : "An opposing Monster with higher attack priority must be targeted first.";
     }
 
     private static string ValidateSetTrap(GameState state, GameAction action)
@@ -1095,6 +1108,8 @@ public static class GameRules
                 defenderOwner.PlayerIndex,
                 attacker.CurrentAttack));
             AddMatchEndIfNeeded(state, events);
+            if (!state.IsFinished)
+                ResolveTriggeredEffects(state, attacker, EffectTriggerType.AfterBattle, events);
             return;
         }
 
@@ -1104,19 +1119,49 @@ public static class GameRules
             return;
         CardInstance defender =
             defenderOwner.MonsterZones[defenderZoneIndex];
+        state.RefreshMonsterAuras(events);
+        int effectiveDefense = System.Math.Max(0, defender.CurrentDefense -
+            CardExpansion.PassiveAmount(attacker, EffectOperationType.PierceDefense));
         int damage = defender.BattlePosition == BattlePosition.Defense
             ? System.Math.Max(
                 0,
-                attacker.CurrentAttack - defender.CurrentDefense)
+                attacker.CurrentAttack - effectiveDefense)
             : attacker.CurrentAttack;
-
+        damage -= state.ConsumeRetaliationReduction(attacker.InstanceId, defender.InstanceId, damage);
+        EffectOperationDefinition reflect = defender.BattlePosition == BattlePosition.Defense
+            ? CardExpansion.Passive(defender, EffectOperationType.ReflectBattleDamage) : null;
+        int healthBefore = defender.CurrentHealth;
         defender.ReceiveDamage(damage);
+        int actualDamage = healthBefore - defender.CurrentHealth;
         events.Add(GameEvent.MonsterDamaged(
             defenderOwner.PlayerIndex,
             defender.InstanceId,
-            damage));
+            actualDamage));
+
+        if (reflect != null && actualDamage > 0)
+        {
+            int attackerBefore = attacker.CurrentHealth;
+            attacker.ReceiveDamage(System.Math.Min(actualDamage, reflect.Amount));
+            events.Add(GameEvent.MonsterHealthModified(attacker.OwnerPlayerIndex, attacker.InstanceId,
+                attacker.CurrentHealth - attackerBefore, state.CurrentPhase));
+            events.Add(GameEvent.EffectResolved(defender.OwnerPlayerIndex, defender.InstanceId, state.CurrentPhase));
+        }
+        EffectOperationDefinition lifesteal = CardExpansion.Passive(attacker, EffectOperationType.Lifesteal);
+        if (lifesteal != null && actualDamage > 0)
+        {
+            int recovered = attacker.RestoreHealth(System.Math.Min(lifesteal.SecondaryAmount,
+                actualDamage * lifesteal.Amount / 100));
+            if (recovered > 0) events.Add(GameEvent.MonsterHealthModified(attacker.OwnerPlayerIndex,
+                attacker.InstanceId, recovered, state.CurrentPhase));
+        }
+        int mark = CardExpansion.PassiveAmount(attacker, EffectOperationType.RetaliationMark);
+        if (mark > 0 && actualDamage > 0 && !defender.IsDestroyed)
+            state.AddRetaliationMark(attacker, defender, mark);
 
         ResolveKnockouts(state, events, defender.InstanceId, attacker);
+        state.RefreshMonsterAuras(events);
+        if (!state.IsFinished && attacker.Zone == CardZone.MonsterZone && !attacker.IsDestroyed)
+            ResolveTriggeredEffects(state, attacker, EffectTriggerType.AfterBattle, events);
     }
 
     private static void ResolveChain(
@@ -1156,6 +1201,7 @@ public static class GameRules
                 source,
                 link,
                 events);
+            state.RefreshMonsterAuras(events);
             ResolveKnockouts(state, events);
             if (state.IsFinished) return;
         }
@@ -1283,7 +1329,7 @@ public static class GameRules
         SendSpellTrapToGraveyard(state, source, events);
     }
 
-    private static void SendSpellTrapToGraveyard(
+    internal static void SendSpellTrapToGraveyard(
         GameState state,
         CardInstance card,
         List<GameEvent> events)
@@ -1360,6 +1406,17 @@ public static class GameRules
             ApplyModifierSet(state, field, monster, effect, events);
     }
 
+    private static void ResolveEndPhaseEffects(GameState state, List<GameEvent> events)
+    {
+        PlayerState owner = state.Players[state.CurrentPlayerIndex];
+        foreach (CardInstance monster in owner.MonsterZones)
+        {
+            ResolveTriggeredEffects(state, monster, EffectTriggerType.EndPhase, events);
+            if (state.IsFinished) return;
+        }
+        ResolveFieldMaintenance(state, owner.PlayerIndex, events);
+    }
+
     private static void ResolveFieldMaintenance(
         GameState state,
         int playerIndex,
@@ -1374,14 +1431,17 @@ public static class GameRules
         for (int index = 0; index < field.Definition.Effects.Count; index++)
         {
             EffectDefinition candidate = field.Definition.Effects[index];
-            if (candidate.Trigger == EffectTriggerType.EndPhase)
+            if (candidate.Trigger == EffectTriggerType.EndPhase && candidate.Operations.Count == 0)
             {
                 maintenance = candidate;
                 break;
             }
         }
         if (maintenance == null)
+        {
+            ResolveTriggeredEffects(state, field, EffectTriggerType.EndPhase, events);
             return;
+        }
 
         EffectContext context = new EffectContext(
             state,
@@ -1390,12 +1450,10 @@ public static class GameRules
         DefinitionEffectCost cost = new DefinitionEffectCost(maintenance);
         if (cost.CanPay(context, out _))
         {
-            int before = player.AvailableEnergy;
-            cost.Pay(context, events);
-            events.Add(GameEvent.FieldMaintenancePaid(
-                playerIndex,
-                field.InstanceId,
-                before - player.AvailableEnergy));
+            state.OpenTriggeredEffect(new PendingTriggeredEffect(playerIndex,
+                field.InstanceId, maintenance, new[] { field.InstanceId }));
+            events.Add(GameEvent.TriggeredEffectOffered(playerIndex, field.InstanceId,
+                state.CurrentPhase));
             return;
         }
 
@@ -1469,9 +1527,28 @@ public static class GameRules
         {
             return "This selection does not belong to the pending effect.";
         }
-        return pending.ContainsCandidate(action.TargetInstanceId)
-            ? string.Empty
-            : "The selected card is not eligible for this effect.";
+        if (!pending.ContainsCandidate(action.TargetInstanceId))
+            return "The selected card is not eligible for this effect.";
+        CardInstance source = state.FindCard(pending.SourceInstanceId);
+        if (source == null || !state.CanUseEffect(pending.Effect, pending.PlayerIndex, source))
+            return "This effect is no longer available.";
+        EffectContext context = new EffectContext(state, pending.PlayerIndex, source.InstanceId,
+            pending.Effect.TargetCount > 0 ? new[] { action.TargetInstanceId } : null);
+        if (!new DefinitionEffectCondition(pending.Effect).IsMet(context, out string reason)) return reason;
+        if (!new DefinitionEffectCost(pending.Effect).CanPay(context, out reason)) return reason;
+        if (pending.Effect.TargetCount > 0 &&
+            !new EffectDefinitionTargetRule(pending.Effect).AreTargetsValid(context, out reason)) return reason;
+        if (ContainsOperation(pending.Effect, EffectOperationType.RestoreHealthPerRemovedAllocatedEnergy) &&
+            (source.Zone != CardZone.MonsterZone || source.IsDestroyed || source.AllocatedEnergy == 0 ||
+             source.CurrentHealth >= source.MaximumHealth))
+            return "There is no useful recovery available.";
+        if (ContainsOperation(pending.Effect, EffectOperationType.SwitchToDefenseAfterBattle) &&
+            (source.Zone != CardZone.MonsterZone || source.IsDestroyed || source.AllocatedEnergy == 0 ||
+             source.BattlePosition != BattlePosition.Attack))
+            return "This Monster can no longer switch to Defense using its Energy.";
+        if (IsFieldMaintenance(source, pending.Effect) && source.Zone != CardZone.FieldZone)
+            return "This Field Spell is no longer active.";
+        return string.Empty;
     }
 
     private static string ValidateTriggeredEffectDecline(
@@ -1495,6 +1572,10 @@ public static class GameRules
         PlayerState player = state.Players[pending.PlayerIndex];
         CardInstance source = state.FindCard(pending.SourceInstanceId);
         List<GameEvent> events = new List<GameEvent>();
+        EffectContext context = new EffectContext(state, player.PlayerIndex, pending.SourceInstanceId,
+            pending.Effect.TargetCount > 0 ? new[] { action.TargetInstanceId } : null);
+        int energyBefore = player.AvailableEnergy;
+        new DefinitionEffectCost(pending.Effect).Pay(context, events);
 
         if (ContainsOperation(
                 pending.Effect,
@@ -1528,6 +1609,11 @@ public static class GameRules
                     state.CurrentPhase));
             }
         }
+        else if (IsFieldMaintenance(source, pending.Effect))
+            events.Add(GameEvent.FieldMaintenancePaid(player.PlayerIndex,
+                source.InstanceId, energyBefore - player.AvailableEnergy));
+        else
+            new DefinitionCardEffect(pending.Effect).Resolve(context, events);
 
         if (source != null)
             state.RecordEffectUse(pending.Effect, player.PlayerIndex, source);
@@ -1536,6 +1622,7 @@ public static class GameRules
             pending.SourceInstanceId,
             state.CurrentPhase));
         state.CloseTriggeredEffect();
+        ResolveKnockouts(state, events);
         return ActionResult.Success(events);
     }
 
@@ -1543,6 +1630,8 @@ public static class GameRules
         GameState state,
         GameAction action)
     {
+        PendingTriggeredEffect pending = state.PendingTriggeredEffect;
+        CardInstance source = state.FindCard(pending.SourceInstanceId);
         List<GameEvent> events = new List<GameEvent>
         {
             GameEvent.TriggeredEffectDeclined(
@@ -1550,8 +1639,18 @@ public static class GameRules
                 action.SourceInstanceId,
                 state.CurrentPhase)
         };
+        if (IsFieldMaintenance(source, pending.Effect) && source.Zone == CardZone.FieldZone)
+            SendSpellTrapToGraveyard(state, source, events);
         state.CloseTriggeredEffect();
+        ResolveKnockouts(state, events);
         return ActionResult.Success(events);
+    }
+
+    private static bool IsFieldMaintenance(CardInstance source, EffectDefinition effect)
+    {
+        return source != null && source.Definition.Category == CardCategory.Spell &&
+            source.Definition.SpellType == SpellType.Field && effect.Trigger == EffectTriggerType.EndPhase &&
+            effect.Operations.Count == 0;
     }
 
     private static void ResolveTriggeredEffects(
@@ -1573,11 +1672,40 @@ public static class GameRules
                 continue;
             }
 
+            EffectContext context = new EffectContext(state, source.OwnerPlayerIndex,
+                source.InstanceId, triggerValue: triggerValue);
+            if (!new DefinitionEffectCondition(effect).IsMet(context, out _) ||
+                !new DefinitionEffectCost(effect).CanPay(context, out _)) continue;
+            if (trigger == EffectTriggerType.OnBattleDestroyedMonster &&
+                ContainsOperation(effect, EffectOperationType.RestoreHealthPerRemovedAllocatedEnergy))
+            {
+                if (source.Zone == CardZone.MonsterZone && !source.IsDestroyed &&
+                    source.AllocatedEnergy > 0 && source.CurrentHealth < source.MaximumHealth)
+                {
+                    state.OpenTriggeredEffect(new PendingTriggeredEffect(source.OwnerPlayerIndex,
+                        source.InstanceId, effect, new[] { source.InstanceId }));
+                    events.Add(GameEvent.TriggeredEffectOffered(source.OwnerPlayerIndex,
+                        source.InstanceId, state.CurrentPhase));
+                }
+                continue;
+            }
+            if (trigger == EffectTriggerType.AfterBattle &&
+                ContainsOperation(effect, EffectOperationType.SwitchToDefenseAfterBattle))
+            {
+                if (source.Zone == CardZone.MonsterZone && !source.IsDestroyed &&
+                    source.AllocatedEnergy > 0 && source.BattlePosition == BattlePosition.Attack)
+                {
+                    state.OpenTriggeredEffect(new PendingTriggeredEffect(source.OwnerPlayerIndex,
+                        source.InstanceId, effect, new[] { source.InstanceId }));
+                    events.Add(GameEvent.TriggeredEffectOffered(source.OwnerPlayerIndex, source.InstanceId, state.CurrentPhase));
+                }
+                continue;
+            }
             List<long> candidates = BuildTriggeredEffectCandidates(
                 state,
                 source,
                 effect);
-            bool isOptionalSelection = ContainsOperation(
+            bool isOptionalSelection = effect.TargetCount > 0 || ContainsOperation(
                     effect,
                     EffectOperationType.SearchBasicMonsterFromDeck) ||
                 ContainsOperation(
@@ -1585,7 +1713,7 @@ public static class GameRules
                     EffectOperationType.RecoverBasicMonsterFromGraveyard);
             if (isOptionalSelection)
             {
-                if (candidates.Count == 0 || state.HasPendingTriggeredEffect)
+                if (candidates.Count == 0)
                     continue;
                 state.OpenTriggeredEffect(new PendingTriggeredEffect(
                     source.OwnerPlayerIndex,
@@ -1599,17 +1727,16 @@ public static class GameRules
                 continue;
             }
 
-            EffectContext context = new EffectContext(
-                state,
-                source.OwnerPlayerIndex,
-                source.InstanceId,
-                triggerValue: triggerValue);
+            new DefinitionEffectCost(effect).Pay(context, events);
             new DefinitionCardEffect(effect).Resolve(context, events);
             state.RecordEffectUse(
                 effect,
                 source.OwnerPlayerIndex,
                 source);
             RefreshEquipModifiersForEffectContext(state, context, events);
+            if (trigger == EffectTriggerType.EndPhase)
+                events.Add(GameEvent.EffectResolved(source.OwnerPlayerIndex,
+                    source.InstanceId, state.CurrentPhase));
         }
     }
 
@@ -1618,6 +1745,13 @@ public static class GameRules
         CardInstance source,
         EffectDefinition effect)
     {
+        if (effect.TargetCount > 0)
+        {
+            var targets = CardExpansion.Targets(effect, new EffectContext(state, source.OwnerPlayerIndex, source.InstanceId));
+            var ids = new List<long>();
+            foreach (CardInstance target in targets) ids.Add(target.InstanceId);
+            return ids;
+        }
         List<long> candidates = new List<long>();
         HashSet<string> includedCardIds = new HashSet<string>();
         PlayerState owner = state.Players[source.OwnerPlayerIndex];

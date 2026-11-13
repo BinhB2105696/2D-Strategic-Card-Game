@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16dd375991f5bc849a6fa38eb27a9288, type: 3}
+  m_Name: Scar_Duelist
+  m_EditorClassIdentifier: 
+  cardId: scar_duelist
+  cardName: Scar Duelist
+  category: 0
+  artwork: {fileID: 0}
+  effectText: After this card inflicts battle damage to a monster's HP, mark that
+    monster until the end of your opponent's next turn. Reduce the next battle damage
+    that marked monster would inflict to this card by 300. The mark is removed after
+    reducing damage or if either monster leaves the field.
+  copyLimitOverride: 0
+  monsterAttribute: 0
+  monsterRank: 1
+  monsterType: 1
+  baseHealth: 1600
+  baseAttack: 1000
+  baseDefense: 250
+  attackEnergyRequirement: 2
+  spellType: 0
+  trapType: 0
+  effects:
+  - effectId: scar_duelist.mark
+    effectKind: 1
+    trigger: 8
+    allowedPhases: 31
+    allowedTurn: 2
+    activationWindow: 0
+    activationSource: 0
+    conditions: []
+    costs: []
+    targets: []
+    resolution:
+    - component: {fileID: 11400000, guid: c9e9ca180d4c49a499afae561103845d, type: 2}
+      amount: 300
+    continuousModifiers: []
+    maxUses: 0
+    countBy: 0
+    reset: 0

@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16dd375991f5bc849a6fa38eb27a9288, type: 3}
+  m_Name: Elite_Summons
+  m_EditorClassIdentifier: 
+  cardId: elite_summons
+  cardName: Elite Summons
+  category: 1
+  artwork: {fileID: 0}
+  effectText: Pay 1 Energy; add 1 Advanced, Supreme, or Ultimate Monster from your
+    Deck to your hand, reveal it, then shuffle your Deck. If your LP were at least
+    1500 lower than your opponent's at the start of this Main Phase, pay no Energy
+    instead.
+  copyLimitOverride: 0
+  monsterAttribute: 5
+  monsterRank: 0
+  monsterType: 2
+  baseHealth: 0
+  baseAttack: 0
+  baseDefense: 0
+  attackEnergyRequirement: 0
+  spellType: 0
+  trapType: 0
+  effects:
+  - effectId: elite_summons
+    effectKind: 0
+    trigger: 0
+    allowedPhases: 4
+    allowedTurn: 0
+    activationWindow: 0
+    activationSource: 0
+    conditions: []
+    costs:
+    - component: {fileID: 11400000, guid: cc4659b4da36ba7429367e9fa2ea8c4f, type: 2}
+      amount: 1
+    targets:
+    - component: {fileID: 11400000, guid: 1b5de1d2434e78c4995ad2bab3a4ba49, type: 2}
+      amount: 1
+    resolution:
+    - component: {fileID: 11400000, guid: e14d7bc6acdf4444399b999b9b77a6ef, type: 2}
+      amount: 1
+    continuousModifiers: []
+    maxUses: 0
+    countBy: 0
+    reset: 0

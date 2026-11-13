@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16dd375991f5bc849a6fa38eb27a9288, type: 3}
+  m_Name: Siegebreaker
+  m_EditorClassIdentifier: 
+  cardId: siegebreaker
+  cardName: Siegebreaker
+  category: 0
+  artwork: {fileID: 0}
+  effectText: When this card battles a Defense Position monster, calculate damage
+    as if that monster had 300 less DEF, to a minimum of 0. No excess damage is dealt
+    to its controller.
+  copyLimitOverride: 0
+  monsterAttribute: 4
+  monsterRank: 1
+  monsterType: 4
+  baseHealth: 1700
+  baseAttack: 1050
+  baseDefense: 250
+  attackEnergyRequirement: 2
+  spellType: 0
+  trapType: 0
+  effects:
+  - effectId: siegebreaker.breach
+    effectKind: 1
+    trigger: 8
+    allowedPhases: 31
+    allowedTurn: 2
+    activationWindow: 0
+    activationSource: 0
+    conditions: []
+    costs: []
+    targets: []
+    resolution:
+    - component: {fileID: 11400000, guid: 5de3e226f1e10c14ea9c3294c618d70f, type: 2}
+      amount: 300
+    continuousModifiers: []
+    maxUses: 0
+    countBy: 0
+    reset: 0

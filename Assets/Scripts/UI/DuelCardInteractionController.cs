@@ -474,12 +474,50 @@ public sealed class DuelCardInteractionController : MonoBehaviour
         GameAction decline = FindAction(
             legalActions,
             GameActionType.DeclineTriggeredEffect);
-        if (choices.Count == 0 || decline == null)
+        if (decline == null)
             return;
 
         selectedCard = state.FindCard(pending.SourceInstanceId);
         ClearDetailRuntime();
         detailPanel.SetActive(true);
+        bool fieldUpkeep = selectedCard != null && selectedCard.Definition.Category == CardCategory.Spell &&
+            selectedCard.Definition.SpellType == SpellType.Field && pending.Effect.Trigger == EffectTriggerType.EndPhase;
+        int recoveryPerEnergy = 0;
+        bool ambushChoice = false;
+        foreach (EffectOperationDefinition operation in pending.Effect.Operations)
+        {
+            if (operation.Type == EffectOperationType.RestoreHealthPerRemovedAllocatedEnergy)
+                recoveryPerEnergy = operation.Amount;
+            if (operation.Type == EffectOperationType.SwitchToDefenseAfterBattle) ambushChoice = true;
+        }
+        if (fieldUpkeep || recoveryPerEnergy > 0 || ambushChoice || choices.Count == 0)
+        {
+            string name = selectedCard != null ? selectedCard.Definition.CardName : "this card";
+            if (fieldUpkeep)
+            {
+                int cost = 0;
+                foreach (EffectCostDefinition item in pending.Effect.Costs) cost += item.Amount;
+                detailText.text = name + "\nPay " + cost + " Energy to keep this Field Spell, or send it to the Graveyard.";
+            }
+            else if (ambushChoice && selectedCard != null)
+                detailText.text = name + "\nRemove all " + selectedCard.AllocatedEnergy +
+                    " allocated Energy to change to Defense Position, or keep attacking position.";
+            else if (selectedCard != null && recoveryPerEnergy > 0)
+            {
+                int recovered = Mathf.Min(selectedCard.MaximumHealth - selectedCard.CurrentHealth,
+                    selectedCard.AllocatedEnergy * recoveryPerEnergy);
+                detailText.text = name + "\nRemove all " + selectedCard.AllocatedEnergy +
+                    " allocated Energy to recover " + recovered + " HP, or keep the Energy.";
+            }
+            else detailText.text = name + "\nThis effect is no longer available.";
+            if (choices.Count > 0)
+                AddPanelButton(detailButtonArea, detailButtons, fieldUpkeep ? "PAY" : ambushChoice ? "DEFENSE" : "RECOVER",
+                    () => Submit(choices[0]));
+            AddPanelButton(detailButtonArea, detailButtons, fieldUpkeep ? "DISCARD FIELD" : "SKIP",
+                () => Submit(decline));
+            LayoutPanelButtons(detailButtons);
+            return;
+        }
         detailText.text = "Activate the effect of \"" +
             (selectedCard != null
                 ? selectedCard.Definition.CardName
@@ -782,8 +820,11 @@ public sealed class DuelCardInteractionController : MonoBehaviour
 
         targetIds.Sort(CompareTargetScreenOrder);
 
+        bool listTargets = targetIds.Exists(id => state.FindCard(id)?.Zone != CardZone.MonsterZone);
+        if (listTargets) CreateTriggeredCandidateScroller(actions);
         for (int index = 0; index < targetIds.Count; index++)
         {
+            if (listTargets) break;
             CardInstance target = state.FindCard(targetIds[index]);
             if (target == null)
                 continue;

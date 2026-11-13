@@ -26,6 +26,7 @@ public sealed class LocalPlayerProfile
     public int losses;
     public List<LocalMatchSummary> recentMatches = new List<LocalMatchSummary>();
     public int selectedDeck;
+    public int presetDeckVersion;
     public List<SavedDeck> decks = new List<SavedDeck>();
     public List<string> favoriteCardIds = new List<string>();
 }
@@ -34,36 +35,47 @@ public sealed class LocalPlayerProfile
 public static class LocalDeckStore
 {
     private const int SchemaVersion = 2;
-    private const int MaxSavedDecks = 3;
+    private const int MaxSavedDecks = 6;
+    private const int PresetDeckVersion = 4;
     private const int MaxCopies = 3;
     private const string FileName = "local_decks_v1.json";
 
     private static readonly string[] StarterIds =
     {
-        "sample_stone_guardian", "sample_stone_guardian", "sample_stone_guardian",
-        "sample_tide_sprite", "sample_tide_sprite", "sample_tide_sprite",
-        "dawnwing_fairy", "dawnwing_fairy", "dawnwing_fairy",
-        "gravebound_imp", "gravebound_imp", "gravebound_imp",
-        "fire_dragon", "fire_dragon", "sample_sky_sage", "legendary_fighter",
+        "dawnwing_fairy", "dawnwing_fairy", "bloodfang_raider", "bloodfang_raider",
+        "battle_herald", "logistics_squire", "siegebreaker", "fire_dragon",
+        "arcane_archivist", "sample_sky_sage", "sample_stone_guardian", "sample_stone_guardian",
+        "bastion_keeper", "energy_wisp", "sample_tide_sprite", "thorn_bastion", "aegis_sentinel",
         "sample_arcane_insight", "sample_arcane_insight",
-        "sample_quick_strike", "sample_quick_strike", "sample_iron_blade",
-        "test_field_spell", "energy_venom", "power_transfer", "power_transfer",
-        "temporal_lock", "sample_ambush", "sample_ambush",
+        "sample_quick_strike", "stop_defense", "energy_reserve", "dispel_magic",
+        "elite_summons", "battlefield_medicine", "test_field_spell",
+        "sample_ambush", "sample_ambush",
         "sample_divine_reversal", "guardian_shift"
+    };
+
+    private static readonly string[] AssaultIds =
+    {
+        "dawnwing_fairy", "dawnwing_fairy", "dawnwing_fairy",
+        "bloodfang_raider", "bloodfang_raider", "bloodfang_raider",
+        "battle_herald", "battle_herald", "logistics_squire", "logistics_squire",
+        "siegebreaker", "siegebreaker", "scar_duelist", "fire_dragon",
+        "arcane_archivist", "sample_sky_sage",
+        "sample_quick_strike", "sample_quick_strike", "stop_defense", "stop_defense",
+        "energy_reserve", "energy_reserve", "sample_arcane_insight", "sample_arcane_insight",
+        "sample_iron_blade", "dispel_magic", "power_transfer", "elite_summons",
+        "sample_ambush", "sample_divine_reversal"
     };
 
     private static readonly string[] GuardIds =
     {
-        "sample_stone_guardian", "sample_stone_guardian", "sample_stone_guardian",
-        "sample_tide_sprite", "sample_tide_sprite", "sample_tide_sprite",
-        "dawnwing_fairy", "dawnwing_fairy", "dawnwing_fairy",
-        "gravebound_imp", "gravebound_imp", "gravebound_imp",
-        "fire_dragon", "fire_dragon", "sample_sky_sage", "legendary_fighter",
-        "sample_arcane_insight", "sample_arcane_insight", "sample_arcane_insight",
-        "sample_iron_blade", "sample_iron_blade", "test_field_spell",
-        "test_field_spell", "energy_venom", "energy_venom",
-        "guardian_shift", "guardian_shift", "sample_ambush", "sample_ambush",
-        "sample_divine_reversal", "temporal_lock"
+        "dawnwing_fairy", "dawnwing_fairy", "arcane_archivist", "sample_sky_sage",
+        "sample_stone_guardian", "sample_stone_guardian", "bastion_keeper", "bastion_keeper",
+        "energy_wisp", "energy_wisp", "field_medic", "sample_tide_sprite",
+        "ambush_lancer", "thorn_bastion", "aegis_sentinel", "aegis_sentinel",
+        "stop_defense", "energy_reserve", "sample_arcane_insight", "sample_arcane_insight",
+        "dispel_magic", "elite_summons", "emergency_reinforcements", "defensive_outpost",
+        "recover_the_fallen", "sample_ambush", "sample_ambush", "sample_divine_reversal",
+        "guardian_shift", "guardian_shift"
     };
 
     public static int MaximumSavedDecks => MaxSavedDecks;
@@ -98,6 +110,7 @@ public static class LocalDeckStore
             if (profile.favoriteCardIds == null)
                 profile.favoriteCardIds = new List<string>();
             Normalize(profile);
+            AddStrategicPresets(profile, catalog);
             return profile;
         }
         catch (Exception exception)
@@ -117,7 +130,7 @@ public static class LocalDeckStore
         if (profile == null || profile.decks == null || profile.decks.Count == 0 ||
             profile.decks.Count > MaxSavedDecks)
         {
-            error = "Choose one to three decks to save.";
+            error = "Choose one to " + MaxSavedDecks + " decks to save.";
             return false;
         }
 
@@ -179,9 +192,9 @@ public static class LocalDeckStore
                 return false;
             }
             copies.TryGetValue(id, out int count);
-            if (++count > MaxCopies)
+            if (++count > catalog[id].MaxCopiesPerDeck)
             {
-                reason = "More than three copies of " + catalog[id].CardName + ".";
+                reason = "Maximum " + catalog[id].MaxCopiesPerDeck + " copies of " + catalog[id].CardName + ".";
                 return false;
             }
             copies[id] = count;
@@ -189,13 +202,13 @@ public static class LocalDeckStore
         return true;
     }
 
-    public static bool CanAdd(SavedDeck deck, string cardId, out string reason)
+    public static bool CanAdd(SavedDeck deck, string cardId, out string reason, int maxCopies = MaxCopies)
     {
         reason = null;
         if (deck.cardIds.Count >= GameConfig.CreateDefault().MaximumDeckSize)
             reason = "Deck is full (40 cards).";
-        else if (deck.cardIds.FindAll(id => id == cardId).Count >= MaxCopies)
-            reason = "Maximum three copies per card.";
+        else if (deck.cardIds.FindAll(id => id == cardId).Count >= maxCopies)
+            reason = "Maximum " + maxCopies + " copies per card.";
         return reason == null;
     }
 
@@ -205,8 +218,7 @@ public static class LocalDeckStore
         warning = null;
         LocalPlayerProfile profile = new LocalPlayerProfile();
         Normalize(profile);
-        AddPreset(profile, "Starter Balance", StarterIds, catalog);
-        AddPreset(profile, "Guardian Control", GuardIds, catalog);
+        AddStrategicPresets(profile, catalog);
         if (profile.decks.Count == 0)
             warning = "Card catalog is incomplete; prepare sample cards in Edit Mode.";
         return profile;
@@ -233,12 +245,27 @@ public static class LocalDeckStore
             if (string.IsNullOrEmpty(deck.deckId)) deck.deckId = Guid.NewGuid().ToString("N");
     }
 
-    private static void AddPreset(LocalPlayerProfile profile, string name,
-        string[] ids, IReadOnlyDictionary<string, CardData> catalog)
+    private static void AddStrategicPresets(LocalPlayerProfile profile,
+        IReadOnlyDictionary<string, CardData> catalog)
     {
-        SavedDeck deck = new SavedDeck { deckId = Guid.NewGuid().ToString("N"), name = name,
-            cardIds = new List<string>(ids) };
-        if (Validate(deck, catalog, GameConfig.CreateDefault(), out _))
+        if (profile.presetDeckVersion >= PresetDeckVersion ||
+            profile.decks.Count + 3 > MaxSavedDecks) return;
+
+        SavedDeck[] presets =
+        {
+            new SavedDeck { name = "Starter Balance v4", cardIds = new List<string>(StarterIds) },
+            new SavedDeck { name = "Crimson Assault", cardIds = new List<string>(AssaultIds) },
+            new SavedDeck { name = "Aegis Bastion", cardIds = new List<string>(GuardIds) }
+        };
+        foreach (SavedDeck deck in presets)
+            if (!Validate(deck, catalog, GameConfig.CreateDefault(), out _)) return;
+
+        // Append once; preserve the player's existing decks, selection and profile data.
+        foreach (SavedDeck deck in presets)
+        {
+            deck.deckId = Guid.NewGuid().ToString("N");
             profile.decks.Add(deck);
+        }
+        profile.presetDeckVersion = PresetDeckVersion;
     }
 }

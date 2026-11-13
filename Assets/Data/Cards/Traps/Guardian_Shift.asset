@@ -17,8 +17,9 @@ MonoBehaviour:
   category: 2
   artwork: {fileID: 0}
   effectText: 'When an opponent''s monster attacks a monster you control: That monster
-    gains 500 DEF. If it is in Attack Position, change it to Defense Position, then
-    remove all its Energy.'
+    gains 500 DEF until the end of this turn. If it is in Attack Position, change
+    it to Defense Position, then remove all its Energy. You can only use this effect
+    of Guardian Shift once per turn.'
   monsterAttribute: 0
   monsterRank: 0
   monsterType: 0
@@ -45,6 +46,6 @@ MonoBehaviour:
     - component: {fileID: 11400000, guid: a6385fe8ffdf55040bb93de88d8d2b8a, type: 2}
       amount: 500
     continuousModifiers: []
-    maxUses: 0
-    countBy: 0
+    maxUses: 1
+    countBy: 1
     reset: 0

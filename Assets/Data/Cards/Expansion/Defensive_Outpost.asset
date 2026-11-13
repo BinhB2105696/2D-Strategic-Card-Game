@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16dd375991f5bc849a6fa38eb27a9288, type: 3}
+  m_Name: Defensive_Outpost
+  m_EditorClassIdentifier: 
+  cardId: defensive_outpost
+  cardName: Defensive Outpost
+  category: 1
+  artwork: {fileID: 0}
+  effectText: 'During your End Phase, if you control at least 2 Defense Position
+    monsters: Restore 1 available Energy, up to your maximum.'
+  copyLimitOverride: 0
+  monsterAttribute: 5
+  monsterRank: 0
+  monsterType: 2
+  baseHealth: 0
+  baseAttack: 0
+  baseDefense: 0
+  attackEnergyRequirement: 0
+  spellType: 2
+  trapType: 0
+  effects:
+  - effectId: defensive_outpost.field
+    effectKind: 1
+    trigger: 0
+    allowedPhases: 4
+    allowedTurn: 0
+    activationWindow: 0
+    activationSource: 0
+    conditions: []
+    costs: []
+    targets: []
+    resolution: []
+    continuousModifiers: []
+    maxUses: 0
+    countBy: 0
+    reset: 0
+  - effectId: defensive_outpost.energy
+    effectKind: 0
+    trigger: 6
+    allowedPhases: 16
+    allowedTurn: 0
+    activationWindow: 0
+    activationSource: 0
+    conditions:
+    - component: {fileID: 11400000, guid: d3a3076f78f08af45b50c34d2ce842e3, type: 2}
+      amount: 2
+    costs: []
+    targets: []
+    resolution:
+    - component: {fileID: 11400000, guid: bdeab1bd204c408479447a7089388443, type: 2}
+      amount: 1
+    continuousModifiers: []
+    maxUses: 0
+    countBy: 0
+    reset: 0

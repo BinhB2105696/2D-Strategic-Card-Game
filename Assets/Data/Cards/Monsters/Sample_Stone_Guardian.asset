@@ -16,7 +16,8 @@ MonoBehaviour:
   cardName: Stone Guardian
   category: 0
   artwork: {fileID: 21300000, guid: c43c40d144ff83241a904f15470fc904, type: 3}
-  effectText: 'Once per turn: Pay 1 Energy; this card gains 100 DEF.'
+  effectText: 'During your End Phase, if this card is in Defense Position: It gains
+    100 DEF.'
   monsterAttribute: 4
   monsterRank: 0
   monsterType: 9
@@ -29,15 +30,15 @@ MonoBehaviour:
   effects:
   - effectId: effect_stone_guardian_fortify
     effectKind: 0
-    trigger: 0
-    allowedPhases: 4
+    trigger: 6
+    allowedPhases: 16
     allowedTurn: 0
     activationWindow: 0
     activationSource: 0
-    conditions: []
-    costs:
-    - component: {fileID: 11400000, guid: 5d1203d777274285bd8e17473215d35e, type: 2}
-      amount: 1
+    conditions:
+    - component: {fileID: 11400000, guid: f0107f9445df4804c841407e56877200, type: 2}
+      amount: 0
+    costs: []
     targets: []
     resolution:
     - component: {fileID: 11400000, guid: b54f8221503aea54aa9d4a28ff51b597, type: 2}

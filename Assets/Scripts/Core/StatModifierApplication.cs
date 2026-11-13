@@ -10,6 +10,7 @@ public sealed class StatModifierApplication
     public int MaximumHealthAmount { get; }
     public int ExpireAfterTurn { get; }
     public bool IsTemporary => ExpireAfterTurn > 0;
+    public bool IsAura { get; }
 
     public StatModifierApplication(
         long sourceInstanceId,
@@ -17,7 +18,8 @@ public sealed class StatModifierApplication
         int attackAmount,
         int defenseAmount,
         int expireAfterTurn,
-        int maximumHealthAmount = 0)
+        int maximumHealthAmount = 0,
+        bool isAura = false)
     {
         SourceInstanceId = sourceInstanceId;
         Target = target ?? throw new ArgumentNullException(nameof(target));
@@ -25,6 +27,7 @@ public sealed class StatModifierApplication
         DefenseAmount = defenseAmount;
         ExpireAfterTurn = expireAfterTurn;
         MaximumHealthAmount = maximumHealthAmount;
+        IsAura = isAura;
     }
 
     public void Apply()

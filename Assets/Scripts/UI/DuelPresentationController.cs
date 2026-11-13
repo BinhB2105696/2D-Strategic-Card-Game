@@ -552,6 +552,11 @@ public sealed class DuelPresentationController : MonoBehaviour
                 yield return ChangeMonsterHealth(eventData.CardInstanceId,
                     eventData.Amount);
                 break;
+            case GameEventType.CardRevealed:
+                yield return SetFace(eventData.CardInstanceId, false);
+                CardInstance revealed = FindCard(eventData.CardInstanceId);
+                if (revealed != null) yield return ShowBanner("Revealed: " + revealed.Definition.CardName);
+                break;
             case GameEventType.MonsterMaximumHealthModified:
                 visibleMonsterMaximumHealth.TryGetValue(eventData.CardInstanceId, out int maximum);
                 visibleMonsterMaximumHealth[eventData.CardInstanceId] = Mathf.Max(0, maximum + eventData.Amount);
@@ -563,6 +568,9 @@ public sealed class DuelPresentationController : MonoBehaviour
             case GameEventType.EnergySpent:
                 yield return ChangeEnergy(eventData.PlayerIndex,
                     -eventData.Amount);
+                break;
+            case GameEventType.EnergyRestored:
+                yield return ChangeEnergy(eventData.PlayerIndex, eventData.Amount);
                 break;
             case GameEventType.EnergyRefreshed:
                 yield return ChangeEnergy(eventData.PlayerIndex,

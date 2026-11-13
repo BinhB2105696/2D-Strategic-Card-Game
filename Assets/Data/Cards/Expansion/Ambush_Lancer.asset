@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16dd375991f5bc849a6fa38eb27a9288, type: 3}
+  m_Name: Ambush_Lancer
+  m_EditorClassIdentifier: 
+  cardId: ambush_lancer
+  cardName: Ambush Lancer
+  category: 0
+  artwork: {fileID: 0}
+  effectText: 'After this card finishes attacking, if it is still in Attack Position:
+    You can remove all Energy from it to change it to Defense Position. This does
+    not restore its used attacks.'
+  copyLimitOverride: 0
+  monsterAttribute: 5
+  monsterRank: 0
+  monsterType: 1
+  baseHealth: 1000
+  baseAttack: 500
+  baseDefense: 400
+  attackEnergyRequirement: 1
+  spellType: 0
+  trapType: 0
+  effects:
+  - effectId: ambush_lancer.hide
+    effectKind: 0
+    trigger: 9
+    allowedPhases: 8
+    allowedTurn: 0
+    activationWindow: 0
+    activationSource: 0
+    conditions: []
+    costs: []
+    targets: []
+    resolution:
+    - component: {fileID: 11400000, guid: 21291992b48dac24db74f8207c885b71, type: 2}
+      amount: 1
+    continuousModifiers: []
+    maxUses: 0
+    countBy: 0
+    reset: 0

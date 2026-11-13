@@ -47,6 +47,7 @@ public sealed class NormalBot : IBot
                 publicGraveyard[card.InstanceId] = new BotCardView(card);
             }
         }
+        foreach (CardInstance choice in CardExpansion.OwnChoiceCards(state, player)) Remember(choice);
         foreach (Detail detail in details.Values)
             penalties[detail.Definition.MonsterRank] = state.Config.GetKnockoutPenalty(detail.Definition.MonsterRank);
         ChainState chain = state.ActiveChain;
@@ -127,6 +128,18 @@ public sealed class NormalBot : IBot
             case GameActionType.ActivateNormalSpell:
                 return Activation(state, action, card);
             case GameActionType.ResolveTriggeredEffect:
+                if (pendingEffect != null && pendingEffect.Trigger == EffectTriggerType.EndPhase &&
+                    card != null && card.Category == CardCategory.Spell && card.SpellType == SpellType.Field &&
+                    details.TryGetValue(card.InstanceId, out Detail fieldDetail))
+                {
+                    double upkeepValue = 0;
+                    foreach (EffectDefinition fieldEffect in fieldDetail.Definition.Effects)
+                        upkeepValue += ContinuousValue(state, card, null, fieldEffect,
+                            own.AvailableEnergy, action.PlayerIndex);
+                    int upkeepCost = 0;
+                    foreach (EffectCostDefinition cost in pendingEffect.Costs) upkeepCost += cost.Amount;
+                    return upkeepValue - EnergyPrice(state, action, upkeepCost);
+                }
                 return pendingEffect == null ? 1 : EffectValue(state, action, pendingEffect);
             case GameActionType.SetTrap: return 80 + (card == null ? 0 : (int)card.Speed * 10);
             case GameActionType.AdvancePhase: return 1;
@@ -180,7 +193,8 @@ public sealed class NormalBot : IBot
         BotPlayerView enemy = state.Players[1 - action.PlayerIndex];
         int energy = own.AvailableEnergy;
         foreach (EffectCostDefinition cost in effect.Costs)
-            if (cost.Type == EffectCostType.AvailableEnergy) energy -= cost.Amount;
+            if (cost.Type == EffectCostType.AvailableEnergy ||
+                (cost.Type == EffectCostType.EnergyWithLpDeficitDiscount && state.MainStartLpDeficit < cost.SecondaryAmount)) energy -= cost.Amount;
         double value = ContinuousValue(state, source, target, effect, energy, action.PlayerIndex);
         foreach (EffectOperationDefinition op in effect.Operations)
         {
@@ -188,16 +202,34 @@ public sealed class NormalBot : IBot
             {
                 case EffectOperationType.DrawCards:
                     value += Math.Min(op.Amount, own.DeckCount) * (own.HandCount >= 6 ? 140 : 280); break;
+                case EffectOperationType.RestoreAvailableEnergy:
+                case EffectOperationType.RestoreEnergyWithLpBonus:
+                    value += Math.Min(own.MaxEnergy - own.AvailableEnergy, op.Amount +
+                        (op.Type == EffectOperationType.RestoreEnergyWithLpBonus && own.Health < enemy.Health ? op.SecondaryAmount : 0)) * 140; break;
+                case EffectOperationType.ReallocateEnergyToPlayer:
+                    value += Math.Min(own.MaxEnergy - own.AvailableEnergy, op.Amount) * 140; break;
+                case EffectOperationType.SearchSelectedCard:
+                    value += target == null ? 0 : 280 + Value(target) * .15; break;
+                case EffectOperationType.RecoverSelectedCard:
+                    value += target == null ? 0 : 180 + Value(target) * .2; break;
+                case EffectOperationType.RemoveSelectedSupport:
+                    value += target == null ? 0 : 350; break;
+                case EffectOperationType.ChangeSelectedMonsterToAttack:
+                    value += target == null ? 0 : target.CurrentDefense * .6 + target.AttackPriority * 400; break;
+                case EffectOperationType.AllocateSelectedEnergy:
+                    value += target == null ? 0 : Math.Min(op.Amount, Math.Max(0, target.AttackEnergyRequirement - target.AllocatedEnergy)) * 180 + 20; break;
+                case EffectOperationType.RemoveSelectedEnergy:
+                    value += target == null ? 0 : Math.Min(op.Amount, target.AllocatedEnergy) * 150; break;
+                case EffectOperationType.SwitchToDefenseAfterBattle:
+                    value += source == null ? 0 : source.CurrentDefense * .4 - source.AllocatedEnergy * 30; break;
                 case EffectOperationType.SkipNextOpponentDrawStep: value += 300; break;
                 case EffectOperationType.RestoreMonsterHealth:
                     if (target != null) value += Math.Min(op.Amount, target.MaximumHealth - target.CurrentHealth) * 0.5;
                     break;
                 case EffectOperationType.RestoreHealthPerRemovedAllocatedEnergy:
-                    int removed = 0;
-                    foreach (EffectCostDefinition cost in effect.Costs)
-                        if (cost.Type == EffectCostType.RemoveAllocatedEnergy) removed += cost.Amount;
+                    int removed = source != null ? source.AllocatedEnergy : 0;
                     if (target != null) value += Math.Min(op.Amount * removed,
-                        target.MaximumHealth - target.CurrentHealth) * 0.5;
+                        target.MaximumHealth - target.CurrentHealth) * 0.5 - removed * 30;
                     break;
                 case EffectOperationType.IncreaseAttackUntilEndOfTurn:
                 case EffectOperationType.IncreaseAttackByTriggerValue:

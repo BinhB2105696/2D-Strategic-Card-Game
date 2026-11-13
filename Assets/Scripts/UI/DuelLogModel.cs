@@ -126,14 +126,16 @@ public sealed class DuelLogModel
                 break;
             case GameEventType.EnergyRefreshed:
             case GameEventType.EnergySpent:
-                int oldEnergy = energy[player]; energy[player] = e.Type == GameEventType.EnergyRefreshed ? e.Amount : Math.Max(0, oldEnergy - e.Amount);
+            case GameEventType.EnergyRestored:
+                int oldEnergy = energy[player]; energy[player] = e.Type == GameEventType.EnergyRefreshed ? e.Amount :
+                    e.Type == GameEventType.EnergyRestored ? oldEnergy + e.Amount : Math.Max(0, oldEnergy - e.Amount);
                 change = "Energy " + oldEnergy + " → " + energy[player];
                 break;
         }
         bool reveal = e.Type == GameEventType.MonsterSummoned || e.Type == GameEventType.SpellActivated ||
             e.Type == GameEventType.TrapActivated || e.Type == GameEventType.FieldSpellActivated ||
             e.Type == GameEventType.CardSentToGraveyard || e.Type == GameEventType.MonsterTributed ||
-            e.Type == GameEventType.ChainLinkAdded || e.Type == GameEventType.EffectResolved;
+            e.Type == GameEventType.ChainLinkAdded || e.Type == GameEventType.EffectResolved || e.Type == GameEventType.CardRevealed;
         if (reveal && card != null) card.Hidden = false;
         if (e.Type == GameEventType.CardSet && card != null) card.Hidden = true;
         for (int viewer = 0; viewer < 2; viewer++)
@@ -148,6 +150,7 @@ public sealed class DuelLogModel
                     message = who + " drew 1 card" + (player == viewer ? ": " + name : "."); break;
                 case GameEventType.CardAddedToHand:
                     message = who + " added 1 card to hand" + (player == viewer ? ": " + name : "."); break;
+                case GameEventType.CardRevealed: message = who + " revealed " + name + "."; break;
                 case GameEventType.TurnStarted: message = "TURN " + e.Amount + " — " + who; break;
                 case GameEventType.PhaseChanged: message = who + " entered " + e.Phase + "."; break;
                 case GameEventType.RecoveryStepChanged: message = who + ": Recovery / " + (RecoveryStep)e.Amount; break;

@@ -39,7 +39,8 @@ public static class CardDataConverter
             cardData.TrapType,
             cardData.TributeCount,
             cardData.Speed,
-            effects);
+            effects,
+            cardData.CopyLimitOverride);
     }
 
     private static EffectDefinition ConvertEffect(CardEffectData effect)

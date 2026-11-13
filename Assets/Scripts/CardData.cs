@@ -75,6 +75,8 @@ public class CardData : ScriptableObject
 
     [TextArea(3, 8)]
     [SerializeField] private string effectText;
+    [Tooltip("0 uses the game's normal three-copy limit.")]
+    [Range(0, 3)] [SerializeField] private int copyLimitOverride = 0;
 
     [Header("Monster Information")]
     [SerializeField] private MonsterAttribute monsterAttribute;
@@ -99,6 +101,8 @@ public class CardData : ScriptableObject
     public CardCategory Category => category;
     public Sprite Artwork => artwork;
     public string EffectText => effectText;
+    public int CopyLimitOverride => copyLimitOverride;
+    public int MaxCopiesPerDeck => copyLimitOverride > 0 ? copyLimitOverride : 3;
 
     public MonsterAttribute MonsterAttribute => monsterAttribute;
     public MonsterRank MonsterRank => monsterRank;

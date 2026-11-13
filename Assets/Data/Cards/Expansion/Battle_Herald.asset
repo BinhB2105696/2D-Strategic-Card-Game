@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16dd375991f5bc849a6fa38eb27a9288, type: 3}
+  m_Name: Battle_Herald
+  m_EditorClassIdentifier: 
+  cardId: battle_herald
+  cardName: Battle Herald
+  category: 0
+  artwork: {fileID: 0}
+  effectText: While this card is face-up on the field, Attack Position monsters you
+    control gain 200 ATK. This effect stacks with other copies.
+  copyLimitOverride: 0
+  monsterAttribute: 2
+  monsterRank: 0
+  monsterType: 1
+  baseHealth: 750
+  baseAttack: 350
+  baseDefense: 150
+  attackEnergyRequirement: 1
+  spellType: 0
+  trapType: 0
+  effects:
+  - effectId: battle_herald.aura
+    effectKind: 1
+    trigger: 8
+    allowedPhases: 31
+    allowedTurn: 2
+    activationWindow: 0
+    activationSource: 0
+    conditions: []
+    costs: []
+    targets: []
+    resolution: []
+    continuousModifiers:
+    - component: {fileID: 11400000, guid: 079b1f9815751bc47a572c763dfe225b, type: 2}
+      amount: 200
+    maxUses: 0
+    countBy: 0
+    reset: 0

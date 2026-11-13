@@ -16,7 +16,8 @@ MonoBehaviour:
   cardName: Arcane Insight
   category: 1
   artwork: {fileID: 0}
-  effectText: Pay 1 Energy; draw 1 card.
+  effectText: Pay 1 Energy; draw 2 cards. You can only use this effect of Arcane
+    Insight once per turn.
   monsterAttribute: 0
   monsterRank: 0
   monsterType: 0
@@ -33,6 +34,7 @@ MonoBehaviour:
     allowedPhases: 4
     allowedTurn: 0
     activationWindow: 0
+    activationSource: 0
     conditions: []
     costs:
     - component: {fileID: 11400000, guid: 5d1203d777274285bd8e17473215d35e, type: 2}
@@ -40,8 +42,8 @@ MonoBehaviour:
     targets: []
     resolution:
     - component: {fileID: 11400000, guid: 6907c02ae32e40218146ba8a36426674, type: 2}
-      amount: 1
+      amount: 2
     continuousModifiers: []
-    maxUses: 0
-    countBy: 0
+    maxUses: 1
+    countBy: 1
     reset: 0

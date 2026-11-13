@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16dd375991f5bc849a6fa38eb27a9288, type: 3}
+  m_Name: Dispel_Magic
+  m_EditorClassIdentifier: 
+  cardId: dispel_magic
+  cardName: Dispel Magic
+  category: 1
+  artwork: {fileID: 0}
+  effectText: Pay 1 Energy; target 1 face-up Equip or Field Spell your opponent controls;
+    send it to the Graveyard.
+  copyLimitOverride: 0
+  monsterAttribute: 5
+  monsterRank: 0
+  monsterType: 2
+  baseHealth: 0
+  baseAttack: 0
+  baseDefense: 0
+  attackEnergyRequirement: 0
+  spellType: 0
+  trapType: 0
+  effects:
+  - effectId: dispel_magic
+    effectKind: 0
+    trigger: 0
+    allowedPhases: 4
+    allowedTurn: 0
+    activationWindow: 0
+    activationSource: 0
+    conditions: []
+    costs:
+    - component: {fileID: 11400000, guid: caffa81a9b72359478add170ae670127, type: 2}
+      amount: 1
+    targets:
+    - component: {fileID: 11400000, guid: cf22fa544bf39154fb04c5070e107fc4, type: 2}
+      amount: 1
+    resolution:
+    - component: {fileID: 11400000, guid: e54a9f00874ff7d428c8b9f558ba9948, type: 2}
+      amount: 1
+    continuousModifiers: []
+    maxUses: 0
+    countBy: 0
+    reset: 0

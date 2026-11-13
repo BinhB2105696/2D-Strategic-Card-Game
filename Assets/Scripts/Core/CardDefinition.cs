@@ -25,6 +25,8 @@ public sealed class CardDefinition
     public int TributeCount { get; }
     public CardSpeed Speed { get; }
     public IReadOnlyList<EffectDefinition> Effects { get; }
+    public int CopyLimitOverride { get; }
+    public int MaxCopiesPerDeck => CopyLimitOverride > 0 ? CopyLimitOverride : 3;
 
     public bool IsMonster => Category == CardCategory.Monster;
 
@@ -44,7 +46,8 @@ public sealed class CardDefinition
         TrapType trapType,
         int tributeCount,
         CardSpeed speed,
-        IReadOnlyList<EffectDefinition> effects = null)
+        IReadOnlyList<EffectDefinition> effects = null,
+        int copyLimitOverride = 0)
     {
         if (string.IsNullOrWhiteSpace(cardId))
         {
@@ -76,6 +79,7 @@ public sealed class CardDefinition
         TributeCount = Math.Max(0, tributeCount);
         Speed = speed;
         Effects = CopyEffects(effects);
+        CopyLimitOverride = Math.Max(0, copyLimitOverride);
     }
 
     private static IReadOnlyList<EffectDefinition> CopyEffects(

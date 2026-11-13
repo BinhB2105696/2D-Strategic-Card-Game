@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16dd375991f5bc849a6fa38eb27a9288, type: 3}
+  m_Name: Change_Of_Plans
+  m_EditorClassIdentifier: 
+  cardId: change_of_plans
+  cardName: Change of Plans
+  category: 1
+  artwork: {fileID: 0}
+  effectText: Discard 1 other card from your hand; draw 2 cards.
+  copyLimitOverride: 0
+  monsterAttribute: 5
+  monsterRank: 0
+  monsterType: 2
+  baseHealth: 0
+  baseAttack: 0
+  baseDefense: 0
+  attackEnergyRequirement: 0
+  spellType: 0
+  trapType: 0
+  effects:
+  - effectId: change_of_plans
+    effectKind: 0
+    trigger: 0
+    allowedPhases: 4
+    allowedTurn: 0
+    activationWindow: 0
+    activationSource: 0
+    conditions: []
+    costs:
+    - component: {fileID: 11400000, guid: 5eb6efe8de9d7e5429b6d5c36598d5b7, type: 2}
+      amount: 1
+    targets:
+    - component: {fileID: 11400000, guid: e6b5696169b831948bd6651513feb944, type: 2}
+      amount: 1
+    resolution:
+    - component: {fileID: 11400000, guid: 34bbcc363b63276459245b337ca1d51e, type: 2}
+      amount: 2
+    continuousModifiers: []
+    maxUses: 0
+    countBy: 0
+    reset: 0

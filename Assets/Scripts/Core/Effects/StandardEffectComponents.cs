@@ -15,6 +15,38 @@ public sealed class DefinitionEffectCondition : IEffectCondition
     {
         for (int index = 0; index < effect.Conditions.Count; index++)
         {
+            EffectConditionType type = effect.Conditions[index].Type;
+            if (type == EffectConditionType.AvailableEnergyBelowMax || type == EffectConditionType.FewerMonstersAtMainStart ||
+                type == EffectConditionType.OwnDefenseMonstersAtLeast)
+            {
+                bool met = type == EffectConditionType.AvailableEnergyBelowMax
+                    ? context.ActivatingPlayer.AvailableEnergy < context.ActivatingPlayer.MaxEnergy
+                    : type == EffectConditionType.FewerMonstersAtMainStart
+                        ? context.State.HadFewerMonstersAtMainStart(context.ActivatingPlayerIndex)
+                        : CountDefense(context.ActivatingPlayer) >= effect.Conditions[index].Amount;
+                if (!met) { failureReason = "The effect's activation condition is not met."; return false; }
+                continue;
+            }
+            if (type == EffectConditionType.SourceInDefense)
+            {
+                CardInstance source = context.State.FindCard(context.SourceInstanceId);
+                if (source == null || source.Zone != CardZone.MonsterZone ||
+                    source.BattlePosition != BattlePosition.Defense)
+                {
+                    failureReason = "The source must be a field Monster in Defense Position.";
+                    return false;
+                }
+                continue;
+            }
+            if (type == EffectConditionType.AfterFirstTurn)
+            {
+                if (context.State.TurnNumber <= 1)
+                {
+                    failureReason = "This effect cannot be activated on the first turn of the match.";
+                    return false;
+                }
+                continue;
+            }
             if (effect.Conditions[index].Type != EffectConditionType.None)
             {
                 failureReason =
@@ -25,6 +57,14 @@ public sealed class DefinitionEffectCondition : IEffectCondition
 
         failureReason = string.Empty;
         return true;
+    }
+
+    private static int CountDefense(PlayerState owner)
+    {
+        int count = 0;
+        foreach (CardInstance card in owner.MonsterZones)
+            if (card != null && card.BattlePosition == BattlePosition.Defense) count++;
+        return count;
     }
 }
 
@@ -41,49 +81,14 @@ public sealed class DefinitionEffectCost : IEffectCost
         EffectContext context,
         out string failureReason)
     {
-        int energyCost = 0;
-
-        for (int index = 0; index < effect.Costs.Count; index++)
-        {
-            EffectCostDefinition cost = effect.Costs[index];
-
-            if (cost.Type != EffectCostType.AvailableEnergy)
-            {
-                failureReason =
-                    "This effect cost type is not implemented yet.";
-                return false;
-            }
-
-            energyCost += cost.Amount;
-        }
-
-        bool canPay = context.ActivatingPlayer.AvailableEnergy >= energyCost;
-        failureReason = canPay
-            ? string.Empty
-            : "Not enough Available Energy to activate this card.";
-        return canPay;
+        return ExpansionEffects.CanPay(effect, context, out failureReason);
     }
 
     public void Pay(
         EffectContext context,
         List<GameEvent> events)
     {
-        int energyCost = 0;
-
-        for (int index = 0; index < effect.Costs.Count; index++)
-        {
-            energyCost += effect.Costs[index].Amount;
-        }
-
-        context.ActivatingPlayer.TrySpendEnergy(energyCost);
-
-        if (energyCost > 0)
-        {
-            events.Add(GameEvent.EnergySpent(
-                context.ActivatingPlayerIndex,
-                energyCost,
-                context.State.CurrentPhase));
-        }
+        ExpansionEffects.Pay(effect, context, events);
     }
 }
 
@@ -112,6 +117,17 @@ public sealed class EffectDefinitionTargetRule : IEffectTargetRule
         {
             failureReason = string.Empty;
             return effect.TargetCount == 0;
+        }
+
+        if (effect.TargetType > EffectTargetType.OpponentMonster)
+        {
+            var candidates = CardExpansion.Targets(effect, context);
+            var unique = new HashSet<long>();
+            foreach (long id in context.TargetInstanceIds)
+                if (!unique.Add(id) || !candidates.Exists(card => card.InstanceId == id))
+                { failureReason = "The selected card is not an eligible target."; return false; }
+            failureReason = string.Empty;
+            return true;
         }
 
         HashSet<long> uniqueTargets = new HashSet<long>();
@@ -158,6 +174,7 @@ public sealed class DefinitionCardEffect : ICardEffect
         for (int index = 0; index < effect.Operations.Count; index++)
         {
             EffectOperationDefinition operation = effect.Operations[index];
+            if (ExpansionEffects.Resolve(operation, context, events)) continue;
 
             switch (operation.Type)
             {
@@ -339,7 +356,8 @@ public sealed class DefinitionCardEffect : ICardEffect
             target.InstanceId,
             target,
             0,
-            increase);
+            increase,
+            context.State.TurnNumber);
         events.Add(GameEvent.MonsterDefenseModified(
             target.OwnerPlayerIndex,
             target.InstanceId,

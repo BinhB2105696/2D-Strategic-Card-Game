@@ -16,8 +16,8 @@ MonoBehaviour:
   cardName: Test Field
   category: 1
   artwork: {fileID: 21300000, guid: 1c41066ef5662d74e82c5c8090c2b1d1, type: 3}
-  effectText: Monsters you control gain 200 ATK and DEF. At the end of your turn,
-    pay 1 Energy or send this card to the Graveyard.
+  effectText: 'Monsters you control gain 200 ATK and DEF. During your End Phase:
+    Pay 1 Energy or send this card to the Graveyard.'
   monsterAttribute: 0
   monsterRank: 0
   monsterType: 0

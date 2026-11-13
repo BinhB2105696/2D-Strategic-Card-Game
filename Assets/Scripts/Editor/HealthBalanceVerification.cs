@@ -72,12 +72,13 @@ public static class HealthBalanceVerification
         GameSession session = Session(CardDataConverter.ToDefinition(LoadMonster("Sample_Tide_Sprite")));
         CardInstance tide = Place(session, session.State.CurrentPlayerIndex, "sample_tide_sprite");
         tide.ReceiveDamage(300);
-        ActionResult activation = Apply(session, GameAction.ActivateCard(tide.OwnerPlayerIndex, tide.InstanceId));
-        Require(tide.CurrentHealth == 500 && tide.MaximumHealth == 800, "authored Tide activation");
+        Internal(tide, "SetBattlePosition", BattlePosition.Defense);
+        ActionResult activation = Apply(session, GameAction.EnterEndPhase(tide.OwnerPlayerIndex));
+        Require(tide.CurrentHealth == 500 && tide.MaximumHealth == 800, "authored Tide End Phase growth");
         Require(activation.Events.Any(e => e.Type == GameEventType.MonsterMaximumHealthModified && e.Amount == 200),
             "maximum HP event");
         Require(!session.TryApply(GameAction.ActivateCard(tide.OwnerPlayerIndex, tide.InstanceId)).Succeeded,
-            "Tide once per turn retained");
+            "Tide no longer has a manual growth action");
     }
 
     private static void VerifyRankPenalties()
@@ -157,7 +158,10 @@ public static class HealthBalanceVerification
         fighter.AllocateEnergy(2);
         fighter.ReceiveDamage(300);
         Internal(session.State, "SetCurrentPhase", TurnPhase.Battle);
-        ActionResult result = Apply(session, GameAction.Attack(actor, fighter.InstanceId, imp.InstanceId));
+        Apply(session, GameAction.Attack(actor, fighter.InstanceId, imp.InstanceId));
+        Require(session.State.PendingTriggeredEffect.SourceInstanceId == fighter.InstanceId && fighter.AllocatedEnergy == 2,
+            "Fighter recovery waits for its owner's choice");
+        ActionResult result = Apply(session, GameAction.ResolveTriggeredEffect(actor, fighter.InstanceId, fighter.InstanceId));
         Require(fighter.CurrentHealth == 3500 && fighter.AllocatedEnergy == 0, "Fighter heals to cap and spends ALL Energy");
         Require(result.Events.Any(e => e.Type == GameEventType.MonsterHealthModified && e.Amount == 300),
             "heal animation gets actual 300, not attempted 1000");

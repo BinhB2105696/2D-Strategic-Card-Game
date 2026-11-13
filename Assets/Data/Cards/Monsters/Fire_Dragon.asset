@@ -16,7 +16,8 @@ MonoBehaviour:
   cardName: Fire Dragon
   category: 0
   artwork: {fileID: 21300000, guid: 1c41066ef5662d74e82c5c8090c2b1d1, type: 3}
-  effectText: 'Pay 1 Energy: This card gains 300 ATK until the end of this turn.'
+  effectText: 'Once per turn: Pay 1 Energy; this card gains 300 ATK until the end
+    of this turn.'
   monsterAttribute: 2
   monsterRank: 1
   monsterType: 0

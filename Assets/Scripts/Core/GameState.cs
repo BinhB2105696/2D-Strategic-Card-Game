@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 
 [Serializable]
-public sealed class GameState
+public sealed partial class GameState
 {
     private readonly PlayerState[] players;
     private readonly Dictionary<string, int> effectUses =
         new Dictionary<string, int>();
+    private readonly List<PendingTriggeredEffect> queuedTriggeredEffects =
+        new List<PendingTriggeredEffect>();
     private readonly List<StatModifierApplication> statModifiers =
         new List<StatModifierApplication>();
 
@@ -55,6 +57,8 @@ public sealed class GameState
 
         ValidateDeck(config, playerOneDeck, nameof(playerOneDeck));
         ValidateDeck(config, playerTwoDeck, nameof(playerTwoDeck));
+        CardExpansion.ValidateCopyLimits(playerOneDeck);
+        CardExpansion.ValidateCopyLimits(playerTwoDeck);
 
         GameState gameState = new GameState(config, seed);
         gameState.players[0] = gameState.CreatePlayer(0, playerOneDeck);
@@ -71,6 +75,7 @@ public sealed class GameState
 
     internal void SetCurrentPhase(TurnPhase phase)
     {
+        if (phase == TurnPhase.Main && CurrentPhase != TurnPhase.Main) CaptureMainStart();
         CurrentPhase = phase;
     }
 
@@ -119,13 +124,15 @@ public sealed class GameState
 
     internal void OpenTriggeredEffect(PendingTriggeredEffect pending)
     {
-        PendingTriggeredEffect = pending ??
-            throw new ArgumentNullException(nameof(pending));
+        if (pending == null) throw new ArgumentNullException(nameof(pending));
+        if (PendingTriggeredEffect == null) PendingTriggeredEffect = pending;
+        else queuedTriggeredEffects.Add(pending);
     }
 
     internal void CloseTriggeredEffect()
     {
-        PendingTriggeredEffect = null;
+        PendingTriggeredEffect = queuedTriggeredEffects.Count > 0 ? queuedTriggeredEffects[0] : null;
+        if (queuedTriggeredEffects.Count > 0) queuedTriggeredEffects.RemoveAt(0);
     }
 
     internal CardInstance FindCard(long instanceId)
@@ -200,7 +207,18 @@ public sealed class GameState
 
             int oldHealth = application.Target.CurrentHealth;
             int oldMaximum = application.Target.MaximumHealth;
+            int oldAttack = application.Target.CurrentAttack;
+            int oldDefense = application.Target.CurrentDefense;
             application.Remove();
+            if (events != null && application.Target.Zone == CardZone.MonsterZone)
+            {
+                if (application.Target.CurrentAttack != oldAttack)
+                    events.Add(GameEvent.MonsterAttackModified(application.Target.OwnerPlayerIndex,
+                        application.Target.InstanceId, application.Target.CurrentAttack - oldAttack, CurrentPhase));
+                if (application.Target.CurrentDefense != oldDefense)
+                    events.Add(GameEvent.MonsterDefenseModified(application.Target.OwnerPlayerIndex,
+                        application.Target.InstanceId, application.Target.CurrentDefense - oldDefense, CurrentPhase));
+            }
             if (events != null && application.MaximumHealthAmount != 0 &&
                 application.Target.Zone == CardZone.MonsterZone)
             {
@@ -221,6 +239,7 @@ public sealed class GameState
         WinnerPlayerIndex = winnerPlayerIndex;
         ActiveChain = null;
         PendingTriggeredEffect = null;
+        queuedTriggeredEffects.Clear();
     }
 
     internal bool CanUseEffect(

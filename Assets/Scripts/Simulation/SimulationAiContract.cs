@@ -66,6 +66,9 @@ public static class SimulationAiContract
             for (int i = 0; i < state.Players[owner].Graveyard.Count; i++)
                 add(new BotCardView(state.Players[owner].Graveyard[i]), i);
         }
+        // Legal own-deck choices reveal their definitions, never their deck order.
+        foreach (BotCardView choice in view.ChoiceCards)
+            if (!indices.ContainsKey(choice.InstanceId)) add(choice, -1);
         Func<long, int> index = id =>
         {
             if (id == 0) return -1;

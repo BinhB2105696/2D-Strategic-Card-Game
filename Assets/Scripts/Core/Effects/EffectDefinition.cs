@@ -10,12 +10,19 @@ public enum EffectTriggerType
     OnSpellTrapActivated,
     OnAttackDeclared,
     EndPhase,
-    OnBattleDestroyedMonster
+    OnBattleDestroyedMonster,
+    WhileOnField,
+    AfterBattle
 }
 
 public enum EffectConditionType
 {
-    None
+    None,
+    SourceInDefense,
+    AfterFirstTurn,
+    AvailableEnergyBelowMax,
+    FewerMonstersAtMainStart,
+    OwnDefenseMonstersAtLeast
 }
 
 public enum EffectCostType
@@ -24,14 +31,26 @@ public enum EffectCostType
     PlayerHealth,
     DiscardFromHand,
     TributeMonster,
-    RemoveAllocatedEnergy
+    RemoveAllocatedEnergy,
+    EnergyWithLpDeficitDiscount
 }
 
 public enum EffectTargetType
 {
     None,
     OwnMonster,
-    OpponentMonster
+    OpponentMonster,
+    OpponentDefenseMonster,
+    OwnMonsterWithEnergy,
+    OwnOtherMonster,
+    OwnWoundedMonster,
+    OpponentMonsterWithEnergy,
+    OpponentFaceUpSupport,
+    OwnDeckHighRankMonster,
+    OwnDeckSpellOrTrap,
+    OwnGraveyardBasicMonster,
+    OwnGraveyardNormalTrap,
+    OwnOtherHandCard
 }
 
 public enum EffectOperationType
@@ -53,7 +72,23 @@ public enum EffectOperationType
     SearchBasicMonsterFromDeck,
     RecoverBasicMonsterFromGraveyard,
     IncreaseMaximumHealth,
-    ReduceMaximumHealth
+    ReduceMaximumHealth,
+    RestoreAvailableEnergy,
+    RestoreEnergyWithLpBonus,
+    ReallocateEnergyToPlayer,
+    SearchSelectedCard,
+    RecoverSelectedCard,
+    RemoveSelectedSupport,
+    ChangeSelectedMonsterToAttack,
+    AllocateSelectedEnergy,
+    RemoveSelectedEnergy,
+    SwitchToDefenseAfterBattle,
+    Lifesteal,
+    RetaliationMark,
+    PierceDefense,
+    ReflectBattleDamage,
+    AttackPriority,
+    CannotAttackOnSummonTurn
 }
 
 [Serializable]
@@ -76,11 +111,13 @@ public sealed class EffectCostDefinition
 {
     public EffectCostType Type { get; }
     public int Amount { get; }
+    public int SecondaryAmount { get; }
 
-    public EffectCostDefinition(EffectCostType type, int amount)
+    public EffectCostDefinition(EffectCostType type, int amount, int secondaryAmount = 0)
     {
         Type = type;
         Amount = Math.Max(0, amount);
+        SecondaryAmount = Math.Max(0, secondaryAmount);
     }
 }
 
@@ -89,10 +126,12 @@ public sealed class EffectOperationDefinition
 {
     public EffectOperationType Type { get; }
     public int Amount { get; }
+    public int SecondaryAmount { get; }
 
     public EffectOperationDefinition(
         EffectOperationType type,
-        int amount)
+        int amount,
+        int secondaryAmount = 0)
     {
         if (type == EffectOperationType.SkipNextOpponentDrawStep && amount != 1)
             throw new ArgumentOutOfRangeException(
@@ -101,6 +140,7 @@ public sealed class EffectOperationDefinition
 
         Type = type;
         Amount = Math.Max(0, amount);
+        SecondaryAmount = Math.Max(0, secondaryAmount);
     }
 }
 

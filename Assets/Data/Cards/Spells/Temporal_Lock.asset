@@ -16,8 +16,9 @@ MonoBehaviour:
   cardName: Temporal Lock
   category: 1
   artwork: {fileID: 0}
-  effectText: Skip your opponent's next Draw Step, and skip your Battle Phase this
-    turn.
+  effectText: You cannot activate this card on the first turn of the match. Skip
+    your opponent's next Draw Step, and skip your Battle Phase this turn. You can
+    only use this effect of Temporal Lock once per turn.
   monsterAttribute: 0
   monsterRank: 0
   monsterType: 0
@@ -35,7 +36,9 @@ MonoBehaviour:
     allowedTurn: 0
     activationWindow: 0
     activationSource: 0
-    conditions: []
+    conditions:
+    - component: {fileID: 11400000, guid: 6e6bf43ef557e714c83cf57532fe97f3, type: 2}
+      amount: 0
     costs: []
     targets: []
     resolution:
@@ -44,6 +47,6 @@ MonoBehaviour:
     - component: {fileID: 11400000, guid: 5b27827d9176ac94cbf8ad521f2486ec, type: 2}
       amount: 1
     continuousModifiers: []
-    maxUses: 0
-    countBy: 0
+    maxUses: 1
+    countBy: 1
     reset: 0

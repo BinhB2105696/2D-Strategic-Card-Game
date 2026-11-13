@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16dd375991f5bc849a6fa38eb27a9288, type: 3}
+  m_Name: Emergency_Reinforcements
+  m_EditorClassIdentifier: 
+  cardId: emergency_reinforcements
+  cardName: Emergency Reinforcements
+  category: 1
+  artwork: {fileID: 0}
+  effectText: 'If you controlled fewer monsters than your opponent at the start of
+    this Main Phase: Restore 2 available Energy, up to your maximum.'
+  copyLimitOverride: 0
+  monsterAttribute: 5
+  monsterRank: 0
+  monsterType: 2
+  baseHealth: 0
+  baseAttack: 0
+  baseDefense: 0
+  attackEnergyRequirement: 0
+  spellType: 0
+  trapType: 0
+  effects:
+  - effectId: emergency_reinforcements
+    effectKind: 0
+    trigger: 0
+    allowedPhases: 4
+    allowedTurn: 0
+    activationWindow: 0
+    activationSource: 0
+    conditions:
+    - component: {fileID: 11400000, guid: 844b314c57c50dd4a92ffc1783f8f342, type: 2}
+      amount: 0
+    costs: []
+    targets: []
+    resolution:
+    - component: {fileID: 11400000, guid: bdeab1bd204c408479447a7089388443, type: 2}
+      amount: 2
+    continuousModifiers: []
+    maxUses: 0
+    countBy: 0
+    reset: 0

@@ -245,24 +245,9 @@ internal static class LegalActionEnumerator
             return;
         }
 
-        int targetOwnerIndex;
-        if (effect.TargetType == EffectTargetType.OwnMonster)
-            targetOwnerIndex = playerIndex;
-        else if (effect.TargetType == EffectTargetType.OpponentMonster)
-            targetOwnerIndex = 1 - playerIndex;
-        else
-            return;
-
-        PlayerState targetOwner = state.Players[targetOwnerIndex];
         List<long> candidates = new List<long>();
-        for (int targetZone = 0;
-             targetZone < targetOwner.MonsterZones.Count;
-             targetZone++)
-        {
-            CardInstance target = targetOwner.MonsterZones[targetZone];
-            if (target != null)
-                candidates.Add(target.InstanceId);
-        }
+        foreach (CardInstance target in CardExpansion.Targets(effect, new EffectContext(state, playerIndex, card.InstanceId)))
+            candidates.Add(target.InstanceId);
 
         AddTargetPermutations(
             state,

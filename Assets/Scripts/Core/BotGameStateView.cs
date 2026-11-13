@@ -12,6 +12,7 @@ public sealed class BotCardView
     public CardCategory Category { get; }
     public MonsterRank MonsterRank { get; }
     public SpellType SpellType { get; }
+    public int AttackPriority { get; }
     public TrapType TrapType { get; }
     public CardSpeed Speed { get; }
     public CardZone Zone { get; }
@@ -41,6 +42,7 @@ public sealed class BotCardView
             ? definition.MonsterRank
             : default(MonsterRank);
         SpellType = IsKnown ? definition.SpellType : default(SpellType);
+        AttackPriority = card.AttackPriority;
         TrapType = IsKnown ? definition.TrapType : default(TrapType);
         Speed = IsKnown ? definition.Speed : default(CardSpeed);
         Zone = card.Zone;
@@ -142,6 +144,9 @@ public sealed class BotGameStateView
     public int WinnerPlayerIndex { get; }
     public bool HasOpenResponseWindow { get; }
     public bool HasPendingTriggeredEffect { get; }
+    public int MainStartLpDeficit { get; private set; }
+    public IReadOnlyList<BotCardView> ChoiceCards => choiceCards;
+    private readonly List<BotCardView> choiceCards = new List<BotCardView>();
     public IReadOnlyList<BotPlayerView> Players => players;
 
     private BotGameStateView(GameState state, int viewingPlayerIndex)
@@ -181,7 +186,15 @@ public sealed class BotGameStateView
             throw new ArgumentOutOfRangeException(nameof(viewingPlayerIndex));
         }
 
-        return new BotGameStateView(state, viewingPlayerIndex);
+        var view = new BotGameStateView(state, viewingPlayerIndex);
+        view.MainStartLpDeficit = state.LpDeficitAtMainStart(viewingPlayerIndex);
+        foreach (CardInstance card in CardExpansion.OwnChoiceCards(state, viewingPlayerIndex))
+        {
+            var choice = new BotCardView(card, true);
+            view.choiceCards.Add(choice);
+            view.cardsByInstanceId[card.InstanceId] = choice;
+        }
+        return view;
     }
 
     public BotCardView FindCard(long instanceId)

@@ -42,12 +42,19 @@ public enum GameEventType
     TriggeredEffectOffered,
     TriggeredEffectDeclined,
     MatchEnded,
-    MonsterMaximumHealthModified
+    MonsterMaximumHealthModified,
+    EnergyRestored,
+    CardRevealed
 }
 
 [Serializable]
 public sealed class GameEvent
 {
+    public static GameEvent EnergyRestored(int player, int amount, TurnPhase phase)
+        => new GameEvent(GameEventType.EnergyRestored, player, 0, 0, amount, phase);
+    public static GameEvent CardRevealed(int player, long card, TurnPhase phase)
+        => new GameEvent(GameEventType.CardRevealed, player, card, 0, 0, phase);
+
     public GameEventType Type { get; }
     public int PlayerIndex { get; }
     public long CardInstanceId { get; }

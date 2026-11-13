@@ -30,6 +30,30 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b3e73cbb97b21b94dbf7ef0a65e3c46d, type: 2}
   - {fileID: 11400000, guid: 38c1d8188cb13504d8f79ecfe91235c7, type: 2}
   - {fileID: 11400000, guid: b50309f0d74fc354d8b4e9f5e26e1e06, type: 2}
+  - {fileID: 11400000, guid: 1daa92e7d25554843ba2aa0d0f25c797, type: 2}
+  - {fileID: 11400000, guid: 41364373937d25048914e9c76dbe906c, type: 2}
+  - {fileID: 11400000, guid: c5cab141b4e25ed4c84149291e38f8e1, type: 2}
+  - {fileID: 11400000, guid: 185f76b98022a31409a0a3893013733b, type: 2}
+  - {fileID: 11400000, guid: f2dc2f1ed047e114ca30af35b9dd1942, type: 2}
+  - {fileID: 11400000, guid: fe8be6fc4a5af314aa4d63d4a66a3cc8, type: 2}
+  - {fileID: 11400000, guid: f5233bebbc8d25c4e8dc4f586cf00c5c, type: 2}
+  - {fileID: 11400000, guid: a3b1fbf747c0c6f47831a963bde01ca8, type: 2}
+  - {fileID: 11400000, guid: a5032362c8b8f5f4781ae69ac93dcc91, type: 2}
+  - {fileID: 11400000, guid: 11e832f6c84684f4db3d9e147b33b12f, type: 2}
+  - {fileID: 11400000, guid: 7db8f8751d93991429917d4611317a1b, type: 2}
+  - {fileID: 11400000, guid: d9ffe2d316917b249ba5987423d9b43f, type: 2}
+  - {fileID: 11400000, guid: b07bac2afe22c7c479db945da0a2e470, type: 2}
+  - {fileID: 11400000, guid: 8e553d81b71e3d04aae3293469df3173, type: 2}
+  - {fileID: 11400000, guid: 418de6bec94d14f41be5755b25f4cf85, type: 2}
+  - {fileID: 11400000, guid: 6d1ef93346deb9045b0f3e120a41786b, type: 2}
+  - {fileID: 11400000, guid: 67a164c633bf98c489ac823adb536598, type: 2}
+  - {fileID: 11400000, guid: aa854d47531c2d04aa6d6362692dabbf, type: 2}
+  - {fileID: 11400000, guid: 36680de7ef091aa46afa111ae0ba2d9a, type: 2}
+  - {fileID: 11400000, guid: 70ef123d9de31ed42affb24bf0ae566c, type: 2}
+  - {fileID: 11400000, guid: 5e3d85bd86628ab4faa52702a213d188, type: 2}
+  - {fileID: 11400000, guid: dc44fa2e64716464f8500b0afadb212f, type: 2}
+  - {fileID: 11400000, guid: 2df4819135935fa4f999778f9c701373, type: 2}
+  - {fileID: 11400000, guid: a047cb2533a16914da1a4e911560a273, type: 2}
   presets:
   - deckId: simulation_preset_0
     name: Starter Balance
@@ -99,5 +123,5 @@ MonoBehaviour:
     - sample_divine_reversal
     - temporal_lock
   sourceRevision: bd5d71df17978c92cd2d4019ef179c9bf7a8300a
-  sourceFingerprint: 1309b89e6f753e01dd16a8ed35cdffc5596cae32045a0ee909d2c80f455200ab
-  catalogFingerprint: 4aa47bf6904b0201fc74ab6bb4838e4be8a16032e3d38ad50f0a534a6f14eb6b
+  sourceFingerprint: 
+  catalogFingerprint: 

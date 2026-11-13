@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16dd375991f5bc849a6fa38eb27a9288, type: 3}
+  m_Name: Recover_The_Fallen
+  m_EditorClassIdentifier: 
+  cardId: recover_the_fallen
+  cardName: Recover the Fallen
+  category: 1
+  artwork: {fileID: 0}
+  effectText: Pay 1 Energy; target 1 Basic Monster in your Graveyard; add it to your
+    hand.
+  copyLimitOverride: 0
+  monsterAttribute: 5
+  monsterRank: 0
+  monsterType: 2
+  baseHealth: 0
+  baseAttack: 0
+  baseDefense: 0
+  attackEnergyRequirement: 0
+  spellType: 0
+  trapType: 0
+  effects:
+  - effectId: recover_the_fallen
+    effectKind: 0
+    trigger: 0
+    allowedPhases: 4
+    allowedTurn: 0
+    activationWindow: 0
+    activationSource: 0
+    conditions: []
+    costs:
+    - component: {fileID: 11400000, guid: caffa81a9b72359478add170ae670127, type: 2}
+      amount: 1
+    targets:
+    - component: {fileID: 11400000, guid: 649a5822fcdf43b4bb522765aa544aee, type: 2}
+      amount: 1
+    resolution:
+    - component: {fileID: 11400000, guid: 489091783b2d5a44a916a45065c231e3, type: 2}
+      amount: 1
+    continuousModifiers: []
+    maxUses: 0
+    countBy: 0
+    reset: 0
