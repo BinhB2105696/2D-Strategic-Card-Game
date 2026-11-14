@@ -15,9 +15,10 @@ MonoBehaviour:
   cardId: test_field_spell
   cardName: Test Field
   category: 1
-  artwork: {fileID: 21300000, guid: 1c41066ef5662d74e82c5c8090c2b1d1, type: 3}
+  artwork: {fileID: 21300000, guid: 5888ff917d02e014e8d45dd8f53ecf33, type: 3}
   effectText: 'Monsters you control gain 200 ATK and DEF. During your End Phase:
     Pay 1 Energy or send this card to the Graveyard.'
+  copyLimitOverride: 0
   monsterAttribute: 0
   monsterRank: 0
   monsterType: 0

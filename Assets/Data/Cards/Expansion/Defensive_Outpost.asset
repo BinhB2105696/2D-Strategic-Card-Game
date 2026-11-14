@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: defensive_outpost
   cardName: Defensive Outpost
   category: 1
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: aa642c97241468440b34ab4fabbb590e, type: 3}
   effectText: 'During your End Phase, if you control at least 2 Defense Position
     monsters: Restore 1 available Energy, up to your maximum.'
   copyLimitOverride: 0

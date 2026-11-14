@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: dispel_magic
   cardName: Dispel Magic
   category: 1
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 748766916c4fce947a4ea36744984026, type: 3}
   effectText: Pay 1 Energy; target 1 face-up Equip or Field Spell your opponent controls;
     send it to the Graveyard.
   copyLimitOverride: 0

@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: siegebreaker
   cardName: Siegebreaker
   category: 0
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 3ad2cefeb0128cf4b841d8b2c0db96dd, type: 3}
   effectText: When this card battles a Defense Position monster, calculate damage
     as if that monster had 300 less DEF, to a minimum of 0. No excess damage is dealt
     to its controller.

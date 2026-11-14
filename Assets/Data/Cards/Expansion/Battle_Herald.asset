@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: battle_herald
   cardName: Battle Herald
   category: 0
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 1aaad6bf2a86da64c8d9be4e95418474, type: 3}
   effectText: While this card is face-up on the field, Attack Position monsters you
     control gain 200 ATK. This effect stacks with other copies.
   copyLimitOverride: 0

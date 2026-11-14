@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: bloodfang_raider
   cardName: Bloodfang Raider
   category: 0
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: cce21a8bc15ca8a4baf65e16020f43a5, type: 3}
   effectText: 'After this card inflicts battle damage to a monster''s HP: Restore
     HP to this card equal to 50% of the HP actually lost, rounded down, up to 300
     HP per battle. This cannot revive this card or exceed its current maximum HP.'

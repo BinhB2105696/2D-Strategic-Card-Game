@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: emergency_reinforcements
   cardName: Emergency Reinforcements
   category: 1
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 317ccb490bea301479d05e0312578056, type: 3}
   effectText: 'If you controlled fewer monsters than your opponent at the start of
     this Main Phase: Restore 2 available Energy, up to your maximum.'
   copyLimitOverride: 0

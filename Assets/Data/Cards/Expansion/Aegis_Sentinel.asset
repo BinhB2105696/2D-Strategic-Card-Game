@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: aegis_sentinel
   cardName: Aegis Sentinel
   category: 0
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 23e5afb1f1dd1dd46bdd2ad8894b7576, type: 3}
   effectText: While this card is face-up on the field, your opponent must choose
     it as an attack target before your other monsters, regardless of its battle position.
     If multiple monsters have this effect, your opponent can choose any of them.

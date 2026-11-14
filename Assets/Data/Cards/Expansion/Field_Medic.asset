@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: field_medic
   cardName: Field Medic
   category: 0
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 7ad692e96ae1c044e831a5db2f8c6028, type: 3}
   effectText: 'During your Main Phase: Remove 1 Energy from this card; target 1 wounded
     monster you control; restore 400 HP to it, up to its current maximum HP.'
   copyLimitOverride: 0

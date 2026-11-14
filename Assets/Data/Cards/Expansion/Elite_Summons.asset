@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: elite_summons
   cardName: Elite Summons
   category: 1
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 2ddc9357816105b4d81492c81862334c, type: 3}
   effectText: Pay 1 Energy; add 1 Advanced, Supreme, or Ultimate Monster from your
     Deck to your hand, reveal it, then shuffle your Deck. If your LP were at least
     1500 lower than your opponent's at the start of this Main Phase, pay no Energy

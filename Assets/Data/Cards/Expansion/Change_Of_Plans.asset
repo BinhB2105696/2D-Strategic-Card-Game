@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: change_of_plans
   cardName: Change of Plans
   category: 1
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: b14e38ee8638ad54a8e68a5d6f8c6bf2, type: 3}
   effectText: Discard 1 other card from your hand; draw 2 cards.
   copyLimitOverride: 0
   monsterAttribute: 5

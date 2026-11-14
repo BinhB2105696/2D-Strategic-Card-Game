@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: veil_strategist
   cardName: Veil Strategist
   category: 0
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 2dd02fbdfca3f4244a241a784c0ac94f, type: 3}
   effectText: 'When this card is summoned: You can add 1 Normal Trap from your Graveyard
     to your hand. That card must be Set normally and cannot be activated during the
     turn it is Set.'

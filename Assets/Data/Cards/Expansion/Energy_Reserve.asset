@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: energy_reserve
   cardName: Energy Reserve
   category: 1
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: cc14d5c85735b2a44a11a1e2cade6260, type: 3}
   effectText: Restore 1 available Energy. If your LP are lower than your opponent's,
     restore 1 additional available Energy. You cannot exceed your maximum Energy.
   copyLimitOverride: 0

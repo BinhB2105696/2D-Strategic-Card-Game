@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: logistics_squire
   cardName: Logistics Squire
   category: 0
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: d70dd7f31f7063f4b8b30902eb67d1b5, type: 3}
   effectText: 'When this card is summoned: You can attach 1 Energy to 1 other monster
     you control, without spending available Energy. This card cannot attack during
     the turn it is summoned.'

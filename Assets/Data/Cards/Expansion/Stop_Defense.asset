@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: stop_defense
   cardName: Stop Defense
   category: 1
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: d2f20bad28981344e8f6a9a1544cb6d7, type: 3}
   effectText: Pay 1 Energy; target 1 Defense Position monster your opponent controls;
     change it to Attack Position.
   copyLimitOverride: 0

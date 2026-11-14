@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: energy_reallocation
   cardName: Energy Reallocation
   category: 1
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 1302ec5e1a73c974da1e356be1da2f98, type: 3}
   effectText: Target 1 monster you control with allocated Energy; remove 1 of its
     Energy, then restore 1 available Energy, up to your maximum.
   copyLimitOverride: 0

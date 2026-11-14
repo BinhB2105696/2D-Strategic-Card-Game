@@ -15,11 +15,12 @@ MonoBehaviour:
   cardId: guardian_shift
   cardName: Guardian Shift
   category: 2
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: bd0cf9b06a4b1de439b39286d65b1ecb, type: 3}
   effectText: 'When an opponent''s monster attacks a monster you control: That monster
     gains 500 DEF until the end of this turn. If it is in Attack Position, change
     it to Defense Position, then remove all its Energy. You can only use this effect
     of Guardian Shift once per turn.'
+  copyLimitOverride: 0
   monsterAttribute: 0
   monsterRank: 0
   monsterType: 0

@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: thorn_bastion
   cardName: Thorn Bastion
   category: 0
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: ff1f7f7a62c67b048b393de24e3f9c13, type: 3}
   effectText: If this Defense Position card loses HP from battle, inflict effect
     damage to the attacking monster equal to the HP this card actually lost, up to
     250, even if this card is KO'd. This reflected damage does not trigger further

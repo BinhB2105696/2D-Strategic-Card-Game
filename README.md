@@ -324,8 +324,9 @@ This structure may change as implementation progresses.
 - [ ] Windows build
 - [ ] Hard Bot after expanded cards/rules stabilize
 - [ ] ML/AI data preparation, training experiment and comparative thesis evaluation
-- [ ] Offline in-match UI/animation polish (immediate priority)
-- [ ] Expanded cards and diverse strategic decks with balance/interaction checks
+- [ ] Further offline in-match UI/animation polish and device acceptance
+- [x] 41-card catalog, three strategic 30-card presets and 37 new integrated artworks (Editor/Normal PvE display accepted)
+- [ ] Expanded-card/deck balance and interaction checks, then a frozen experimental baseline
 - [ ] Thesis documentation and final build
 
 ## Documentation
@@ -338,8 +339,14 @@ This document is intended to be updated whenever important gameplay, architectur
 
 ## Current Status
 
-Updated 11 November 2026. Current direction: **offline UI/animation first, card/deck diversity next, then Hard Bot and reproducible ML/AI research**. PvP/accounts are deferred until last if time permits. The connected PvP prototype is retained, but its presentation has not met student expectations; this documentation update does not implement new gameplay or training.
-Latest pushed checkpoint: **Windows replay/state hashes and AI data contract MVP, plus verified PvP SDK installation** (`f51a4e6`). The earlier Normal tactical/evaluation checkpoint is `bd5d71d`; later PvP work is not described as a pushed checkpoint.
+Updated 14 November 2026. Current checkpoint: **41-card artwork integration and Normal-bot PvE display acceptance**. Offline quality, strategic decks and reproducible Hard/ML research remain the priority; PvP/accounts are deferred until last if time permits.
+Previous pushed checkpoints: `663228a` (existing-card balance, 24 new cards and three deck presets), `da6e788` (accepted offline animation improvements), `be08740` (PvP prototype and offline-first priorities), `f51a4e6` (replay/AI contract and verified SDKs), and `bd5d71d` (Normal evaluation).
+
+The catalog contains **41 designs: 21 Monsters, 17 Spells and 3 Traps**, with rules/catalog version 4. Three 30-card presets are available in Deck Builder: **Starter Balance v4**, **Crimson Assault** and **Aegis Bastion**. New profiles start with these; older profiles append them once while preserving existing decks and selection, with capacity increased to six saved decks. Arcane Archivist and Energy Wisp have a two-copy limit; other cards retain the normal three-copy limit.
+
+**Artwork acceptance, 14 November:** 37 approved 4:3 illustrations were moved into `Assets/Art/Cards/Monsters`, `Spells` and `Traps` (17/17/3), imported using Stone Guardian's sprite/platform settings and assigned to their CardData. Stone Guardian, Sky Sage, Gravebound Imp and Legendary Fighter retain their existing artwork. The three replaced old PNGs went to Windows Recycle Bin while their metadata/GUIDs were retained. `CardArtworkImportTool` is Editor-only and saves just the affected assets; verification compares named settings and actual platform overrides rather than raw internal records. The student confirmed import/verification PASS and correct artwork display in a Normal-bot PvE match. See [artwork checklist](Artworks/ARTWORK_PROGRESS.md). This acceptance covers presentation in the Editor; expanded effect/chain coverage, new-deck strength and Android acceptance remain separate work. No Hard bot or trained ML policy exists yet.
+
+The earlier Normal win rates below belong to the old decks/catalog. Rebuild the Windows headless runner and regenerate its catalog/presets before collecting version-4 experimental data; rebuild Android before device testing the current artwork and balance.
 Earlier checkpoints include `8425b84` (runner acceptance handoff), `0027715`
 (headless runner), and `977a734` (Normal Bot, Duel mode, Auto, compact HP display).
 The original offline 0.1.0 Android APK built with 0 errors and 0 warnings, is approximately 35.52 MiB,
@@ -366,9 +373,10 @@ As of 19 October 2026, the local hot-seat match supports the Monster combat
 loop plus playable Normal and Equip Spells, one Field Spell per player, Set
 Normal/Counter Traps, targeted and triggered effects, legal-response
 filtering, and a simple Speed 1/2/3 last-in-first-out chain. Response prompts
-are skipped when a player has no legal response. The fixed 30-card sample deck
-contains 17 card designs with no more than three copies of one design. Edit
-Mode prepares or repairs its required sample data before Play Mode.
+are skipped when a player has no legal response. The original fixed 30-card sample deck
+used the initial 17-design catalog; the current 41-card catalog and three strategic
+presets are described above. Existing-card and expansion data tools are explicit
+Editor commands and must not be rerun to overwrite manual balance edits.
 
 The core now exposes one complete legal-action list for the UI and bots. An
 initial deterministic Easy Bot selects only from that list and submits every
@@ -395,7 +403,7 @@ Explicit Fast/Skip, all-category presentation acceptance, and Android
 performance/touch acceptance remain incomplete.
 
 A separate AppShell now provides a local guest profile, local deck saves,
-Profile/Settings, Deck Builder, two validated preset decks, and a selected-deck
+Profile/Settings, Deck Builder, three validated 30-card preset decks, and a selected-deck
 PvE handoff against Easy or Normal Bot through the Main Menu's Duel mode selector.
 Its original focused Editor verification passed on 21
 October for save/load safety, deck validation, selected-deck sessions, Easy Bot
@@ -424,12 +432,13 @@ an optional research target. Keep Easy/Normal fixed as reference opponents for l
 See [experiment notes](Tools/Simulation/TESTING_NOTES.md) for exact seeds, paths,
 group results and reproduction commands. Large raw results remain local on D.
 The existing offline-demo APK predates this update; rebuild it before testing the
-new balance/Normal on Android. Updated Normal/Auto Play Mode acceptance is pending.
+new balance/Normal on Android. The 14 November Normal PvE check accepted artwork display;
+expanded tactical/Auto/effect combinations still require their own focused acceptance.
 
 ### Important remaining work
 
 - First polish offline in-match UI, input locking and the ordered animation/feedback for draw, summon, attacks, damage, destruction and effect/chain resolution. Verify a readable full-match flow on Editor and Android; retain the accepted basic Duel Log, with further polish scheduled separately.
-- Expand cards and usable decks with distinct strategic roles and interactions; check balance and representative effect/chain cases, then freeze a versioned card/rule catalog for experiments.
+- Validate the 41-card pool and three strategic decks with balance and representative effect/chain cases, then freeze a versioned card/rule/deck baseline for experiments; extend the pool when needed.
 - Preserve the accepted Easy/Normal references and the approximately 7:3 Normal results. Build and evaluate Hard after the expanded rules/catalog stabilize; do not require a fixed win-rate gap between every bot tier.
 - Extend the existing runner/replay/hash/AI contract for the chosen search/training method. Separate training/tuning and evaluation seeds/decks; record versions, reproducible commands, outcomes, decision time and resource use for the thesis. Training has not started.
 - Validate offline Android touch/readability/performance, saves and complete matches; prepare a Windows build and report/final-build evidence.

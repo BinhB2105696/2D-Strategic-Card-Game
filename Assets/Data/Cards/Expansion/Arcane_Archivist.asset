@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: arcane_archivist
   cardName: Arcane Archivist
   category: 0
-  artwork: {fileID: 0}
+  artwork: {fileID: 21300000, guid: 53342b24d98d1e64696724dd99c85eba, type: 3}
   effectText: 'During your Main Phase: Pay 1 Energy; add 1 Spell or Trap from your
     Deck to your hand, reveal it, then shuffle your Deck. You can include up to 2
     copies of this card in your Deck.'

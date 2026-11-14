@@ -244,6 +244,8 @@ separate action available only in End.
 
 ## 9. Cards and Decks
 
+Current catalog, 14 November: **41 designs (21 Monsters, 17 Spells, 3 Traps)**, rules/catalog version 4. Arcane Archivist and Energy Wisp allow two copies per deck; the other cards retain the normal three-copy limit. Deck Builder provides Starter Balance v4, Crimson Assault and Aegis Bastion, each 30 cards; old profiles append these once without replacing saved decks/selection, with six saved slots. The initial sample catalog/decks described in older progress notes are historical.
+
 - Categories: Monster, Spell, Trap.
 - Monster attributes: Metal, Wood, Fire, Water, Earth, Wind.
 - Monster ranks: Basic, Advanced, Supreme, Ultimate.
@@ -632,7 +634,20 @@ Do not install networking packages until local core actions are deterministic an
 
 ## 15. Current Progress
 
-Updated direction, 11 November: prioritize offline in-match UI/animation, expanded cards and strategic decks, then Hard and ML/AI research preparation. Easy/Normal, the headless runner and Windows/Mono replay/hash/AI-contract foundation exist; Hard and actual model training are not implemented. The student tested a connected Editor/Android PvP duel but did not accept its presentation. PvP/accounts are retained as unfinished prototypes/future work and scheduled last if time remains. No code/assets are changed by this documentation update.
+Updated 14 November: offline artwork integration is accepted in an Editor Normal-bot PvE match. Continue offline quality, strategic deck/rule validation and reproducible Hard/ML research preparation. Easy/Normal, the headless runner and Windows/Mono replay/hash/AI-contract foundation exist; Hard and actual model training are not implemented. PvP/accounts remain unfinished and scheduled last if time remains.
+
+### Artwork checkpoint — 14 November 2026
+
+- Previous pushed checkpoints: 663228a (balance v3, expansion v4 and three decks) and da6e788 (accepted offline animation improvements). The catalog is now 41 designs, including 24 expansion cards. Earlier 17-card/two-preset descriptions below refer to the old baseline.
+- 37 approved landscape 4:3 artworks were moved from Artworks/Cards to Assets/Art/Cards/Monsters, Spells and Traps, totaling 17/17/3. Stone Guardian, Sky Sage, Gravebound Imp and Legendary Fighter retain their existing artwork.
+- CardArtworkImportTool.cs adds explicit Import and Assign / Verify menus under Card Game > Art. It copies Stone_Guadian.png's Single Sprite/import/platform configuration and assigns the corresponding CardData artwork field. It changes no gameplay rules, bot policy or card stats.
+- The old Dawnwing_Fairy, Fire_Dragon and Tide_Sprite PNGs were sent to Windows Recycle Bin; their .meta files/GUIDs remain intact to preserve references. Other image assets are outside the replacement scope.
+- Initial verification failed at the importer comparison. The corrected verifier compares named public configuration and default/overridden platform values, ignores irrelevant internal ordering, and reports precise differences. The student subsequently confirmed import/verification PASS and correct card artwork display in a Normal PvE match.
+- Only the affected textures and CardData are saved. Automatic serialization added some zero-valued copyLimitOverride fields to existing cards; zero retains the standard three-copy limit. No project-wide SaveAssets/Refresh or scene rewrite is used.
+- Artwork checklist: Artworks/ARTWORK_PROGRESS.md. Unselected drafts, source style references and old prompts remain local. No new prompt files are saved. Artwork approval precedes copying into the project.
+- Outstanding: representative new-effect/chain cases, balanced deck experiments, device readability/performance and further UI/animation polish. Historical Normal ~7:3 results used the old decks/catalog. Rebuild the Windows runner/catalog/presets before new data, and rebuild APK before checking the updated assets on Android.
+
+The following dated checkpoints retain historical build/test evidence; their version numbers and pending work do not override the current checkpoint above.
 
 Checkpoint: **Offline Demo 0.1.0 + Duel Log**, 9 November; previous checkpoint `977a734`.
 The offline APK built in the existing Editor with 0 errors and 0 warnings.
@@ -651,7 +666,7 @@ actions, freezes separate hidden-info views, and reuses text rows for scrolling.
 Privacy, reveal-history, ordering, maximum-HP and duplicate-capture checks passed.
 It is in-memory for the current match, not a persisted event journal or post-match
 viewer. Further Duel Log standardization, detailed effect/chain review and card
-expansion are explicitly deferred by the student. No Google login/cloud sync was added.
+expansion were deferred at that earlier checkpoint; the 41-card expansion and artwork checkpoint above supersede that card-pool status. No Google login/cloud sync was added.
 The November balance slice implements capped recovery, damage-preserving maximum
 HP, rank-based KO penalties, the 6000 LP trial, seven Monster stat changes and
 Stone/Guardian DEF adjustments. The student reported HP/KO diagnostic PASS.
@@ -773,8 +788,7 @@ Completed or explored:
 
 Known next gaps:
 
-1. Polish offline in-match UI, input locking and animation/event order, then run a focused Play-mode acceptance pass for the newly assigned Monster
-   artwork and remaining all-category edge cases: Equip cleanup, Field replacement/maintenance,
+1. Continue offline UI/input/animation polish after the accepted artwork display check, and validate remaining all-category edge cases: Equip cleanup, Field replacement/maintenance,
    Trap set-turn lockout, attack responses, Counter Trap negation,
    two-or-more-link LIFO resolution, insufficient Energy, full zones, pending
    triggers at match end, and the match-result overlay.
