@@ -91,6 +91,9 @@ public sealed class CardInstance
         SetTurnNumber = -1;
     }
 
+    // All instance fields are scalar values or the immutable card definition.
+    internal CardInstance CopyForSearch() => (CardInstance)MemberwiseClone();
+
     public void MoveToZone(CardZone destination, bool faceDown)
     {
         Zone = destination;

@@ -1,55 +1,49 @@
-# Handoff — Replay foundation and verified PvP SDK checkpoint
-Updated: 10 November 2026. Unity 2022.3.62f3; Android first, Windows second.
-Read root AGENTS.md, then this file only; inspect other sections as needed.
+# HANDOFF â€” Hard H3 / AI preparation checkpoint
+Updated 2026-11-17; base commit4618e4a. Read AGENTS.md first.
 
 ## Current goal
-Checkpoint replay/hash/AI-contract MVP and compatible PvP SDK installation.
-User authorized updating docs, committing and pushing this checkpoint.
-Next: discuss room-code PvP MVP design; no matchmaking. Hard/ML deferred.
+- Thesis: multi-level bots in a2D tactical card game; Hard target>=75% vs Normal, ML comparison later.
+- Current review entry: Docs/AI_BOT_CHECKPOINT.md. Roadmap records history; read relevant sections only.
 
-## Done — replay foundation
-- New SimulationStateHash.cs, SimulationAiContract.cs, SimulationReplayFormat.cs
-  and SimulationReplay.cs; SimulationEngine/Runner integration uses schema 2.
-- New ReplayFoundationVerification.cs, Replay-Simulation.ps1, Test-Replay.ps1.
-- Read-only private pure-state hashes, replay validation, masked AI contract,
-  legal candidates/masks, per-player transitions and terminal rewards.
-- Pure verification PASS; Windows runner build 0 errors/0 warnings.
-- Native acceptance 18/18 PASS: 6 matches, 1,222 actions, 922 decisions;
-  11 corrupted/version/legacy traces rejected, 1 limited prefix verified.
-- README, PROJECT_CONTEXT, simulation README/TESTING_NOTES updated.
-- Core/rules/Easy/Normal unchanged. No actual training or network protocol.
+## Done
+- Hard sources: Assets/Scripts/Bots/{HardBot,HardTacticalPolicy,HardStrategicEvaluation,IStateObservingBot}.cs.
+- H3 uses bounded single-observer ISMCTS with public hidden-state sampling, Normal guidance, tactical preparation and hand/board portfolio evaluation.
+- Search defaults96 iterations/depth6/rollout64/horizon+2; stops at next own Main boundary.
+- Exact fork/public accessors were added earlier in Core; Normal exposes its existing score/interface. No Core/Easy/Normal tuning during H1-H3.
+- AI schema2:21 global features,18/entity, public retaliation marks; no true hidden hand/deck order/seed in policy inputs.
+- Two verified pilot datasets, simulation-only collection decks and Tools/Training encoder/data preparation exist.
+- Normal imitation subset1124 meaningful-choice samples:878 train,246 validation; no trainer/model/inference yet.
+- Latest experiment: H3 vs Normal, Starter Balance v4, seeds420001-420060,2 swapped seats each:72W/48L=60%.
+- Batches23/40,27/40,22/40.120 Finished;0 errors/draws/truncations. Target75% not achieved.
+-60 paired seeds:14 double wins,2 double losses(420047,420049),44 splits.
+- Hardseat0=32/60,seat1=40/60;first41/60,second31/60. Seat index is not move order.
+- Local result: SimulationResults/Experiments/Hard/H3_vs_Normal_StarterBalance_20261116_132958/.
+- Git-reviewable summaries and5 standout-pair records: Docs/AI_BOT_EVIDENCE/h3-vs-normal/.
+- Prior H3 checks PASS:578 prototype checks plus H1/H2/H3 tactical cases;6 encoder tests previously PASS.
 
-## Done — PvP SDK installation
-- NGO 1.15.1, Relay 1.2.0, Authentication 3.6.0, Transport 1.5.0;
-  Core 1.15.1, QoS 1.3.2, Mono Cecil 1.11.6, Newtonsoft JSON 3.2.1.
-- Preserved/pinned Collections 1.2.4, Burst 1.8.21, Mathematics 1.2.6.
-- PvpSdkVerification.cs PASS 2026-11-10T07:30:48Z; student confirmed
-  Console 0 errors/0 warnings. Original 54 packages and Editor unchanged.
-- Expired Unity login blocked downloads; re-login resolved it. Diagnostic
-  PackageInfo collision fixed with a type alias. Safe Mode exited successfully.
-- Manifest, resolved package lock, verification plan/report checkpointed.
-- MPS unified SDK not installed: evaluated versions need Collections 2.2.1.
-  Standalone Relay is legacy; review service support before production release.
+## In progress / next
+- User authorized publishing this checkpoint to origin/main; inspect Git history for the resulting commit.
+- Historical comparisons: Docs/AI_BOT_HISTORY.md; Claude review prompt: Docs/CLAUDE_HARD_REVIEW_PROMPT.md.
+- Historical comparisons: Docs/AI_BOT_HISTORY.md; Claude review prompt: Docs/CLAUDE_HARD_REVIEW_PROMPT.md.
+- Current analysis priority: sustainable offensive pressure and preserving/dismantling draw engines.
+- Review both-loss seeds alongside double-win guards; do not fix individual seeds with exceptions.
+- User launches long simulation batches after assistant prepares them; no further matches run automatically.
+- ML next: small imitation trainer/inference design; no installs/train/cloud upload without specific approval.
 
-## Next / constraints
-- Design create room -> share code -> join -> 1v1, then service configuration
-  and two-device Android/Windows connectivity. No services configured yet.
-- Never upgrade Unity 2022.3.62f3 or change Core/rules without explicit approval.
-- SDK PASS is installation/API verification, not an online match/device test.
-- Define host authority, private views, lifecycle/disconnects and version checks;
-  simulator private hashes/decks/seeds are not a network sync protocol.
-- Online recovery/history/results unimplemented; preserve local guest/PvE data.
-- Hard/ML workflow saved in PROJECT_CONTEXT section 12 until cards/rules stable.
-- Replay MVP tested Windows/Mono only; schema-1 baselines remain untouched.
-- Existing APK 0.1.0 predates later balance/Normal updates; device checks pending.
-- Preserve unrelated font/AGENTS/dated-handoff edits. No further commit unasked.
+## Important constraints / portability
+- Keep Unity2022.3.62f3/packages. Preserve all uncommitted work; no broad cleanup/refactor.
+- Core/game rules/card definitions/Easy/Normal are read-only unless user specifically authorizes a change.
+- All actions use actual GameRules; no hidden information or seed-specific policy exceptions.
+- Response/trigger search roots currently use explicit Normal fallback; full UI/Player integration is not verified by the standalone benchmark.
+- SimulationResults/ and Tools/Simulation/Control/ are ignored: full traces, binaries, data and prepared pointers remain local.
+- Run-HardBatch.ps1 requires a prepared frozen package; a clone alone cannot reproduce old batches with it.
+- Hard benchmark data is replayVerified=false/trainingEligible=false; published review records are not ML policy inputs.
+- State hashes can depend on executable assembly names; preserve matching runtime/source/catalog metadata.
+- Candidate commit details are in Docs/AI_BOT_CHECKPOINT.md and Tools/Simulation/Control/commit-checkpoint-plan.json.
+- Unrelated TMP font changes, simulation scene generated IDs and old HANDOFF archive are preserved outside the proposed commit.
 
-## Evidence / quick checks
-- Card Game > Networking > Verify Pinned PvP SDKs.
-- SDK plan/status: Tools/Simulation/Control/PvpSdk/{plan,status}.json.
-- Card Game > Simulation > Verify Replay State and AI Contract.
-- Replay report: Tools/Simulation/Control/ReplayAcceptance/20261110_132014_b683aa0f/report.json
-- Source runs: SimulationResults/20261110_062015_7ab0ec9e and 20261110_062116_6c5a775d.
-- Replay output: <run>/replay/<UTC>_<id>/; all generated runs stay on D.
-- Do not repeat passed tests without changes/new reason.
-- Prior pushed checkpoint bd5d71d: Normal 108/150; unseen seeds 107/150.
+## Quick verification commands (when needed)
+- git diff --check -- Assets/Scripts Docs Tools Assets/Simulation/SimulationCatalog.asset AGENTS.md
+- py -3 -B -m unittest discover -s Tools/Training -p test_action_features.py
+- .\Tools\Simulation\Run-HardBatch.ps1 -ValidateOnly (local prepared package only; no matches)
+- Unity menu: Card Game/Simulation/Verify Hard Bot Prototype (not a win-rate benchmark).

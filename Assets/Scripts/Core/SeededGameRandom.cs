@@ -18,6 +18,8 @@ public sealed class SeededGameRandom
         state = InitialSeed;
     }
 
+    internal SeededGameRandom CopyForSearch() => (SeededGameRandom)MemberwiseClone();
+
     public uint NextUInt()
     {
         uint value = state;

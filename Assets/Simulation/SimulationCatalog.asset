@@ -13,13 +13,31 @@ MonoBehaviour:
   m_Name: SimulationCatalog
   m_EditorClassIdentifier: 
   cards:
+  - {fileID: 11400000, guid: 36680de7ef091aa46afa111ae0ba2d9a, type: 2}
+  - {fileID: 11400000, guid: 67a164c633bf98c489ac823adb536598, type: 2}
+  - {fileID: 11400000, guid: 2df4819135935fa4f999778f9c701373, type: 2}
+  - {fileID: 11400000, guid: d9ffe2d316917b249ba5987423d9b43f, type: 2}
+  - {fileID: 11400000, guid: 7db8f8751d93991429917d4611317a1b, type: 2}
+  - {fileID: 11400000, guid: fe8be6fc4a5af314aa4d63d4a66a3cc8, type: 2}
+  - {fileID: 11400000, guid: 8e553d81b71e3d04aae3293469df3173, type: 2}
+  - {fileID: 11400000, guid: f5233bebbc8d25c4e8dc4f586cf00c5c, type: 2}
   - {fileID: 11400000, guid: a140938ea8a64134c8abeea084df88a2, type: 2}
+  - {fileID: 11400000, guid: 11e832f6c84684f4db3d9e147b33b12f, type: 2}
+  - {fileID: 11400000, guid: a3b1fbf747c0c6f47831a963bde01ca8, type: 2}
+  - {fileID: 11400000, guid: f2dc2f1ed047e114ca30af35b9dd1942, type: 2}
+  - {fileID: 11400000, guid: c5cab141b4e25ed4c84149291e38f8e1, type: 2}
+  - {fileID: 11400000, guid: 185f76b98022a31409a0a3893013733b, type: 2}
+  - {fileID: 11400000, guid: 41364373937d25048914e9c76dbe906c, type: 2}
   - {fileID: 11400000, guid: f53d77e0df5b4ef429277b4ceee264f9, type: 2}
+  - {fileID: 11400000, guid: a047cb2533a16914da1a4e911560a273, type: 2}
+  - {fileID: 11400000, guid: 70ef123d9de31ed42affb24bf0ae566c, type: 2}
   - {fileID: 11400000, guid: c3a03a47af6998941af072a4a1081ab8, type: 2}
   - {fileID: 11400000, guid: 72f42de9b09afb04790530dd59237ecd, type: 2}
   - {fileID: 11400000, guid: cb45a78777b48a04898c79d6800fe7ec, type: 2}
   - {fileID: 11400000, guid: 268df1d6ed4298240a654e4b0eb5d9df, type: 2}
+  - {fileID: 11400000, guid: b07bac2afe22c7c479db945da0a2e470, type: 2}
   - {fileID: 11400000, guid: 1a524d724c6c0fa43bc0c288cb7c9e03, type: 2}
+  - {fileID: 11400000, guid: a5032362c8b8f5f4781ae69ac93dcc91, type: 2}
   - {fileID: 11400000, guid: 5013b1579e1208e4b968db853be53926, type: 2}
   - {fileID: 11400000, guid: ebfab4b51b0bd4247a76a5bbb774b9fa, type: 2}
   - {fileID: 11400000, guid: 64d1fa7413e0a9548a95c3ef2abe6a93, type: 2}
@@ -28,100 +46,180 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8841758a12cc6e04b8ba4714318287f2, type: 2}
   - {fileID: 11400000, guid: feb9fb58a41ada14a910ae6618204b9a, type: 2}
   - {fileID: 11400000, guid: b3e73cbb97b21b94dbf7ef0a65e3c46d, type: 2}
-  - {fileID: 11400000, guid: 38c1d8188cb13504d8f79ecfe91235c7, type: 2}
-  - {fileID: 11400000, guid: b50309f0d74fc354d8b4e9f5e26e1e06, type: 2}
-  - {fileID: 11400000, guid: 1daa92e7d25554843ba2aa0d0f25c797, type: 2}
-  - {fileID: 11400000, guid: 41364373937d25048914e9c76dbe906c, type: 2}
-  - {fileID: 11400000, guid: c5cab141b4e25ed4c84149291e38f8e1, type: 2}
-  - {fileID: 11400000, guid: 185f76b98022a31409a0a3893013733b, type: 2}
-  - {fileID: 11400000, guid: f2dc2f1ed047e114ca30af35b9dd1942, type: 2}
-  - {fileID: 11400000, guid: fe8be6fc4a5af314aa4d63d4a66a3cc8, type: 2}
-  - {fileID: 11400000, guid: f5233bebbc8d25c4e8dc4f586cf00c5c, type: 2}
-  - {fileID: 11400000, guid: a3b1fbf747c0c6f47831a963bde01ca8, type: 2}
-  - {fileID: 11400000, guid: a5032362c8b8f5f4781ae69ac93dcc91, type: 2}
-  - {fileID: 11400000, guid: 11e832f6c84684f4db3d9e147b33b12f, type: 2}
-  - {fileID: 11400000, guid: 7db8f8751d93991429917d4611317a1b, type: 2}
-  - {fileID: 11400000, guid: d9ffe2d316917b249ba5987423d9b43f, type: 2}
-  - {fileID: 11400000, guid: b07bac2afe22c7c479db945da0a2e470, type: 2}
-  - {fileID: 11400000, guid: 8e553d81b71e3d04aae3293469df3173, type: 2}
   - {fileID: 11400000, guid: 418de6bec94d14f41be5755b25f4cf85, type: 2}
   - {fileID: 11400000, guid: 6d1ef93346deb9045b0f3e120a41786b, type: 2}
-  - {fileID: 11400000, guid: 67a164c633bf98c489ac823adb536598, type: 2}
-  - {fileID: 11400000, guid: aa854d47531c2d04aa6d6362692dabbf, type: 2}
-  - {fileID: 11400000, guid: 36680de7ef091aa46afa111ae0ba2d9a, type: 2}
-  - {fileID: 11400000, guid: 70ef123d9de31ed42affb24bf0ae566c, type: 2}
   - {fileID: 11400000, guid: 5e3d85bd86628ab4faa52702a213d188, type: 2}
+  - {fileID: 11400000, guid: 1daa92e7d25554843ba2aa0d0f25c797, type: 2}
+  - {fileID: 11400000, guid: 38c1d8188cb13504d8f79ecfe91235c7, type: 2}
+  - {fileID: 11400000, guid: b50309f0d74fc354d8b4e9f5e26e1e06, type: 2}
+  - {fileID: 11400000, guid: aa854d47531c2d04aa6d6362692dabbf, type: 2}
   - {fileID: 11400000, guid: dc44fa2e64716464f8500b0afadb212f, type: 2}
-  - {fileID: 11400000, guid: 2df4819135935fa4f999778f9c701373, type: 2}
-  - {fileID: 11400000, guid: a047cb2533a16914da1a4e911560a273, type: 2}
   presets:
   - deckId: simulation_preset_0
-    name: Starter Balance
+    name: Starter Balance v4
     cardIds:
-    - sample_stone_guardian
-    - sample_stone_guardian
-    - sample_stone_guardian
-    - sample_tide_sprite
-    - sample_tide_sprite
-    - sample_tide_sprite
     - dawnwing_fairy
     - dawnwing_fairy
-    - dawnwing_fairy
-    - gravebound_imp
-    - gravebound_imp
-    - gravebound_imp
+    - bloodfang_raider
+    - bloodfang_raider
+    - battle_herald
+    - logistics_squire
+    - siegebreaker
     - fire_dragon
-    - fire_dragon
+    - arcane_archivist
     - sample_sky_sage
-    - legendary_fighter
+    - sample_stone_guardian
+    - sample_stone_guardian
+    - bastion_keeper
+    - energy_wisp
+    - sample_tide_sprite
+    - thorn_bastion
+    - aegis_sentinel
     - sample_arcane_insight
     - sample_arcane_insight
     - sample_quick_strike
-    - sample_quick_strike
-    - sample_iron_blade
+    - stop_defense
+    - energy_reserve
+    - dispel_magic
+    - elite_summons
+    - battlefield_medicine
     - test_field_spell
-    - energy_venom
-    - power_transfer
-    - power_transfer
-    - temporal_lock
     - sample_ambush
     - sample_ambush
     - sample_divine_reversal
     - guardian_shift
   - deckId: simulation_preset_1
-    name: Guardian Control
+    name: Crimson Assault
     cardIds:
-    - sample_stone_guardian
-    - sample_stone_guardian
-    - sample_stone_guardian
-    - sample_tide_sprite
-    - sample_tide_sprite
-    - sample_tide_sprite
     - dawnwing_fairy
     - dawnwing_fairy
     - dawnwing_fairy
-    - gravebound_imp
-    - gravebound_imp
-    - gravebound_imp
+    - bloodfang_raider
+    - bloodfang_raider
+    - bloodfang_raider
+    - battle_herald
+    - battle_herald
+    - logistics_squire
+    - logistics_squire
+    - siegebreaker
+    - siegebreaker
+    - scar_duelist
     - fire_dragon
-    - fire_dragon
+    - arcane_archivist
     - sample_sky_sage
-    - legendary_fighter
-    - sample_arcane_insight
+    - sample_quick_strike
+    - sample_quick_strike
+    - stop_defense
+    - stop_defense
+    - energy_reserve
+    - energy_reserve
     - sample_arcane_insight
     - sample_arcane_insight
     - sample_iron_blade
-    - sample_iron_blade
-    - test_field_spell
-    - test_field_spell
-    - energy_venom
-    - energy_venom
-    - guardian_shift
-    - guardian_shift
+    - dispel_magic
+    - power_transfer
+    - elite_summons
+    - sample_ambush
+    - sample_divine_reversal
+  - deckId: simulation_preset_2
+    name: Aegis Bastion
+    cardIds:
+    - dawnwing_fairy
+    - dawnwing_fairy
+    - arcane_archivist
+    - sample_sky_sage
+    - sample_stone_guardian
+    - sample_stone_guardian
+    - bastion_keeper
+    - bastion_keeper
+    - energy_wisp
+    - energy_wisp
+    - field_medic
+    - sample_tide_sprite
+    - ambush_lancer
+    - thorn_bastion
+    - aegis_sentinel
+    - aegis_sentinel
+    - stop_defense
+    - energy_reserve
+    - sample_arcane_insight
+    - sample_arcane_insight
+    - dispel_magic
+    - elite_summons
+    - emergency_reinforcements
+    - defensive_outpost
+    - recover_the_fallen
     - sample_ambush
     - sample_ambush
     - sample_divine_reversal
+    - guardian_shift
+    - guardian_shift
+  - deckId: collection_resources_v1
+    name: Collection Resources v1
+    cardIds:
+    - dawnwing_fairy
+    - dawnwing_fairy
+    - dawnwing_fairy
+    - gravebound_imp
+    - gravebound_imp
+    - gravebound_imp
+    - static_leech
+    - static_leech
+    - static_leech
+    - logistics_squire
+    - logistics_squire
+    - energy_wisp
+    - energy_wisp
+    - arcane_archivist
+    - arcane_archivist
+    - veil_strategist
+    - legendary_fighter
+    - change_of_plans
+    - change_of_plans
+    - change_of_plans
+    - energy_reallocation
+    - energy_reallocation
+    - energy_venom
+    - energy_venom
     - temporal_lock
-  sourceRevision: bd5d71df17978c92cd2d4019ef179c9bf7a8300a
-  sourceFingerprint: 
-  catalogFingerprint: 
+    - energy_reserve
+    - elite_summons
+    - sample_ambush
+    - sample_ambush
+    - guardian_shift
+  - deckId: collection_tributes_v1
+    name: Collection Tributes v1
+    cardIds:
+    - dawnwing_fairy
+    - dawnwing_fairy
+    - dawnwing_fairy
+    - gravebound_imp
+    - gravebound_imp
+    - gravebound_imp
+    - battle_herald
+    - battle_herald
+    - bastion_keeper
+    - bastion_keeper
+    - ambush_lancer
+    - ambush_lancer
+    - logistics_squire
+    - logistics_squire
+    - veil_strategist
+    - veil_strategist
+    - legendary_fighter
+    - legendary_fighter
+    - energy_wisp
+    - energy_wisp
+    - elite_summons
+    - elite_summons
+    - change_of_plans
+    - change_of_plans
+    - temporal_lock
+    - battlefield_medicine
+    - energy_reserve
+    - sample_ambush
+    - sample_ambush
+    - guardian_shift
+  sourceRevision: 4618e4a1bfb083c01cacf06127c14b9b9cc665d3
+  sourceFingerprint: e0e8ceccdeb1ea3d9081c783c28afb4058d05a89ef1ac4b7471de27d5b57f771
+  catalogFingerprint: c0267e994f56220bd5a320da48c3b1afd4ae20804f4c82ac1a116185cb25c7b4

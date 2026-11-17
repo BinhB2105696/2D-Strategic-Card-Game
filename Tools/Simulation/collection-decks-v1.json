@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "decks": [
+    {
+      "deckId": "collection_resources_v1",
+      "name": "Collection Resources v1",
+      "cardIds": [
+        "dawnwing_fairy", "dawnwing_fairy", "dawnwing_fairy",
+        "gravebound_imp", "gravebound_imp", "gravebound_imp",
+        "static_leech", "static_leech", "static_leech",
+        "logistics_squire", "logistics_squire",
+        "energy_wisp", "energy_wisp", "arcane_archivist", "arcane_archivist",
+        "veil_strategist", "legendary_fighter",
+        "change_of_plans", "change_of_plans", "change_of_plans",
+        "energy_reallocation", "energy_reallocation", "energy_venom", "energy_venom",
+        "temporal_lock", "energy_reserve", "elite_summons",
+        "sample_ambush", "sample_ambush", "guardian_shift"
+      ]
+    },
+    {
+      "deckId": "collection_tributes_v1",
+      "name": "Collection Tributes v1",
+      "cardIds": [
+        "dawnwing_fairy", "dawnwing_fairy", "dawnwing_fairy",
+        "gravebound_imp", "gravebound_imp", "gravebound_imp",
+        "battle_herald", "battle_herald", "bastion_keeper", "bastion_keeper",
+        "ambush_lancer", "ambush_lancer", "logistics_squire", "logistics_squire",
+        "veil_strategist", "veil_strategist", "legendary_fighter", "legendary_fighter",
+        "energy_wisp", "energy_wisp",
+        "elite_summons", "elite_summons", "change_of_plans", "change_of_plans",
+        "temporal_lock", "battlefield_medicine", "energy_reserve",
+        "sample_ambush", "sample_ambush", "guardian_shift"
+      ]
+    }
+  ]
+}

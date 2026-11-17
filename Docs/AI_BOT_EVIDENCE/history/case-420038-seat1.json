@@ -1,0 +1,4036 @@
+{
+  "seed": 420038,
+  "hardSeat": 1,
+  "purpose": "selected historical action review; not a complete replay or ML input",
+  "versions": {
+    "H0": {
+      "result": {
+        "hardWon": true,
+        "winnerSeat": 1,
+        "firstPlayer": 0,
+        "turns": 26,
+        "finalLp": [
+          0,
+          2000
+        ],
+        "matchId": "s420038_leg1"
+      },
+      "observationNote": "first Main observation where available, otherwise first own-turn observation; opponent/automatic/routine pass/phase actions omitted",
+      "turns": [
+        {
+          "turn": 2,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "sample_stone_guardian",
+            "bloodfang_raider",
+            "stop_defense",
+            "dawnwing_fairy"
+          ],
+          "actions": [
+            {
+              "sequence": 14,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 15,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 16,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 17,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 18,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 19,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 21,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "siegebreaker"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 22,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bloodfang_raider",
+              "targets": [
+                "siegebreaker"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "lp": [
+            5500,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 150,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 400,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "siegebreaker",
+              "hp": 650,
+              "atk": 1050,
+              "def": 250,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "stop_defense",
+            "bloodfang_raider",
+            "bastion_keeper"
+          ],
+          "actions": [
+            {
+              "sequence": 43,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 44,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 45,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 46,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 48,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bloodfang_raider",
+              "targets": [
+                "siegebreaker"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 49,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 50,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bloodfang_raider",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "lp": [
+            5000,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 400,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "stop_defense",
+            "bastion_keeper",
+            "dispel_magic"
+          ],
+          "actions": [
+            {
+              "sequence": 67,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bastion_keeper",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 68,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "bastion_keeper",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 70,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bastion_keeper",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 71,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 72,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bloodfang_raider",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 8,
+          "lp": [
+            4500,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 400,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "stop_defense",
+            "dispel_magic",
+            "logistics_squire"
+          ],
+          "actions": [
+            {
+              "sequence": 89,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 90,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "logistics_squire",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 91,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 93,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "fire_dragon"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 94,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bloodfang_raider",
+              "targets": [
+                "fire_dragon"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 10,
+          "lp": [
+            4000,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 500,
+              "atk": 650,
+              "def": 100,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 400,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "stop_defense",
+            "dispel_magic",
+            "test_field_spell"
+          ],
+          "actions": [
+            {
+              "sequence": 112,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "test_field_spell",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 113,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "battlefield_medicine",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 115,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bloodfang_raider",
+              "targets": [
+                "fire_dragon"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 116,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "thorn_bastion"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 118,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 12,
+          "lp": [
+            3500,
+            3500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 600,
+              "atk": 550,
+              "def": 600,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1050,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "energy_reserve"
+          ],
+          "actions": [
+            {
+              "sequence": 137,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 140,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 14,
+          "lp": [
+            3500,
+            3500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 600,
+              "atk": 550,
+              "def": 700,
+              "energy": 1,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1050,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "energy_reserve",
+            "thorn_bastion"
+          ],
+          "actions": [
+            {
+              "sequence": 154,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [
+                "sample_stone_guardian"
+              ],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 157,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 16,
+          "lp": [
+            3500,
+            3500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 600,
+              "def": 800,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1050,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "energy_reserve",
+            "siegebreaker"
+          ],
+          "actions": [
+            {
+              "sequence": 171,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "siegebreaker",
+              "targets": [],
+              "tributes": [
+                "thorn_bastion"
+              ],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 172,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "siegebreaker",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 174,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "siegebreaker",
+              "targets": [
+                "thorn_bastion"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 176,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 18,
+          "lp": [
+            3500,
+            2500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "siegebreaker",
+              "hp": 400,
+              "atk": 1250,
+              "def": 450,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 250,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "energy_reserve",
+            "sample_stone_guardian"
+          ],
+          "actions": [
+            {
+              "sequence": 193,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 194,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "energy_reserve",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 195,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "siegebreaker",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 197,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "siegebreaker",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 199,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 20,
+          "lp": [
+            2500,
+            2000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 550,
+              "def": 600,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_tide_sprite",
+              "hp": 600,
+              "atk": 450,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 250,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "sample_ambush"
+          ],
+          "actions": [
+            {
+              "sequence": 215,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 216,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 219,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 22,
+          "lp": [
+            2500,
+            2000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 550,
+              "def": 700,
+              "energy": 2,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_tide_sprite",
+              "hp": 600,
+              "atk": 450,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 250,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "sample_ambush",
+            "arcane_archivist"
+          ],
+          "actions": [
+            {
+              "sequence": 234,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "arcane_archivist",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 235,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "arcane_archivist",
+              "targets": [
+                "sample_arcane_insight"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 236,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_arcane_insight",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 237,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 238,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 239,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 240,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 241,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 243,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "battle_herald",
+              "targets": [
+                "dawnwing_fairy"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 245,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "sample_tide_sprite"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 24,
+          "lp": [
+            2500,
+            1500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 550,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 400,
+              "def": 200,
+              "energy": 0,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 550,
+              "def": 500,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 250,
+              "def": 200,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "guardian_shift"
+          ],
+          "actions": [
+            {
+              "sequence": 268,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "arcane_archivist",
+              "targets": [
+                "sample_arcane_insight"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 269,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_arcane_insight",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 270,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_quick_strike",
+              "targets": [
+                "arcane_archivist"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 271,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "arcane_archivist",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 272,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "arcane_archivist",
+              "targets": [
+                "elite_summons"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 274,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "battle_herald",
+              "targets": [
+                "energy_wisp"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 276,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "arcane_archivist",
+              "targets": [
+                "dawnwing_fairy"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 277,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "logistics_squire"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 26,
+          "lp": [
+            2000,
+            1000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 550,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 550,
+              "def": 500,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "logistics_squire",
+              "hp": 50,
+              "atk": 400,
+              "def": 350,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "energy_wisp",
+              "hp": 700,
+              "atk": 450,
+              "def": 400,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "guardian_shift",
+            "sample_tide_sprite",
+            "elite_summons",
+            "fire_dragon"
+          ],
+          "actions": [
+            {
+              "sequence": 293,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [
+                "battle_herald"
+              ],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 294,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 295,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "dispel_magic",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 296,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "guardian_shift",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 297,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "sample_tide_sprite",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 299,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "logistics_squire"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 300,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "energy_wisp"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        }
+      ]
+    },
+    "H1": {
+      "result": {
+        "hardWon": false,
+        "winnerSeat": 0,
+        "firstPlayer": 0,
+        "turns": 11,
+        "finalLp": [
+          5500,
+          0
+        ],
+        "matchId": "s420038_leg1"
+      },
+      "observationNote": "first Main observation where available, otherwise first own-turn observation; opponent/automatic/routine pass/phase actions omitted",
+      "turns": [
+        {
+          "turn": 2,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "sample_stone_guardian",
+            "bloodfang_raider",
+            "stop_defense",
+            "dawnwing_fairy"
+          ],
+          "actions": [
+            {
+              "sequence": 14,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 15,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 16,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 17,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "lp": [
+            5500,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 0,
+              "position": "Defense"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 350,
+              "atk": 650,
+              "def": 100,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "sample_stone_guardian",
+            "stop_defense",
+            "bastion_keeper"
+          ],
+          "actions": [
+            {
+              "sequence": 39,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 40,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "battlefield_medicine",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 41,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 42,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 43,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 44,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 45,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 47,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 48,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bloodfang_raider",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "lp": [
+            4500,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "bastion_keeper",
+            "dispel_magic"
+          ],
+          "actions": [
+            {
+              "sequence": 66,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bastion_keeper",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 67,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            }
+          ]
+        },
+        {
+          "turn": 8,
+          "lp": [
+            4000,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 100,
+              "atk": 350,
+              "def": 400,
+              "energy": 1,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "logistics_squire"
+          ],
+          "actions": [
+            {
+              "sequence": 86,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 87,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "logistics_squire",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 10,
+          "lp": [
+            2600,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "test_field_spell"
+          ],
+          "actions": []
+        }
+      ]
+    },
+    "H2": {
+      "result": {
+        "hardWon": false,
+        "winnerSeat": 0,
+        "firstPlayer": 0,
+        "turns": 17,
+        "finalLp": [
+          4000,
+          0
+        ],
+        "matchId": "s420038_leg1"
+      },
+      "observationNote": "first Main observation where available, otherwise first own-turn observation; opponent/automatic/routine pass/phase actions omitted",
+      "turns": [
+        {
+          "turn": 2,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "sample_stone_guardian",
+            "bloodfang_raider",
+            "stop_defense",
+            "dawnwing_fairy"
+          ],
+          "actions": [
+            {
+              "sequence": 14,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 15,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 16,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 17,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 18,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 19,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 21,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bloodfang_raider",
+              "targets": [
+                "siegebreaker"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 22,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bloodfang_raider",
+              "targets": [
+                "siegebreaker"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "lp": [
+            5500,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 150,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "siegebreaker",
+              "hp": 400,
+              "atk": 1050,
+              "def": 250,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "sample_stone_guardian",
+            "stop_defense",
+            "bastion_keeper"
+          ],
+          "actions": [
+            {
+              "sequence": 43,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 44,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 45,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 46,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 47,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "battlefield_medicine",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 49,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "dawnwing_fairy"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 50,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "dawnwing_fairy"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 51,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bloodfang_raider",
+              "targets": [
+                "siegebreaker"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "lp": [
+            5000,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "bastion_keeper",
+            "dispel_magic"
+          ],
+          "actions": [
+            {
+              "sequence": 68,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bastion_keeper",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 69,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "bastion_keeper",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 71,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bastion_keeper",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 72,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 73,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 8,
+          "lp": [
+            4500,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "bastion_keeper",
+              "hp": 850,
+              "atk": 200,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "logistics_squire"
+          ],
+          "actions": [
+            {
+              "sequence": 90,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 91,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "logistics_squire",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 92,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 93,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "bastion_keeper",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            }
+          ]
+        },
+        {
+          "turn": 10,
+          "lp": [
+            4000,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 600,
+              "energy": 2,
+              "position": "Defense"
+            },
+            {
+              "card": "bastion_keeper",
+              "hp": 850,
+              "atk": 200,
+              "def": 500,
+              "energy": 1,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "test_field_spell"
+          ],
+          "actions": [
+            {
+              "sequence": 112,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "test_field_spell",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 115,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 12,
+          "lp": [
+            4000,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 550,
+              "def": 900,
+              "energy": 2,
+              "position": "Defense"
+            },
+            {
+              "card": "bastion_keeper",
+              "hp": 250,
+              "atk": 400,
+              "def": 700,
+              "energy": 1,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "energy_reserve"
+          ],
+          "actions": [
+            {
+              "sequence": 133,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 134,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "bastion_keeper",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 136,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bastion_keeper",
+              "targets": [
+                "dawnwing_fairy"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 137,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "dawnwing_fairy"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 139,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 14,
+          "lp": [
+            3000,
+            4000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "energy_reserve",
+            "thorn_bastion"
+          ],
+          "actions": []
+        },
+        {
+          "turn": 16,
+          "lp": [
+            650,
+            4000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "energy_reserve",
+            "thorn_bastion",
+            "siegebreaker"
+          ],
+          "actions": []
+        }
+      ]
+    },
+    "H3-selected": {
+      "result": {
+        "hardWon": true,
+        "winnerSeat": 1,
+        "firstPlayer": 0,
+        "turns": 26,
+        "finalLp": [
+          0,
+          1500
+        ],
+        "matchId": "s420038_leg1"
+      },
+      "observationNote": "first Main observation where available, otherwise first own-turn observation; opponent/automatic/routine pass/phase actions omitted",
+      "turns": [
+        {
+          "turn": 2,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "sample_stone_guardian",
+            "bloodfang_raider",
+            "stop_defense",
+            "dawnwing_fairy"
+          ],
+          "actions": [
+            {
+              "sequence": 14,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 15,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 16,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 17,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 18,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 19,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 21,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bloodfang_raider",
+              "targets": [
+                "siegebreaker"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 22,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bloodfang_raider",
+              "targets": [
+                "siegebreaker"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "lp": [
+            5500,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 150,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "siegebreaker",
+              "hp": 400,
+              "atk": 1050,
+              "def": 250,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "sample_stone_guardian",
+            "stop_defense",
+            "bastion_keeper"
+          ],
+          "actions": [
+            {
+              "sequence": 43,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 44,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 45,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 46,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 47,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "battlefield_medicine",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 49,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "siegebreaker"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 50,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 51,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bloodfang_raider",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "lp": [
+            5000,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 750,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "bastion_keeper",
+            "dispel_magic"
+          ],
+          "actions": [
+            {
+              "sequence": 68,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bastion_keeper",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 70,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 71,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bloodfang_raider",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 8,
+          "lp": [
+            4500,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "bastion_keeper",
+              "hp": 850,
+              "atk": 200,
+              "def": 500,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "logistics_squire"
+          ],
+          "actions": [
+            {
+              "sequence": 88,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            }
+          ]
+        },
+        {
+          "turn": 10,
+          "lp": [
+            4500,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 600,
+              "energy": 1,
+              "position": "Defense"
+            },
+            {
+              "card": "bastion_keeper",
+              "hp": 350,
+              "atk": 200,
+              "def": 500,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "logistics_squire",
+            "test_field_spell"
+          ],
+          "actions": []
+        },
+        {
+          "turn": 12,
+          "lp": [
+            4000,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 500,
+              "energy": 1,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "logistics_squire",
+            "test_field_spell",
+            "energy_reserve"
+          ],
+          "actions": []
+        },
+        {
+          "turn": 14,
+          "lp": [
+            4000,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 300,
+              "atk": 350,
+              "def": 600,
+              "energy": 1,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "logistics_squire",
+            "test_field_spell",
+            "energy_reserve",
+            "thorn_bastion"
+          ],
+          "actions": [
+            {
+              "sequence": 142,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [
+                "sample_stone_guardian"
+              ],
+              "amount": 0,
+              "position": "Defense"
+            }
+          ]
+        },
+        {
+          "turn": 16,
+          "lp": [
+            4000,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "thorn_bastion",
+              "hp": 900,
+              "atk": 400,
+              "def": 600,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1350,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "logistics_squire",
+            "test_field_spell",
+            "energy_reserve",
+            "siegebreaker"
+          ],
+          "actions": [
+            {
+              "sequence": 159,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 160,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 161,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "energy_reserve",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 162,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 163,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "logistics_squire",
+              "targets": [
+                "thorn_bastion"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 164,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "siegebreaker",
+              "targets": [],
+              "tributes": [
+                "logistics_squire"
+              ],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 165,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 166,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "siegebreaker",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 167,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "test_field_spell",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 168,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "siegebreaker",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 170,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "thorn_bastion",
+              "targets": [
+                "fire_dragon"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 171,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "siegebreaker",
+              "targets": [
+                "fire_dragon"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 173,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 18,
+          "lp": [
+            3000,
+            3500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "siegebreaker",
+              "hp": 1300,
+              "atk": 1250,
+              "def": 450,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "sample_stone_guardian"
+          ],
+          "actions": [
+            {
+              "sequence": 189,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 190,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 192,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "thorn_bastion"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 193,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "siegebreaker",
+              "targets": [
+                "thorn_bastion"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 195,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 20,
+          "lp": [
+            2500,
+            2500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "siegebreaker",
+              "hp": 900,
+              "atk": 1250,
+              "def": 450,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_tide_sprite",
+              "hp": 600,
+              "atk": 450,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "sample_ambush"
+          ],
+          "actions": [
+            {
+              "sequence": 211,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 213,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "siegebreaker",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 215,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 22,
+          "lp": [
+            2500,
+            2000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "siegebreaker",
+              "hp": 250,
+              "atk": 1250,
+              "def": 450,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 250,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_tide_sprite",
+              "hp": 600,
+              "atk": 450,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "arcane_archivist"
+          ],
+          "actions": [
+            {
+              "sequence": 233,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "arcane_archivist",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 234,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "arcane_archivist",
+              "targets": [
+                "guardian_shift"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 235,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "arcane_archivist",
+              "targets": [
+                "sample_ambush"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 236,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "arcane_archivist",
+              "targets": [
+                "sample_quick_strike"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 237,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_quick_strike",
+              "targets": [
+                "arcane_archivist"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 238,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "guardian_shift",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 239,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "arcane_archivist",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 240,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 242,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "arcane_archivist",
+              "targets": [
+                "dawnwing_fairy"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 244,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "siegebreaker",
+              "targets": [
+                "sample_tide_sprite"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 24,
+          "lp": [
+            2500,
+            1500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 200,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "siegebreaker",
+              "hp": 250,
+              "atk": 1050,
+              "def": 250,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 250,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "sample_arcane_insight"
+          ],
+          "actions": [
+            {
+              "sequence": 267,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "siegebreaker",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 268,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "arcane_archivist",
+              "targets": [
+                "elite_summons"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 269,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_arcane_insight",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 270,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 271,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "siegebreaker",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 273,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "arcane_archivist",
+              "targets": [
+                "logistics_squire"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 275,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "siegebreaker",
+              "targets": [
+                "dawnwing_fairy"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 26,
+          "lp": [
+            1500,
+            1000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 350,
+              "def": 150,
+              "energy": 0,
+              "position": "Defense"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 300,
+              "atk": 400,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 450,
+              "def": 400,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 400,
+              "def": 350,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "stop_defense",
+            "dispel_magic",
+            "elite_summons",
+            "sample_arcane_insight",
+            "sample_divine_reversal"
+          ],
+          "actions": [
+            {
+              "sequence": 291,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "elite_summons",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 292,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 293,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_arcane_insight",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 294,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "sample_tide_sprite",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 295,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 296,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "sample_tide_sprite",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 297,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_divine_reversal",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 299,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_tide_sprite",
+              "targets": [
+                "logistics_squire"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 300,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "arcane_archivist",
+              "targets": [
+                "energy_wisp"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 301,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "battle_herald",
+              "targets": [
+                "energy_wisp"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

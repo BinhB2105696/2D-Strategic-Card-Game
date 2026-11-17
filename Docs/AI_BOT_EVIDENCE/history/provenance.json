@@ -1,0 +1,217 @@
+{
+  "checkpoint": "2026-11-17",
+  "sources": [
+    {
+      "path": "SimulationResults/Experiments/Hard/H0_StarterBalance_20261116_144210/batch_01/matches.jsonl",
+      "sha256": "5459b55110ca84edde1261f1937edc35f157da68967c35ba509fe3431ef72434"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H0_StarterBalance_20261116_144210/batch_01/traces/s420005_leg0.jsonl",
+      "sha256": "df93c47a4251516436a58989812696841e8cc054de40e6ce653a2ef7d579c70e"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H0_StarterBalance_20261116_144210/batch_02/matches.jsonl",
+      "sha256": "1c4682d583d5a0f9278b840ad43380117d834203dfcb8c2e241320a4e8457de7"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H0_StarterBalance_20261116_144210/batch_02/traces/s420033_leg1.jsonl",
+      "sha256": "6d92e3d8a15fdcee9e71166f15f801a4a2b4e72306fd3258f929332261117896"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H0_StarterBalance_20261116_144210/batch_02/traces/s420038_leg1.jsonl",
+      "sha256": "4a61baa39f7bb8b2eb8281c966b97ee32856b269f353cf5d269043142906856e"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H0_StarterBalance_20261116_144210/batch_03/matches.jsonl",
+      "sha256": "8547ac7c694f7de44e33eea907b1d8f075e22f12b2fcafad234b8532d8eebac6"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H0_StarterBalance_20261116_144210/batch_03/traces/s420048_leg1.jsonl",
+      "sha256": "9bc3af1796e78bccfa55079efaee3a4fff31a5c15bab14ce7c4ba27c852a537c"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H0_StarterBalance_20261116_144210/batch_03/traces/s420050_leg1.jsonl",
+      "sha256": "bddf5c2f0dff362b220750d755ca3ced24a2a7c57a079d87e56f98726c8958c8"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H0_StarterBalance_20261116_144210/batch_03/traces/s420057_leg0.jsonl",
+      "sha256": "303a338c9c40690c0a06a56f8fa3d2150131255d48a72d3e832a92a7beef9424"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H0_StarterBalance_20261116_144210/batch_03/traces/s420059_leg1.jsonl",
+      "sha256": "980d6bcdd0f2dd67313c94d3d73e9d136390528755e2911afbdc79d43c4e6f03"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H0_StarterBalance_20261116_144210/manifest.json",
+      "sha256": "fc3030da5747a23f19ae2ba06b860ece402f4af0c8d82043d097a6dd395a6fcc"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H1_StarterBalance_20261116_155129/batch_01/matches.jsonl",
+      "sha256": "838fc0304a0f3271ea7b34bc776ca14caf163b74b6a2cce5928e92c100df03c2"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H1_StarterBalance_20261116_155129/batch_01/traces/s420005_leg0.jsonl",
+      "sha256": "e5b4398a9a8b4247b608c492936d9e3d798e37c6592d27c2bbfa3cf35a3d6524"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H1_StarterBalance_20261116_155129/batch_02/matches.jsonl",
+      "sha256": "eceab6bc1b72872e1adc73e777c007af34e4e54c41c45d50106c4189ff8ac744"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H1_StarterBalance_20261116_155129/batch_02/traces/s420033_leg1.jsonl",
+      "sha256": "030208f1b4d14e535fd0526019aef78c4c31b93dc274d68b5bb5c0b5da5ba5f8"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H1_StarterBalance_20261116_155129/batch_02/traces/s420038_leg1.jsonl",
+      "sha256": "bba45ba4a6c1e900dbaafcf20fc9521ee8c54a424bf59a1d9cf7d5f4b547277c"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H1_StarterBalance_20261116_155129/batch_03/matches.jsonl",
+      "sha256": "25bf23ba70d5e566e84af010be754a98423efffb28af63e2b00d2b43eeaf6b58"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H1_StarterBalance_20261116_155129/batch_03/traces/s420048_leg1.jsonl",
+      "sha256": "74d985fbae8c2f1daf9031ddf29cca107c887c4d352ce9bc27b88a0dba50c151"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H1_StarterBalance_20261116_155129/batch_03/traces/s420050_leg1.jsonl",
+      "sha256": "645e20879085ce92b6cae78826948bf11e3120a5b473f9d3d891b3c002167224"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H1_StarterBalance_20261116_155129/batch_03/traces/s420057_leg0.jsonl",
+      "sha256": "256bb4f29b5aafaee16c78636483c6a56cd086934949271b83c66090498ff83d"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H1_StarterBalance_20261116_155129/batch_03/traces/s420059_leg1.jsonl",
+      "sha256": "0b14fe05fde0b20d290e6f11dc3c4965eb1f3acac2788c9ff58fe481da35ee09"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H1_StarterBalance_20261116_155129/comparison-H0-H1.json",
+      "sha256": "f3f4eeb56d5689cb63ab77a1bc0725c2d19907e506ade7655cc336f5a25e139c"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H1_StarterBalance_20261116_155129/manifest.json",
+      "sha256": "c219b4df1fb7eb6b3799b29f0eed5fec3e67b899c58b655a754c93c0f143382d"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H2_StarterBalance_20261116_181012/batch_01/matches.jsonl",
+      "sha256": "a9bde186422fb0795524a02d0110306bf1a622a72a9a27bf4fe1f2119149e334"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H2_StarterBalance_20261116_181012/batch_01/traces/s420005_leg0.jsonl",
+      "sha256": "2a8a371fd900225612e6185736394e2fe35a142faa5804ad8302e3f2f549a28e"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H2_StarterBalance_20261116_181012/batch_02/matches.jsonl",
+      "sha256": "116c109e1b183de3475bb27799592e43de7b24294a829f0f32aad2c8011e34fe"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H2_StarterBalance_20261116_181012/batch_02/traces/s420033_leg1.jsonl",
+      "sha256": "b0af566c046f095d7f93542386e25ff60ce6853c92d2f83e8eee9c145b7eab08"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H2_StarterBalance_20261116_181012/batch_02/traces/s420038_leg1.jsonl",
+      "sha256": "6a0a16d040a432f27cc84c968f7718e7c501d25bc4557ff14a23c74930a3311b"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H2_StarterBalance_20261116_181012/batch_03/matches.jsonl",
+      "sha256": "e17b35437e802c7cf2abc6c43d0db54e17d657e0298705845fe53669ded81c82"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H2_StarterBalance_20261116_181012/batch_03/traces/s420048_leg1.jsonl",
+      "sha256": "65f4f71d651f54222731ed69a9296e71cd7b4a0d6f012ebd4db215ab9b9ce20e"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H2_StarterBalance_20261116_181012/batch_03/traces/s420050_leg1.jsonl",
+      "sha256": "f8e1610db63b10ad456c05413c8d0089708da1a705003c0b3d9c04a3022f24bc"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H2_StarterBalance_20261116_181012/batch_03/traces/s420057_leg0.jsonl",
+      "sha256": "2b7e09537f925e0c785611f77b3b1e524e70c6b4bbd47791bcb1794f1e01e6c7"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H2_StarterBalance_20261116_181012/batch_03/traces/s420059_leg1.jsonl",
+      "sha256": "fbf22e21e5e842f1738be84febf04b44ba096b074c2eea9f69ded60ea85ddfd2"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H2_StarterBalance_20261116_181012/initial-state-audit.json",
+      "sha256": "b823392c036194cb829f1b31712990b338fdb999c171dbacb137da6b3c2e36b5"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H2_StarterBalance_20261116_181012/manifest.json",
+      "sha256": "a65ae0f10f43e1f7e89fb9f36866ac1613e762523bd17cc3707db72c24e6c4ff"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H3_FiveRegressions_20261116_123457/batch_01/matches.jsonl",
+      "sha256": "b22bfe41dda8f1bd350141d00f3c8496f0f72d8eb3be73c031701fdad8d1c444"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H3_FiveRegressions_20261116_123457/batch_01/traces/s420033_leg1.jsonl",
+      "sha256": "26f3aeae49181dcaadccaeec2faf369303d88871d8c7cb4e4c05dde2e937c995"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H3_FiveRegressions_20261116_123457/batch_01/traces/s420038_leg1.jsonl",
+      "sha256": "15e01735ea41dea1d2392f0a92333c85486f119b6cef858b6241a4cdbbbfdce9"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H3_FiveRegressions_20261116_123457/batch_01/traces/s420048_leg1.jsonl",
+      "sha256": "c8f316612131af623c5d7b7d70671a38f1449a8b5f3634ba0d7780735ff813b9"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H3_FiveRegressions_20261116_123457/batch_01/traces/s420057_leg0.jsonl",
+      "sha256": "e8da7cf34a1e751d5f5813371c74ab46e21f29d47bb55cea93329a159038e950"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H3_FiveRegressions_20261116_123457/batch_01/traces/s420059_leg1.jsonl",
+      "sha256": "60208d0048bfd70005aa541cb0fe309cddfb2bb9b005477ee01f0175d6608cb8"
+    },
+    {
+      "path": "SimulationResults/Experiments/Hard/H3_FiveRegressions_20261116_123457/manifest.json",
+      "sha256": "059785b5870413bc100e0c0c38a3b541631464d70067272b0eeaa14697c63c96"
+    }
+  ],
+  "exports": [
+    {
+      "path": "Docs/AI_BOT_EVIDENCE/history/case-420005-seat0.json",
+      "sha256": "ba0fbfda7c730f1ced739af068d783324c0f61ce647ecb8d60e59363726e532a"
+    },
+    {
+      "path": "Docs/AI_BOT_EVIDENCE/history/case-420033-seat1.json",
+      "sha256": "d0a16f80bc8e3d1da04a363299f1e5ca3c480fce0f9db5abb466ea633538fe34"
+    },
+    {
+      "path": "Docs/AI_BOT_EVIDENCE/history/case-420038-seat1.json",
+      "sha256": "f6e42053c172358453a76625a12b8330d1c0f41b86e7220bbfe5c4906f34136e"
+    },
+    {
+      "path": "Docs/AI_BOT_EVIDENCE/history/case-420048-seat1.json",
+      "sha256": "8c98f539808b57704dfaf50d4168b97d30f50c24568b52e23495d59af81e1c5e"
+    },
+    {
+      "path": "Docs/AI_BOT_EVIDENCE/history/case-420050-seat1.json",
+      "sha256": "4338faf3333d329e207b80861780e38cb4b3cdc1416ae083d8229c2b17bc54ac"
+    },
+    {
+      "path": "Docs/AI_BOT_EVIDENCE/history/case-420057-seat0.json",
+      "sha256": "c04a7755a9173b0f9bb630daf69e19f75c9c9ea2241ab5074f7c0577ba724f33"
+    },
+    {
+      "path": "Docs/AI_BOT_EVIDENCE/history/case-420059-seat1.json",
+      "sha256": "efd2823aeda343589f6523e09ff3d1371182b327ba9812dae8dd4bd8afc3f879"
+    },
+    {
+      "path": "Docs/AI_BOT_EVIDENCE/history/seed-comparison.json",
+      "sha256": "78166537a4eb150d0d5923e3850a724f4f632e597ffa7e065a2907b02b1023b6"
+    },
+    {
+      "path": "Docs/AI_BOT_EVIDENCE/history/version-profiles.json",
+      "sha256": "02eab1be79c801009494a164edeb89e4b24ace998931e15f74c7524d6fc6be47"
+    }
+  ],
+  "cautions": [
+    "Source files remain local and ignored; hashes record provenance, not independent replay validation.",
+    "Rules/catalog/config/deck agree. Raw state hashes can depend on runtime assembly names; do not compare them naively across H0/H1/H2 executables.",
+    "H3 was tested on only5 selected Easy cases and separately120 Normal cases; these are different comparisons.",
+    "An action difference is not proof of a sole causal reason. Current repository contains H3 sources; historical profiles and traces are evidence, not full source snapshots for every version."
+  ]
+}

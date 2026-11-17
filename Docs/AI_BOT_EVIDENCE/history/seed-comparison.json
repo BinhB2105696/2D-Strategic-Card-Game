@@ -1,0 +1,5258 @@
+{
+  "purpose": "same-deck, same seed/seat development comparison versus Easy; missing H3 cells mean not run, not losses",
+  "summary": {
+    "H0": {
+      "matches": 120,
+      "hardWins": 99,
+      "hardLosses": 21,
+      "selectedCasesOnly": false
+    },
+    "H1": {
+      "matches": 120,
+      "hardWins": 89,
+      "hardLosses": 31,
+      "selectedCasesOnly": false
+    },
+    "H2": {
+      "matches": 120,
+      "hardWins": 101,
+      "hardLosses": 19,
+      "selectedCasesOnly": false
+    },
+    "H3-selected": {
+      "matches": 5,
+      "hardWins": 3,
+      "hardLosses": 2,
+      "selectedCasesOnly": true
+    }
+  },
+  "changes": {
+    "H0->H1": {
+      "counts": {
+        "winToWin": 87,
+        "winToLoss": 12,
+        "lossToLoss": 19,
+        "lossToWin": 2
+      },
+      "flips": [
+        {
+          "seed": 420002,
+          "hardSeat": 0,
+          "change": "winToLoss"
+        },
+        {
+          "seed": 420007,
+          "hardSeat": 1,
+          "change": "winToLoss"
+        },
+        {
+          "seed": 420008,
+          "hardSeat": 0,
+          "change": "winToLoss"
+        },
+        {
+          "seed": 420021,
+          "hardSeat": 1,
+          "change": "winToLoss"
+        },
+        {
+          "seed": 420030,
+          "hardSeat": 0,
+          "change": "winToLoss"
+        },
+        {
+          "seed": 420032,
+          "hardSeat": 1,
+          "change": "winToLoss"
+        },
+        {
+          "seed": 420038,
+          "hardSeat": 1,
+          "change": "winToLoss"
+        },
+        {
+          "seed": 420042,
+          "hardSeat": 0,
+          "change": "winToLoss"
+        },
+        {
+          "seed": 420045,
+          "hardSeat": 1,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420047,
+          "hardSeat": 1,
+          "change": "winToLoss"
+        },
+        {
+          "seed": 420048,
+          "hardSeat": 1,
+          "change": "winToLoss"
+        },
+        {
+          "seed": 420050,
+          "hardSeat": 1,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420057,
+          "hardSeat": 0,
+          "change": "winToLoss"
+        },
+        {
+          "seed": 420059,
+          "hardSeat": 1,
+          "change": "winToLoss"
+        }
+      ]
+    },
+    "H0->H2": {
+      "counts": {
+        "winToWin": 94,
+        "lossToLoss": 14,
+        "lossToWin": 7,
+        "winToLoss": 5
+      },
+      "flips": [
+        {
+          "seed": 420005,
+          "hardSeat": 0,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420011,
+          "hardSeat": 1,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420026,
+          "hardSeat": 0,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420033,
+          "hardSeat": 1,
+          "change": "winToLoss"
+        },
+        {
+          "seed": 420037,
+          "hardSeat": 0,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420038,
+          "hardSeat": 1,
+          "change": "winToLoss"
+        },
+        {
+          "seed": 420045,
+          "hardSeat": 1,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420048,
+          "hardSeat": 1,
+          "change": "winToLoss"
+        },
+        {
+          "seed": 420050,
+          "hardSeat": 1,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420057,
+          "hardSeat": 0,
+          "change": "winToLoss"
+        },
+        {
+          "seed": 420059,
+          "hardSeat": 1,
+          "change": "winToLoss"
+        },
+        {
+          "seed": 420060,
+          "hardSeat": 0,
+          "change": "lossToWin"
+        }
+      ]
+    },
+    "H1->H2": {
+      "counts": {
+        "winToWin": 88,
+        "lossToWin": 13,
+        "lossToLoss": 18,
+        "winToLoss": 1
+      },
+      "flips": [
+        {
+          "seed": 420002,
+          "hardSeat": 0,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420005,
+          "hardSeat": 0,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420007,
+          "hardSeat": 1,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420008,
+          "hardSeat": 0,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420011,
+          "hardSeat": 1,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420021,
+          "hardSeat": 1,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420026,
+          "hardSeat": 0,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420030,
+          "hardSeat": 0,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420032,
+          "hardSeat": 1,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420033,
+          "hardSeat": 1,
+          "change": "winToLoss"
+        },
+        {
+          "seed": 420037,
+          "hardSeat": 0,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420042,
+          "hardSeat": 0,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420047,
+          "hardSeat": 1,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420060,
+          "hardSeat": 0,
+          "change": "lossToWin"
+        }
+      ]
+    },
+    "H2->H3-selected": {
+      "counts": {
+        "lossToWin": 3,
+        "lossToLoss": 2
+      },
+      "flips": [
+        {
+          "seed": 420033,
+          "hardSeat": 1,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420038,
+          "hardSeat": 1,
+          "change": "lossToWin"
+        },
+        {
+          "seed": 420057,
+          "hardSeat": 0,
+          "change": "lossToWin"
+        }
+      ]
+    }
+  },
+  "matches": [
+    {
+      "seed": 420001,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 9,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420001_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420001_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 9,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420001_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420001,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420001_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 18,
+          "finalLp": [
+            0,
+            3500
+          ],
+          "matchId": "s420001_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 14,
+          "finalLp": [
+            0,
+            4500
+          ],
+          "matchId": "s420001_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420002,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 19,
+          "finalLp": [
+            3000,
+            0
+          ],
+          "matchId": "s420002_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 24,
+          "finalLp": [
+            0,
+            4500
+          ],
+          "matchId": "s420002_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 15,
+          "finalLp": [
+            4000,
+            0
+          ],
+          "matchId": "s420002_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420002,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420002_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 14,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420002_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420002_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420003,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420003_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420003_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420003_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420003,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 13,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420003_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 17,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420003_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420003_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420004,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 16,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420004_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 14,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420004_leg0"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 16,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420004_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420004,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420004_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420004_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420004_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420005,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420005_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 13,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420005_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420005_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420005,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            4500
+          ],
+          "matchId": "s420005_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420005_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420005_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420006,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 14,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420006_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 10,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420006_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 10,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420006_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420006,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 10,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420006_leg1"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 10,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420006_leg1"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 10,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420006_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420007,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420007_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420007_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420007_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420007,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            4000
+          ],
+          "matchId": "s420007_leg1"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 17,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420007_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420007_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420008,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420008_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 28,
+          "finalLp": [
+            0,
+            2500
+          ],
+          "matchId": "s420008_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420008_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420008,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420008_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420008_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 8,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420008_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420009,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 8,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420009_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 8,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420009_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 10,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420009_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420009,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420009_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            4500
+          ],
+          "matchId": "s420009_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420009_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420010,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420010_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420010_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 10,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420010_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420010,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420010_leg1"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420010_leg1"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 18,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420010_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420011,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420011_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420011_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            4500,
+            0
+          ],
+          "matchId": "s420011_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420011,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420011_leg1"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 15,
+          "finalLp": [
+            3500,
+            0
+          ],
+          "matchId": "s420011_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 20,
+          "finalLp": [
+            0,
+            4500
+          ],
+          "matchId": "s420011_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420012,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420012_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 16,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420012_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 16,
+          "finalLp": [
+            4500,
+            0
+          ],
+          "matchId": "s420012_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420012,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 15,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420012_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 7,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420012_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 13,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420012_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420013,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420013_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            4500,
+            0
+          ],
+          "matchId": "s420013_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420013_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420013,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420013_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420013_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420013_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420014,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420014_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420014_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420014_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420014,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420014_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            4500
+          ],
+          "matchId": "s420014_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 8,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420014_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420015,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 13,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420015_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420015_leg0"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 13,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420015_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420015,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420015_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420015_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420015_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420016,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420016_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 15,
+          "finalLp": [
+            3500,
+            0
+          ],
+          "matchId": "s420016_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 17,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420016_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420016,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420016_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420016_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            4500
+          ],
+          "matchId": "s420016_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420017,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420017_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 14,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420017_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 14,
+          "finalLp": [
+            4500,
+            0
+          ],
+          "matchId": "s420017_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420017,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420017_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420017_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420017_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420018,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 14,
+          "finalLp": [
+            4500,
+            0
+          ],
+          "matchId": "s420018_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420018_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 14,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420018_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420018,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 17,
+          "finalLp": [
+            0,
+            2500
+          ],
+          "matchId": "s420018_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 19,
+          "finalLp": [
+            0,
+            3500
+          ],
+          "matchId": "s420018_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 19,
+          "finalLp": [
+            0,
+            3000
+          ],
+          "matchId": "s420018_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420019,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 15,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420019_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 15,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420019_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420019_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420019,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 14,
+          "finalLp": [
+            0,
+            4500
+          ],
+          "matchId": "s420019_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 16,
+          "finalLp": [
+            0,
+            3500
+          ],
+          "matchId": "s420019_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 16,
+          "finalLp": [
+            0,
+            4000
+          ],
+          "matchId": "s420019_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420020,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420020_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 14,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420020_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420020_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420020,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 16,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420020_leg1"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 16,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420020_leg1"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 16,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420020_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420021,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420021_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420021_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 9,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420021_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420021,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 20,
+          "finalLp": [
+            0,
+            1500
+          ],
+          "matchId": "s420021_leg1"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 21,
+          "finalLp": [
+            3000,
+            0
+          ],
+          "matchId": "s420021_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420021_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420022,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420022_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            4500,
+            0
+          ],
+          "matchId": "s420022_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420022_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420022,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420022_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420022_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420022_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420023,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420023_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 10,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420023_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 10,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420023_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420023,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420023_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420023_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420023_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420024,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 8,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420024_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 14,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420024_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 8,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420024_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420024,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 15,
+          "finalLp": [
+            0,
+            3500
+          ],
+          "matchId": "s420024_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 15,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420024_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420024_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420025,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 9,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420025_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 9,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420025_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 9,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420025_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420025,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420025_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 8,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420025_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420025_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420026,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 22,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420026_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 26,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420026_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 21,
+          "finalLp": [
+            4500,
+            0
+          ],
+          "matchId": "s420026_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420026,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420026_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 14,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420026_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420026_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420027,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 18,
+          "finalLp": [
+            4500,
+            0
+          ],
+          "matchId": "s420027_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 14,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420027_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420027_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420027,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420027_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420027_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420027_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420028,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420028_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 14,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420028_leg0"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420028_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420028,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420028_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420028_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420028_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420029,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 13,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420029_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420029_leg0"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 13,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420029_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420029,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 7,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420029_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 7,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420029_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 7,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420029_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420030,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 24,
+          "finalLp": [
+            1000,
+            0
+          ],
+          "matchId": "s420030_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 17,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420030_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 18,
+          "finalLp": [
+            3000,
+            0
+          ],
+          "matchId": "s420030_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420030,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 19,
+          "finalLp": [
+            0,
+            3000
+          ],
+          "matchId": "s420030_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 13,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420030_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 13,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420030_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420031,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420031_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 20,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420031_leg0"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420031_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420031,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 8,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420031_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420031_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420031_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420032,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420032_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420032_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420032_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420032,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 20,
+          "finalLp": [
+            0,
+            4500
+          ],
+          "matchId": "s420032_leg1"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 35,
+          "finalLp": [
+            2000,
+            0
+          ],
+          "matchId": "s420032_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420032_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420033,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 8,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420033_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 8,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420033_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 8,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420033_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420033,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420033_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 13,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420033_leg1"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 18,
+          "finalLp": [
+            3500,
+            0
+          ],
+          "matchId": "s420033_leg1"
+        },
+        "H3-selected": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420033_leg1"
+        }
+      }
+    },
+    {
+      "seed": 420034,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 14,
+          "finalLp": [
+            3300,
+            0
+          ],
+          "matchId": "s420034_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            3300,
+            0
+          ],
+          "matchId": "s420034_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            3300,
+            0
+          ],
+          "matchId": "s420034_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420034,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420034_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420034_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420034_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420035,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 17,
+          "finalLp": [
+            3500,
+            0
+          ],
+          "matchId": "s420035_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420035_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 17,
+          "finalLp": [
+            3500,
+            0
+          ],
+          "matchId": "s420035_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420035,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420035_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            4500
+          ],
+          "matchId": "s420035_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420035_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420036,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 8,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420036_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 8,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420036_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 8,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420036_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420036,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 10,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420036_leg1"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 10,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420036_leg1"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 10,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420036_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420037,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 22,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420037_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 22,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420037_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 21,
+          "finalLp": [
+            4000,
+            0
+          ],
+          "matchId": "s420037_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420037,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420037_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 14,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420037_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 8,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420037_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420038,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 9,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420038_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 9,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420038_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 9,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420038_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420038,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 26,
+          "finalLp": [
+            0,
+            2000
+          ],
+          "matchId": "s420038_leg1"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420038_leg1"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 17,
+          "finalLp": [
+            4000,
+            0
+          ],
+          "matchId": "s420038_leg1"
+        },
+        "H3-selected": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 26,
+          "finalLp": [
+            0,
+            1500
+          ],
+          "matchId": "s420038_leg1"
+        }
+      }
+    },
+    {
+      "seed": 420039,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 19,
+          "finalLp": [
+            0,
+            3500
+          ],
+          "matchId": "s420039_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 13,
+          "finalLp": [
+            0,
+            4000
+          ],
+          "matchId": "s420039_leg0"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 13,
+          "finalLp": [
+            0,
+            4000
+          ],
+          "matchId": "s420039_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420039,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420039_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420039_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420039_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420040,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420040_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420040_leg0"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420040_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420040,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420040_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 7,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420040_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420040_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420041,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 17,
+          "finalLp": [
+            4000,
+            0
+          ],
+          "matchId": "s420041_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420041_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420041_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420041,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 16,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420041_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 14,
+          "finalLp": [
+            0,
+            4500
+          ],
+          "matchId": "s420041_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420041_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420042,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 25,
+          "finalLp": [
+            3000,
+            0
+          ],
+          "matchId": "s420042_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 14,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420042_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 27,
+          "finalLp": [
+            3000,
+            0
+          ],
+          "matchId": "s420042_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420042,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420042_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420042_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420042_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420043,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420043_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420043_leg0"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420043_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420043,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 7,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420043_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420043_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420043_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420044,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 9,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420044_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 9,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420044_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 9,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420044_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420044,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 8,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420044_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 14,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420044_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 14,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420044_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420045,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 10,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420045_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 16,
+          "finalLp": [
+            4000,
+            0
+          ],
+          "matchId": "s420045_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 10,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420045_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420045,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 18,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420045_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420045_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420045_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420046,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 14,
+          "finalLp": [
+            4000,
+            0
+          ],
+          "matchId": "s420046_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 24,
+          "finalLp": [
+            2500,
+            0
+          ],
+          "matchId": "s420046_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 14,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420046_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420046,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420046_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420046_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420046_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420047,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420047_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420047_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420047_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420047,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            4000
+          ],
+          "matchId": "s420047_leg1"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 15,
+          "finalLp": [
+            4000,
+            0
+          ],
+          "matchId": "s420047_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            3050
+          ],
+          "matchId": "s420047_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420048,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420048_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 10,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420048_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420048_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420048,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 15,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420048_leg1"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 20,
+          "finalLp": [
+            4500,
+            0
+          ],
+          "matchId": "s420048_leg1"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 14,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420048_leg1"
+        },
+        "H3-selected": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 14,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420048_leg1"
+        }
+      }
+    },
+    {
+      "seed": 420049,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 21,
+          "finalLp": [
+            2000,
+            0
+          ],
+          "matchId": "s420049_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 17,
+          "finalLp": [
+            4000,
+            0
+          ],
+          "matchId": "s420049_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 21,
+          "finalLp": [
+            2000,
+            0
+          ],
+          "matchId": "s420049_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420049,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420049_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420049_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            4500
+          ],
+          "matchId": "s420049_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420050,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420050_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420050_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420050_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420050,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 45,
+          "finalLp": [
+            4500,
+            0
+          ],
+          "matchId": "s420050_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 16,
+          "finalLp": [
+            0,
+            4000
+          ],
+          "matchId": "s420050_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420050_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420051,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 18,
+          "finalLp": [
+            4500,
+            0
+          ],
+          "matchId": "s420051_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 28,
+          "finalLp": [
+            3000,
+            0
+          ],
+          "matchId": "s420051_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 22,
+          "finalLp": [
+            4000,
+            0
+          ],
+          "matchId": "s420051_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420051,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420051_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420051_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 7,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420051_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420052,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420052_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420052_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420052_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420052,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420052_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420052_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 8,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420052_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420053,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420053_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 21,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420053_leg0"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420053_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420053,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420053_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420053_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420053_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420054,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 10,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420054_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420054_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 12,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420054_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420054,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 16,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420054_leg1"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 14,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420054_leg1"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 16,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420054_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420055,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            3950,
+            0
+          ],
+          "matchId": "s420055_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 21,
+          "finalLp": [
+            3450,
+            0
+          ],
+          "matchId": "s420055_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 19,
+          "finalLp": [
+            2450,
+            0
+          ],
+          "matchId": "s420055_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420055,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 14,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420055_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 22,
+          "finalLp": [
+            0,
+            4500
+          ],
+          "matchId": "s420055_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 14,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420055_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420056,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 21,
+          "finalLp": [
+            4000,
+            0
+          ],
+          "matchId": "s420056_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 23,
+          "finalLp": [
+            2500,
+            0
+          ],
+          "matchId": "s420056_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420056_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420056,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420056_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 10,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420056_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 12,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420056_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420057,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 16,
+          "finalLp": [
+            3000,
+            0
+          ],
+          "matchId": "s420057_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 11,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420057_leg0"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 13,
+          "finalLp": [
+            0,
+            4000
+          ],
+          "matchId": "s420057_leg0"
+        },
+        "H3-selected": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 20,
+          "finalLp": [
+            1950,
+            0
+          ],
+          "matchId": "s420057_leg0"
+        }
+      }
+    },
+    {
+      "seed": 420057,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 13,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420057_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 17,
+          "finalLp": [
+            0,
+            3500
+          ],
+          "matchId": "s420057_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 13,
+          "finalLp": [
+            0,
+            5000
+          ],
+          "matchId": "s420057_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420058,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 16,
+          "finalLp": [
+            3600,
+            0
+          ],
+          "matchId": "s420058_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 16,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420058_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 16,
+          "finalLp": [
+            3600,
+            0
+          ],
+          "matchId": "s420058_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420058,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            4950
+          ],
+          "matchId": "s420058_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            4950
+          ],
+          "matchId": "s420058_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 7,
+          "finalLp": [
+            0,
+            4950
+          ],
+          "matchId": "s420058_leg1"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420059,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            6000,
+            0
+          ],
+          "matchId": "s420059_leg0"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            4000,
+            0
+          ],
+          "matchId": "s420059_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 9,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420059_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420059,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 0,
+          "turns": 20,
+          "finalLp": [
+            0,
+            2750
+          ],
+          "matchId": "s420059_leg1"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 13,
+          "finalLp": [
+            5500,
+            0
+          ],
+          "matchId": "s420059_leg1"
+        },
+        "H2": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420059_leg1"
+        },
+        "H3-selected": {
+          "hardWon": false,
+          "winnerSeat": 0,
+          "firstPlayer": 0,
+          "turns": 11,
+          "finalLp": [
+            5000,
+            0
+          ],
+          "matchId": "s420059_leg1"
+        }
+      }
+    },
+    {
+      "seed": 420060,
+      "hardSeat": 0,
+      "leg": 0,
+      "versions": {
+        "H0": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 19,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420060_leg0"
+        },
+        "H1": {
+          "hardWon": false,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 19,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420060_leg0"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 0,
+          "firstPlayer": 1,
+          "turns": 18,
+          "finalLp": [
+            2000,
+            0
+          ],
+          "matchId": "s420060_leg0"
+        },
+        "H3-selected": null
+      }
+    },
+    {
+      "seed": 420060,
+      "hardSeat": 1,
+      "leg": 1,
+      "versions": {
+        "H0": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            6000
+          ],
+          "matchId": "s420060_leg1"
+        },
+        "H1": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420060_leg1"
+        },
+        "H2": {
+          "hardWon": true,
+          "winnerSeat": 1,
+          "firstPlayer": 1,
+          "turns": 9,
+          "finalLp": [
+            0,
+            5500
+          ],
+          "matchId": "s420060_leg1"
+        },
+        "H3-selected": null
+      }
+    }
+  ],
+  "replayVerified": false,
+  "trainingEligible": false
+}

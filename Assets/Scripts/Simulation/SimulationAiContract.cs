@@ -4,12 +4,13 @@ using System.Linq;
 
 public static class SimulationAiContract
 {
-    public const int Schema = 1;
+    public const int Schema = 2;
     public static object Describe() => SimulationJson.Object("schema", Schema,
         "semantics", "per-player/next-decision transitions; terminal rewards include intervening opponent and automatic steps",
         "globalFeatures", new[] { "turn/100", "phase", "ownTurn", "ownPriority", "response", "trigger",
             "ownLP/1000", "enemyLP/1000", "ownEnergy/5", "enemyEnergy/5", "ownMaxEnergy/5", "enemyMaxEnergy/5",
-            "ownDeck/40", "enemyDeck/40", "ownHand/10", "enemyHand/10", "finished" },
+            "ownDeck/40", "enemyDeck/40", "ownHand/10", "enemyHand/10", "finished",
+            "ownMonstersAtMainStart/5", "enemyMonstersAtMainStart/5", "ownLPAtMainStart/1000", "enemyLPAtMainStart/1000" },
         "entityFeatures", new[] { "relativeOwner", "zone", "slot", "known", "category", "rank", "position",
             "hp/1000", "maxHP/1000", "atk/1000", "def/1000", "energy/5", "attackEnergy/5", "tributes/3",
             "speed", "remainingAttacks", "changedPosition", "summonedThisTurn" },
@@ -17,6 +18,8 @@ public static class SimulationAiContract
         "zones", EnumValues(typeof(CardZone)), "phases", EnumValues(typeof(TurnPhase)),
         "categories", EnumValues(typeof(CardCategory)), "ranks", EnumValues(typeof(MonsterRank)), "speeds", EnumValues(typeof(CardSpeed)),
         "actionFeatures", new[] { "type", "zone", "amount/5", "position" },
+        "retaliationMarkFeatures", new[] { "reduction/1000", "expiresAfterTurn/100" },
+        "retaliationMarks", "public active marks; source/target are local known on-field entity indices, never raw instance IDs",
         "reward", "ongoing/draw=0, win=1, loss=-1; limits are truncated, never losses",
         "identity", "cardId is a known categorical label; source/target/tribute indices address local entities, never raw instance IDs",
         "mask", "only legal candidates are present; each mask entry is 1",
@@ -41,11 +44,13 @@ public static class SimulationAiContract
         BotPlayerView own = view.Players[player], enemy = view.Players[1 - player];
         var entities = new List<object>();
         var indices = new Dictionary<long, int>();
+        var knownMonsters = new List<CardInstance>();
         Action<BotCardView, int> add = (card, slot) =>
         {
             if (card == null || indices.ContainsKey(card.InstanceId)) return;
             bool known = card.IsKnown;
             CardInstance flags = known ? state.FindCard(card.InstanceId) : null;
+            if (flags != null && flags.Zone == CardZone.MonsterZone) knownMonsters.Add(flags);
             indices.Add(card.InstanceId, entities.Count);
             entities.Add(SimulationJson.Object("cardId", known ? card.CardId : "", "features", new double[] {
                 card.OwnerPlayerIndex == player ? 0 : 1, (int)card.Zone, slot, known ? 1 : 0,
@@ -92,13 +97,22 @@ public static class SimulationAiContract
                 "targets", action.TargetInstanceIds.Select(index).ToArray(),
                 "tributes", action.TributeInstanceIds.Select(index).ToArray()));
         }
+        var marks = new List<object>();
+        foreach (CardInstance source in knownMonsters)
+            foreach (CardInstance target in knownMonsters)
+                if (state.TryGetRetaliationMark(source.InstanceId, target.InstanceId, out int reduction, out int expires))
+                    marks.Add(SimulationJson.Object("source", indices[source.InstanceId], "target", indices[target.InstanceId],
+                        "features", new double[] { reduction/1000.0, expires/100.0 }));
         return SimulationJson.Object("schema", Schema, "globalFeatures", new double[] {
             state.TurnNumber/100.0, (int)state.CurrentPhase, state.CurrentPlayerIndex == player ? 1 : 0,
             state.InteractionPlayerIndex == player ? 1 : 0, state.HasOpenResponseWindow ? 1 : 0,
             state.HasPendingTriggeredEffect ? 1 : 0, own.Health/1000.0, enemy.Health/1000.0,
             own.AvailableEnergy/5.0, enemy.AvailableEnergy/5.0, own.MaxEnergy/5.0, enemy.MaxEnergy/5.0,
-            own.DeckCount/40.0, enemy.DeckCount/40.0, own.HandCount/10.0, enemy.HandCount/10.0, state.IsFinished ? 1 : 0 },
-            "entities", entities, "legalActions", candidates, "legalActionMask", Enumerable.Repeat(1, legal.Count).ToArray());
+            own.DeckCount/40.0, enemy.DeckCount/40.0, own.HandCount/10.0, enemy.HandCount/10.0, state.IsFinished ? 1 : 0,
+            state.MonsterCountAtMainStart(player)/5.0, state.MonsterCountAtMainStart(1-player)/5.0,
+            state.HealthAtMainStart(player)/1000.0, state.HealthAtMainStart(1-player)/1000.0 },
+            "entities", entities, "legalActions", candidates, "legalActionMask", Enumerable.Repeat(1, legal.Count).ToArray(),
+            "retaliationMarks", marks);
     }
 
     public static int Reward(GameState state, int player) => !state.IsFinished || state.WinnerPlayerIndex < 0

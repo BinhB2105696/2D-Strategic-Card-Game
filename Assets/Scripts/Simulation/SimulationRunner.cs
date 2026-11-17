@@ -42,7 +42,7 @@ public sealed class SimulationRunner : MonoBehaviour
                 var warmup = new SimulationMatchResult { matchId = "warmup_" + i, pairId = "warmup", seed = (uint)(config.firstSeed + i),
                     bot0 = template.bot0, bot1 = template.bot1, deck0 = template.deck0, deck1 = template.deck1 };
                 SimulationEngine.Run(config, Deck(warmup.deck0), Deck(warmup.deck1), warmup,
-                    Path.Combine(runDirectory, "traces", warmup.matchId + ".jsonl"), false, r => Progress("warming-up", r));
+                    Path.Combine(runDirectory, "traces", warmup.matchId + ".jsonl"), false, r => Progress("warming-up", r), definitions.Values.ToArray());
                 if (warmup.status != "Finished" && !SimulationEngine.IsTruncated(warmup.status))
                     throw new InvalidOperationException("Warm-up failed: " + warmup.status + " " + warmup.error);
             }
@@ -71,7 +71,7 @@ public sealed class SimulationRunner : MonoBehaviour
                     SimulationMatchResult result = jobs[i];
                     SimulationEngine.Run(config, Deck(result.deck0), Deck(result.deck1), result,
                         Path.Combine(runDirectory, "traces", result.matchId + ".jsonl"), i < config.detailedMatches,
-                        r => Progress("running", r));
+                        r => Progress("running", r), definitions.Values.ToArray());
                     jsonl.WriteLine(SimulationJson.Encode(result));
                     csv.WriteLine(Csv(result)); completed.Add(result);
                     if (completed.Count % 10 == 0 || completed.Count == expected)
@@ -109,6 +109,7 @@ public sealed class SimulationRunner : MonoBehaviour
             string configPath = Argument("--simulation-config");
             progressPath = Argument("--simulation-progress");
             config = JsonUtility.FromJson<SimulationConfig>(File.ReadAllText(configPath));
+            if (catalog != null) definitions = catalog.cards.ToDictionary(card => card.CardId, CardDataConverter.ToDefinition);
             Validate();
             string root = SimulationJson.ResultsRoot(config.projectRoot);
             string project = Path.GetFullPath(config.projectRoot).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
@@ -116,7 +117,6 @@ public sealed class SimulationRunner : MonoBehaviour
                 throw new InvalidOperationException("Progress file must also be inside the project on D.");
             runDirectory = Path.Combine(root, DateTime.UtcNow.ToString("yyyyMMdd_HHmmss") + "_" + Guid.NewGuid().ToString("N").Substring(0, 8));
             Directory.CreateDirectory(Path.Combine(runDirectory, "traces"));
-            definitions = catalog.cards.ToDictionary(card => card.CardId, CardDataConverter.ToDefinition);
             for (int i = 0; i < catalog.presets.Length; i++) Deck(i);
             SimulationJson.Atomic(Path.Combine(runDirectory, "run.json"), SimulationJson.Object("schema", 2,
                 "createdUtc", DateTime.UtcNow.ToString("o"), "config", config, "rules", GameConfig.CreateDefault(),
@@ -145,7 +145,7 @@ public sealed class SimulationRunner : MonoBehaviour
             throw new InvalidOperationException("Invalid batch limits/seeds/matchups.");
         foreach (SimulationMatchup matchup in config.matchups)
         {
-            SimulationEngine.Bot(matchup.player0Bot); SimulationEngine.Bot(matchup.player1Bot);
+            SimulationEngine.Bot(matchup.player0Bot, definitions.Values.ToArray()); SimulationEngine.Bot(matchup.player1Bot, definitions.Values.ToArray());
             if (matchup.deck0 < 0 || matchup.deck1 < 0 || matchup.deck0 >= catalog.presets.Length || matchup.deck1 >= catalog.presets.Length)
                 throw new InvalidOperationException("Deck index is outside the packaged preset catalog.");
         }

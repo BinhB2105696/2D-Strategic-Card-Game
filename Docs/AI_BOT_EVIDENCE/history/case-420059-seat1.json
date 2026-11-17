@@ -1,0 +1,1988 @@
+{
+  "seed": 420059,
+  "hardSeat": 1,
+  "purpose": "selected historical action review; not a complete replay or ML input",
+  "versions": {
+    "H0": {
+      "result": {
+        "hardWon": true,
+        "winnerSeat": 1,
+        "firstPlayer": 0,
+        "turns": 20,
+        "finalLp": [
+          0,
+          2750
+        ],
+        "matchId": "s420059_leg1"
+      },
+      "observationNote": "first Main observation where available, otherwise first own-turn observation; opponent/automatic/routine pass/phase actions omitted",
+      "turns": [
+        {
+          "turn": 2,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 0,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "sample_ambush",
+            "dawnwing_fairy",
+            "sample_ambush",
+            "fire_dragon",
+            "guardian_shift"
+          ],
+          "actions": [
+            {
+              "sequence": 15,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 16,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 17,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [
+                "dawnwing_fairy"
+              ],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 18,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 19,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 20,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 21,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 22,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "guardian_shift",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 24,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "lp": [
+            5500,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 1500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "aegis_sentinel"
+          ],
+          "actions": [
+            {
+              "sequence": 43,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 44,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 46,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "logistics_squire"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "lp": [
+            5500,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 4,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "aegis_sentinel",
+              "hp": 2500,
+              "atk": 650,
+              "def": 700,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "aegis_sentinel",
+            "sample_sky_sage"
+          ],
+          "actions": [
+            {
+              "sequence": 64,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 66,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "aegis_sentinel"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 8,
+          "lp": [
+            5500,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 1150,
+              "atk": 1000,
+              "def": 300,
+              "energy": 4,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 250,
+              "def": 200,
+              "energy": 0,
+              "position": "Attack"
+            },
+            {
+              "card": "aegis_sentinel",
+              "hp": 1700,
+              "atk": 650,
+              "def": 700,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "aegis_sentinel",
+            "sample_sky_sage",
+            "sample_quick_strike"
+          ],
+          "actions": [
+            {
+              "sequence": 89,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            }
+          ]
+        },
+        {
+          "turn": 10,
+          "lp": [
+            4500,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 250,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "aegis_sentinel",
+              "hp": 1700,
+              "atk": 650,
+              "def": 700,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "aegis_sentinel",
+            "sample_sky_sage",
+            "sample_quick_strike",
+            "test_field_spell"
+          ],
+          "actions": []
+        },
+        {
+          "turn": 12,
+          "lp": [
+            3250,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 250,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "aegis_sentinel",
+              "hp": 1700,
+              "atk": 650,
+              "def": 700,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "aegis_sentinel",
+            "sample_sky_sage",
+            "sample_quick_strike",
+            "test_field_spell",
+            "bastion_keeper"
+          ],
+          "actions": [
+            {
+              "sequence": 123,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bastion_keeper",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            }
+          ]
+        },
+        {
+          "turn": 14,
+          "lp": [
+            3250,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "bastion_keeper",
+              "hp": 450,
+              "atk": 200,
+              "def": 500,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 450,
+              "def": 400,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "aegis_sentinel",
+              "hp": 1700,
+              "atk": 850,
+              "def": 900,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 550,
+              "def": 500,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "aegis_sentinel",
+            "sample_sky_sage",
+            "sample_quick_strike",
+            "test_field_spell",
+            "energy_wisp"
+          ],
+          "actions": [
+            {
+              "sequence": 140,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "energy_wisp",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 141,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [
+                "bastion_keeper",
+                "energy_wisp"
+              ],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 142,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 16,
+          "lp": [
+            3250,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2250,
+              "atk": 1600,
+              "def": 600,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 450,
+              "def": 400,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "aegis_sentinel",
+              "hp": 2000,
+              "atk": 850,
+              "def": 900,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 550,
+              "def": 500,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "aegis_sentinel",
+            "sample_quick_strike",
+            "test_field_spell",
+            "dawnwing_fairy",
+            "sample_divine_reversal",
+            "battlefield_medicine"
+          ],
+          "actions": [
+            {
+              "sequence": 159,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 160,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_divine_reversal",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 161,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "battlefield_medicine",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 163,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 164,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 165,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 166,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 167,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "test_field_spell",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 168,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_quick_strike",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 169,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 171,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_sky_sage",
+              "targets": [
+                "aegis_sentinel"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 172,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bloodfang_raider",
+              "targets": [
+                "energy_wisp"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 18,
+          "lp": [
+            2750,
+            3500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 350,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2250,
+              "atk": 1600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 850,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 550,
+              "def": 500,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "aegis_sentinel",
+            "siegebreaker"
+          ],
+          "actions": [
+            {
+              "sequence": 189,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 190,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 191,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "siegebreaker",
+              "targets": [],
+              "tributes": [
+                "bloodfang_raider"
+              ],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 192,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "siegebreaker",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 194,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "siegebreaker",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 195,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_sky_sage",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 20,
+          "lp": [
+            2750,
+            2500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2250,
+              "atk": 1600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "siegebreaker",
+              "hp": 1300,
+              "atk": 1050,
+              "def": 250,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "bastion_keeper",
+              "hp": 850,
+              "atk": 400,
+              "def": 500,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "aegis_sentinel",
+            "battle_herald",
+            "thorn_bastion",
+            "sample_stone_guardian"
+          ],
+          "actions": [
+            {
+              "sequence": 211,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 212,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "energy_reserve",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 213,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 214,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [
+                "sample_stone_guardian"
+              ],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 215,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 217,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "siegebreaker",
+              "targets": [
+                "bastion_keeper"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 218,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 219,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        }
+      ]
+    },
+    "H1": {
+      "result": {
+        "hardWon": false,
+        "winnerSeat": 0,
+        "firstPlayer": 0,
+        "turns": 13,
+        "finalLp": [
+          5500,
+          0
+        ],
+        "matchId": "s420059_leg1"
+      },
+      "observationNote": "first Main observation where available, otherwise first own-turn observation; opponent/automatic/routine pass/phase actions omitted",
+      "turns": [
+        {
+          "turn": 2,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 0,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "sample_ambush",
+            "dawnwing_fairy",
+            "sample_ambush",
+            "fire_dragon",
+            "guardian_shift"
+          ],
+          "actions": [
+            {
+              "sequence": 15,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 16,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 17,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 18,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [
+                "dawnwing_fairy"
+              ],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 19,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 20,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 500,
+              "atk": 1000,
+              "def": 300,
+              "energy": 0,
+              "position": "Attack"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "guardian_shift",
+            "aegis_sentinel"
+          ],
+          "actions": [
+            {
+              "sequence": 40,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "aegis_sentinel",
+              "targets": [],
+              "tributes": [
+                "fire_dragon",
+                "bloodfang_raider"
+              ],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 41,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "aegis_sentinel",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 42,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "guardian_shift",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 44,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "aegis_sentinel",
+              "targets": [
+                "logistics_squire"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "lp": [
+            6000,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "aegis_sentinel",
+              "hp": 2100,
+              "atk": 650,
+              "def": 700,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 200,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "sample_sky_sage"
+          ],
+          "actions": []
+        },
+        {
+          "turn": 8,
+          "lp": [
+            6000,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "aegis_sentinel",
+              "hp": 600,
+              "atk": 650,
+              "def": 700,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "sample_sky_sage",
+            "sample_quick_strike"
+          ],
+          "actions": []
+        },
+        {
+          "turn": 10,
+          "lp": [
+            2800,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "sample_sky_sage",
+            "sample_quick_strike",
+            "test_field_spell"
+          ],
+          "actions": []
+        },
+        {
+          "turn": 12,
+          "lp": [
+            1200,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "aegis_sentinel",
+              "hp": 2500,
+              "atk": 650,
+              "def": 700,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "sample_sky_sage",
+            "sample_quick_strike",
+            "test_field_spell",
+            "bastion_keeper"
+          ],
+          "actions": [
+            {
+              "sequence": 121,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bastion_keeper",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            }
+          ]
+        }
+      ]
+    },
+    "H2": {
+      "result": {
+        "hardWon": false,
+        "winnerSeat": 0,
+        "firstPlayer": 0,
+        "turns": 11,
+        "finalLp": [
+          5000,
+          0
+        ],
+        "matchId": "s420059_leg1"
+      },
+      "observationNote": "first Main observation where available, otherwise first own-turn observation; opponent/automatic/routine pass/phase actions omitted",
+      "turns": [
+        {
+          "turn": 2,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 0,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "sample_ambush",
+            "dawnwing_fairy",
+            "sample_ambush",
+            "fire_dragon",
+            "guardian_shift"
+          ],
+          "actions": [
+            {
+              "sequence": 15,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 16,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 17,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [
+                "dawnwing_fairy"
+              ],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 18,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 19,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 20,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "guardian_shift",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 21,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 22,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 24,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "lp": [
+            5500,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 1500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "aegis_sentinel"
+          ],
+          "actions": [
+            {
+              "sequence": 44,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "logistics_squire"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "lp": [
+            5500,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 500,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 1500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 200,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "aegis_sentinel",
+            "sample_sky_sage"
+          ],
+          "actions": [
+            {
+              "sequence": 68,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 70,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "arcane_archivist"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 8,
+          "lp": [
+            4500,
+            5000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "aegis_sentinel",
+            "sample_sky_sage",
+            "sample_quick_strike"
+          ],
+          "actions": []
+        },
+        {
+          "turn": 10,
+          "lp": [
+            2150,
+            5000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "aegis_sentinel",
+            "sample_sky_sage",
+            "sample_quick_strike",
+            "test_field_spell"
+          ],
+          "actions": []
+        }
+      ]
+    },
+    "H3-selected": {
+      "result": {
+        "hardWon": false,
+        "winnerSeat": 0,
+        "firstPlayer": 0,
+        "turns": 11,
+        "finalLp": [
+          5000,
+          0
+        ],
+        "matchId": "s420059_leg1"
+      },
+      "observationNote": "first Main observation where available, otherwise first own-turn observation; opponent/automatic/routine pass/phase actions omitted",
+      "turns": [
+        {
+          "turn": 2,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 0,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "sample_ambush",
+            "dawnwing_fairy",
+            "sample_ambush",
+            "fire_dragon",
+            "guardian_shift"
+          ],
+          "actions": [
+            {
+              "sequence": 15,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 16,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 17,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [
+                "dawnwing_fairy"
+              ],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 18,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 19,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 20,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 22,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "lp": [
+            5500,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 1500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "sample_ambush",
+            "guardian_shift",
+            "aegis_sentinel"
+          ],
+          "actions": [
+            {
+              "sequence": 41,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "guardian_shift",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 43,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "logistics_squire"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "lp": [
+            5500,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 800,
+              "atk": 1000,
+              "def": 300,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 1500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 200,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "sample_ambush",
+            "aegis_sentinel",
+            "sample_sky_sage"
+          ],
+          "actions": [
+            {
+              "sequence": 66,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 67,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 68,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 69,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 71,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "arcane_archivist"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 8,
+          "lp": [
+            4500,
+            5000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "aegis_sentinel",
+            "sample_sky_sage",
+            "sample_quick_strike"
+          ],
+          "actions": []
+        },
+        {
+          "turn": 10,
+          "lp": [
+            2150,
+            5000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "aegis_sentinel",
+            "sample_sky_sage",
+            "sample_quick_strike",
+            "test_field_spell"
+          ],
+          "actions": []
+        }
+      ]
+    }
+  }
+}

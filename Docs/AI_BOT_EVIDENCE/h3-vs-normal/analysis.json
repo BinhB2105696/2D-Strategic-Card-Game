@@ -1,0 +1,179 @@
+{
+  "label": "H3-vs-Normal",
+  "totals": {
+    "matches": 120,
+    "hardWins": 72,
+    "hardWinRate": 0.6
+  },
+  "byBatch": [
+    {
+      "matches": 40,
+      "hardWins": 23,
+      "hardWinRate": 0.575
+    },
+    {
+      "matches": 40,
+      "hardWins": 27,
+      "hardWinRate": 0.675
+    },
+    {
+      "matches": 40,
+      "hardWins": 22,
+      "hardWinRate": 0.55
+    }
+  ],
+  "byHardSeat": [
+    {
+      "matches": 60,
+      "hardWins": 32,
+      "hardWinRate": 0.5333333333333333
+    },
+    {
+      "matches": 60,
+      "hardWins": 40,
+      "hardWinRate": 0.6666666666666666
+    }
+  ],
+  "byHardTurnOrder": {
+    "first": {
+      "matches": 60,
+      "hardWins": 41,
+      "hardWinRate": 0.6833333333333333
+    },
+    "second": {
+      "matches": 60,
+      "hardWins": 31,
+      "hardWinRate": 0.5166666666666667
+    }
+  },
+  "pairCounts": {
+    "both_wins": 14,
+    "both_losses": 2,
+    "split": 44
+  },
+  "splitDetails": {
+    "hardWinsSeat0": 18,
+    "hardWinsSeat1": 26,
+    "startingSeatWinsBothLegs": 27,
+    "secondSeatWinsBothLegs": 17
+  },
+  "integrity": {
+    "frozenPayload": "PASS",
+    "completedResultTraceDiagnosticsHashes": "120/120 PASS",
+    "protectedSources": "80/80 unchanged"
+  },
+  "finished": 120,
+  "errors": 0,
+  "truncated": 0,
+  "pairSeedLists": {
+    "both_wins": [
+      420004,
+      420005,
+      420007,
+      420021,
+      420023,
+      420024,
+      420027,
+      420028,
+      420035,
+      420037,
+      420041,
+      420043,
+      420044,
+      420055
+    ],
+    "both_losses": [
+      420047,
+      420049
+    ],
+    "split": [
+      420001,
+      420002,
+      420003,
+      420006,
+      420008,
+      420009,
+      420010,
+      420011,
+      420012,
+      420013,
+      420014,
+      420015,
+      420016,
+      420017,
+      420018,
+      420019,
+      420020,
+      420022,
+      420025,
+      420026,
+      420029,
+      420030,
+      420031,
+      420032,
+      420033,
+      420034,
+      420036,
+      420038,
+      420039,
+      420040,
+      420042,
+      420045,
+      420046,
+      420048,
+      420050,
+      420051,
+      420052,
+      420053,
+      420054,
+      420056,
+      420057,
+      420058,
+      420059,
+      420060
+    ]
+  },
+  "standouts": [
+    {
+      "seed": 420041,
+      "group": "both_wins",
+      "evidence": "Hard wins both seats with5500/5000 LP, in13/12 turns; develops Siegebreaker in leg0 and Sky draw engine in leg1. Useful winning guard case."
+    },
+    {
+      "seed": 420047,
+      "group": "both_losses",
+      "evidence": "Normal wins with2500/4000 LP. Normal develops Sky early in both legs; Sky manual activations Hard0 vs Normal2, then Hard1 vs Normal6. Evidence of engine/tempo imbalance, not proof that one ability alone caused the outcomes."
+    },
+    {
+      "seed": 420049,
+      "group": "both_losses",
+      "evidence": "Normal wins with4500/5500 LP. Leg0 Hard field becomes Siege+Aegis+Thorn and offense narrows; Normal later breaks the wall. Leg1 Normal maintains Sky, activating draw5 times while Hard has0. Both-seat loss cannot be assigned solely to one bad seat."
+    },
+    {
+      "seed": 420040,
+      "group": "split",
+      "evidence": "Seat1/starting player wins both legs at6000 LP. At seat0 both bots have0 legal summon actions throughout Main decisions on turns2 and4, with the same first turn2 hand lacking Basic monsters. Clear initial-hand/deployment bottleneck; do not modify rules/decks to rescue this seed."
+    },
+    {
+      "seed": 420014,
+      "group": "split",
+      "evidence": "Seat1/second player wins both legs at6000 LP, in12/8 turns. Early Sky deployment/draw from seat1 demonstrates that starting first alone does not determine these results."
+    }
+  ],
+  "interpretation": [
+    "Seat index and first-player order are separate variables.",
+    "44 split seeds: starting seat wins both legs for27, second-moving seat wins both legs for17. This design bundles seat-specific initial hand/shuffle and turn-order effects; it does not isolate each causal contribution.",
+    "72/120 is60%, below the75% development target. Previously inspected seeds, one deck; not held-out proof of overall strength.",
+    "14 double-win versus2 double-loss pairs is favorable for Hard, but the high split count shows substantial sensitivity to the paired starting conditions.",
+    "No individual tactical choice has been established as the sole cause of a loss."
+  ],
+  "nextDiscussion": [
+    "Keep current H3 unchanged while selecting a broader tactical improvement from the2 double-loss seeds, with double-win seeds as regression guards.",
+    "Prioritize sustainable attack pressure and preserving/dismantling draw engines; avoid unconditional extra bonuses for high-rank summons.",
+    "Future overall evaluation needs both-seat paired seeds and further decks/new seeds."
+  ],
+  "botChanges": false,
+  "additionalMatchesExecuted": 0,
+  "replayVerified": false,
+  "trainingEligible": false
+}

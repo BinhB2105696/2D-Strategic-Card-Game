@@ -30,6 +30,20 @@ public sealed partial class GameState
         => mainStartMonsterCounts[player] < mainStartMonsterCounts[1 - player];
     public int LpDeficitAtMainStart(int player) => mainStartHealth[1 - player] - mainStartHealth[player];
 
+    public int MonsterCountAtMainStart(int player) => mainStartMonsterCounts[player];
+    public int HealthAtMainStart(int player) => mainStartHealth[player];
+
+    // Read-only public battle history; unlike ConsumeRetaliationReduction, this never removes a mark.
+    public bool TryGetRetaliationMark(long source, long opponent, out int reduction, out int expiresAfterTurn)
+    {
+        RetaliationMark mark = retaliationMarks.Find(item => item.Source == source && item.Opponent == opponent &&
+            item.ExpiresAfterTurn >= TurnNumber && FindCard(item.Source)?.Zone == CardZone.MonsterZone &&
+            FindCard(item.Opponent)?.Zone == CardZone.MonsterZone);
+        reduction = mark?.Reduction ?? 0;
+        expiresAfterTurn = mark?.ExpiresAfterTurn ?? 0;
+        return mark != null;
+    }
+
     internal void RefreshMonsterAuras(List<GameEvent> events)
     {
         var expected = new List<StatModifierApplication>();

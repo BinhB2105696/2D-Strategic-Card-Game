@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "checkpoint": "2026-11-17",
+  "baseCommit": "4618e4a",
+  "sourceRun": "SimulationResults/Experiments/Hard/H3_vs_Normal_StarterBalance_20261116_132958",
+  "sourcePackageSha256": "10baaf830bf5efb8d881052a11d71126a706ed18f4010ad491c181f813a2559a",
+  "notes": [
+    "Lightweight review evidence; complete raw traces and frozen executables remain local and ignored by Git.",
+    "Checksums are provenance records, not independent proof of replay correctness.",
+    "activeHand is the first observed active hand in a turn and can precede Recovery draw.",
+    "Seat assignments are fixed per seed and swapped bots; seat index is not necessarily move order."
+  ],
+  "replayVerified": false,
+  "trainingEligible": false,
+  "files": [
+    {
+      "published": "Docs/AI_BOT_EVIDENCE/h3-vs-normal/analysis.json",
+      "source": "SimulationResults/Experiments/Hard/H3_vs_Normal_StarterBalance_20261116_132958/analysis.json",
+      "sourceSha256": "630d8e1a5d5b1773da83a34f1e3ba916f65e61f34dc6799ee5ec51b9a43140b1",
+      "publishedSha256": "630d8e1a5d5b1773da83a34f1e3ba916f65e61f34dc6799ee5ec51b9a43140b1",
+      "transformation": "byte-for-byte copy"
+    },
+    {
+      "published": "Docs/AI_BOT_EVIDENCE/h3-vs-normal/pair-classification.json",
+      "source": "SimulationResults/Experiments/Hard/H3_vs_Normal_StarterBalance_20261116_132958/pair-classification.json",
+      "sourceSha256": "838e2a5b872023a1a2f935255d6152c79b3b77c02fc1d4b47fe7445fa45ef4ef",
+      "publishedSha256": "838e2a5b872023a1a2f935255d6152c79b3b77c02fc1d4b47fe7445fa45ef4ef",
+      "transformation": "byte-for-byte copy"
+    },
+    {
+      "published": "Docs/AI_BOT_EVIDENCE/h3-vs-normal/hard-profile.json",
+      "source": "SimulationResults/Experiments/Hard/H3_vs_Normal_StarterBalance_20261116_132958/expected-profile.json",
+      "sourceSha256": "70650f50addf16ddfc5d57c8ddc3098263f8843560ae9cfe89bc4b9426a67369",
+      "publishedSha256": "70650f50addf16ddfc5d57c8ddc3098263f8843560ae9cfe89bc4b9426a67369",
+      "transformation": "byte-for-byte copy"
+    },
+    {
+      "published": "Docs/AI_BOT_EVIDENCE/h3-vs-normal/standout-420041.json",
+      "source": "SimulationResults/Experiments/Hard/H3_vs_Normal_StarterBalance_20261116_132958/standout-pair-review.json",
+      "sourceSha256": "af6754d2673a1bef77a152c2d288723db8bbd3d1f7bdc9f73a97101df5dbb5dd",
+      "publishedSha256": "26f96fa02f16d39db3125a9fc0be4951f269bb23bf1d9515db3b8588b7222ac2",
+      "transformation": "selected pair; retained named actions, boards, LP, hands; omitted event payloads and routine phase/pass actions"
+    },
+    {
+      "published": "Docs/AI_BOT_EVIDENCE/h3-vs-normal/standout-420049.json",
+      "source": "SimulationResults/Experiments/Hard/H3_vs_Normal_StarterBalance_20261116_132958/standout-pair-review.json",
+      "sourceSha256": "af6754d2673a1bef77a152c2d288723db8bbd3d1f7bdc9f73a97101df5dbb5dd",
+      "publishedSha256": "da681393e027d2ac61728bd2b49914dd267314873d602cd767ce89216e60cd46",
+      "transformation": "selected pair; retained named actions, boards, LP, hands; omitted event payloads and routine phase/pass actions"
+    },
+    {
+      "published": "Docs/AI_BOT_EVIDENCE/h3-vs-normal/standout-420047.json",
+      "source": "SimulationResults/Experiments/Hard/H3_vs_Normal_StarterBalance_20261116_132958/standout-pair-review.json",
+      "sourceSha256": "af6754d2673a1bef77a152c2d288723db8bbd3d1f7bdc9f73a97101df5dbb5dd",
+      "publishedSha256": "b11a8036d71754ec30f6fbb8f940c4554776803353b66e1c68a4bab83dd3f4a5",
+      "transformation": "selected pair; retained named actions, boards, LP, hands; omitted event payloads and routine phase/pass actions"
+    },
+    {
+      "published": "Docs/AI_BOT_EVIDENCE/h3-vs-normal/standout-420040.json",
+      "source": "SimulationResults/Experiments/Hard/H3_vs_Normal_StarterBalance_20261116_132958/standout-pair-review.json",
+      "sourceSha256": "af6754d2673a1bef77a152c2d288723db8bbd3d1f7bdc9f73a97101df5dbb5dd",
+      "publishedSha256": "3bfe9b062de11a56439386f4bf5886caf32a810fdb7c3043a1d869106d72eab8",
+      "transformation": "selected pair; retained named actions, boards, LP, hands; omitted event payloads and routine phase/pass actions"
+    },
+    {
+      "published": "Docs/AI_BOT_EVIDENCE/h3-vs-normal/standout-420014.json",
+      "source": "SimulationResults/Experiments/Hard/H3_vs_Normal_StarterBalance_20261116_132958/standout-pair-review.json",
+      "sourceSha256": "af6754d2673a1bef77a152c2d288723db8bbd3d1f7bdc9f73a97101df5dbb5dd",
+      "publishedSha256": "133c2d75c29b923b13ebe35b64c125197bbc650d4fc299c3f3862cb42a7e192d",
+      "transformation": "selected pair; retained named actions, boards, LP, hands; omitted event payloads and routine phase/pass actions"
+    }
+  ]
+}

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 // Tactical policy. Observe copies only owned/public information; no mutable state
 // or hidden opponent definitions are retained or used in combat forecasts.
-public sealed class NormalBot : IBot
+public sealed class NormalBot : IBot, IStateObservingBot
 {
     private sealed class Detail
     {
@@ -101,6 +101,8 @@ public sealed class NormalBot : IBot
         }
         return best;
     }
+
+    internal double ScoreForSearch(BotGameStateView state, GameAction action) => Score(state, action);
 
     private double Score(BotGameStateView state, GameAction action)
     {

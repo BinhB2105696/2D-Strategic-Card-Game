@@ -1,0 +1,1446 @@
+{
+  "label": "H3-vs-Normal",
+  "totals": {
+    "matches": 120,
+    "hardWins": 72,
+    "hardWinRate": 0.6
+  },
+  "byBatch": [
+    {
+      "matches": 40,
+      "hardWins": 23,
+      "hardWinRate": 0.575
+    },
+    {
+      "matches": 40,
+      "hardWins": 27,
+      "hardWinRate": 0.675
+    },
+    {
+      "matches": 40,
+      "hardWins": 22,
+      "hardWinRate": 0.55
+    }
+  ],
+  "byHardSeat": [
+    {
+      "matches": 60,
+      "hardWins": 32,
+      "hardWinRate": 0.5333333333333333
+    },
+    {
+      "matches": 60,
+      "hardWins": 40,
+      "hardWinRate": 0.6666666666666666
+    }
+  ],
+  "byHardTurnOrder": {
+    "first": {
+      "matches": 60,
+      "hardWins": 41,
+      "hardWinRate": 0.6833333333333333
+    },
+    "second": {
+      "matches": 60,
+      "hardWins": 31,
+      "hardWinRate": 0.5166666666666667
+    }
+  },
+  "pairCounts": {
+    "both_wins": 14,
+    "both_losses": 2,
+    "split": 44
+  },
+  "splitDetails": {
+    "hardWinsSeat0": 18,
+    "hardWinsSeat1": 26,
+    "startingSeatWinsBothLegs": 27,
+    "secondSeatWinsBothLegs": 17
+  },
+  "integrity": {
+    "frozenPayload": "PASS",
+    "completedResultTraceDiagnosticsHashes": "120/120 PASS",
+    "protectedSources": "80/80 unchanged"
+  },
+  "groups": {
+    "both_wins": [
+      {
+        "seed": 420004,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          11,
+          16
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          4500
+        ],
+        "matchIds": [
+          "s420004_leg0",
+          "s420004_leg1"
+        ]
+      },
+      {
+        "seed": 420005,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "win",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          18,
+          9
+        ],
+        "winnerLpByHardSeat": [
+          2500,
+          5500
+        ],
+        "matchIds": [
+          "s420005_leg0",
+          "s420005_leg1"
+        ]
+      },
+      {
+        "seed": 420007,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          15,
+          12
+        ],
+        "winnerLpByHardSeat": [
+          4000,
+          4000
+        ],
+        "matchIds": [
+          "s420007_leg0",
+          "s420007_leg1"
+        ]
+      },
+      {
+        "seed": 420021,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          11,
+          12
+        ],
+        "winnerLpByHardSeat": [
+          4500,
+          5500
+        ],
+        "matchIds": [
+          "s420021_leg0",
+          "s420021_leg1"
+        ]
+      },
+      {
+        "seed": 420023,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "win",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          10,
+          17
+        ],
+        "winnerLpByHardSeat": [
+          5000,
+          4500
+        ],
+        "matchIds": [
+          "s420023_leg0",
+          "s420023_leg1"
+        ]
+      },
+      {
+        "seed": 420024,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "win",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          14,
+          7
+        ],
+        "winnerLpByHardSeat": [
+          4000,
+          6000
+        ],
+        "matchIds": [
+          "s420024_leg0",
+          "s420024_leg1"
+        ]
+      },
+      {
+        "seed": 420027,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "win",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          12,
+          11
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          3500
+        ],
+        "matchIds": [
+          "s420027_leg0",
+          "s420027_leg1"
+        ]
+      },
+      {
+        "seed": 420028,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          15,
+          10
+        ],
+        "winnerLpByHardSeat": [
+          3500,
+          4500
+        ],
+        "matchIds": [
+          "s420028_leg0",
+          "s420028_leg1"
+        ]
+      },
+      {
+        "seed": 420035,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          19,
+          20
+        ],
+        "winnerLpByHardSeat": [
+          3000,
+          3500
+        ],
+        "matchIds": [
+          "s420035_leg0",
+          "s420035_leg1"
+        ]
+      },
+      {
+        "seed": 420037,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          21,
+          8
+        ],
+        "winnerLpByHardSeat": [
+          3000,
+          6000
+        ],
+        "matchIds": [
+          "s420037_leg0",
+          "s420037_leg1"
+        ]
+      },
+      {
+        "seed": 420041,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          13,
+          12
+        ],
+        "winnerLpByHardSeat": [
+          5500,
+          5000
+        ],
+        "matchIds": [
+          "s420041_leg0",
+          "s420041_leg1"
+        ]
+      },
+      {
+        "seed": 420043,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "win",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          20,
+          15
+        ],
+        "winnerLpByHardSeat": [
+          550,
+          6000
+        ],
+        "matchIds": [
+          "s420043_leg0",
+          "s420043_leg1"
+        ]
+      },
+      {
+        "seed": 420044,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          9,
+          22
+        ],
+        "winnerLpByHardSeat": [
+          5500,
+          500
+        ],
+        "matchIds": [
+          "s420044_leg0",
+          "s420044_leg1"
+        ]
+      },
+      {
+        "seed": 420055,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          17,
+          12
+        ],
+        "winnerLpByHardSeat": [
+          2900,
+          5500
+        ],
+        "matchIds": [
+          "s420055_leg0",
+          "s420055_leg1"
+        ]
+      }
+    ],
+    "both_losses": [
+      {
+        "seed": 420047,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "loss",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          16,
+          13
+        ],
+        "winnerLpByHardSeat": [
+          2500,
+          4000
+        ],
+        "matchIds": [
+          "s420047_leg0",
+          "s420047_leg1"
+        ]
+      },
+      {
+        "seed": 420049,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "loss",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          16,
+          11
+        ],
+        "winnerLpByHardSeat": [
+          4500,
+          5500
+        ],
+        "matchIds": [
+          "s420049_leg0",
+          "s420049_leg1"
+        ]
+      }
+    ],
+    "split": [
+      {
+        "seed": 420001,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          11,
+          15
+        ],
+        "winnerLpByHardSeat": [
+          5500,
+          3000
+        ],
+        "matchIds": [
+          "s420001_leg0",
+          "s420001_leg1"
+        ]
+      },
+      {
+        "seed": 420002,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          15,
+          17
+        ],
+        "winnerLpByHardSeat": [
+          4000,
+          4000
+        ],
+        "matchIds": [
+          "s420002_leg0",
+          "s420002_leg1"
+        ]
+      },
+      {
+        "seed": 420003,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          17,
+          15
+        ],
+        "winnerLpByHardSeat": [
+          3500,
+          4000
+        ],
+        "matchIds": [
+          "s420003_leg0",
+          "s420003_leg1"
+        ]
+      },
+      {
+        "seed": 420006,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          8,
+          12
+        ],
+        "winnerLpByHardSeat": [
+          5500,
+          6000
+        ],
+        "matchIds": [
+          "s420006_leg0",
+          "s420006_leg1"
+        ]
+      },
+      {
+        "seed": 420008,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          13,
+          13
+        ],
+        "winnerLpByHardSeat": [
+          5500,
+          6000
+        ],
+        "matchIds": [
+          "s420008_leg0",
+          "s420008_leg1"
+        ]
+      },
+      {
+        "seed": 420009,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          17,
+          13
+        ],
+        "winnerLpByHardSeat": [
+          1500,
+          4000
+        ],
+        "matchIds": [
+          "s420009_leg0",
+          "s420009_leg1"
+        ]
+      },
+      {
+        "seed": 420010,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          10,
+          12
+        ],
+        "winnerLpByHardSeat": [
+          5500,
+          5000
+        ],
+        "matchIds": [
+          "s420010_leg0",
+          "s420010_leg1"
+        ]
+      },
+      {
+        "seed": 420011,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          9,
+          15
+        ],
+        "winnerLpByHardSeat": [
+          4000,
+          3500
+        ],
+        "matchIds": [
+          "s420011_leg0",
+          "s420011_leg1"
+        ]
+      },
+      {
+        "seed": 420012,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          17,
+          9
+        ],
+        "winnerLpByHardSeat": [
+          4500,
+          6000
+        ],
+        "matchIds": [
+          "s420012_leg0",
+          "s420012_leg1"
+        ]
+      },
+      {
+        "seed": 420013,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          9,
+          11
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          5500
+        ],
+        "matchIds": [
+          "s420013_leg0",
+          "s420013_leg1"
+        ]
+      },
+      {
+        "seed": 420014,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          12,
+          8
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          6000
+        ],
+        "matchIds": [
+          "s420014_leg0",
+          "s420014_leg1"
+        ]
+      },
+      {
+        "seed": 420015,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          9,
+          9
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          5500
+        ],
+        "matchIds": [
+          "s420015_leg0",
+          "s420015_leg1"
+        ]
+      },
+      {
+        "seed": 420016,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          14,
+          10
+        ],
+        "winnerLpByHardSeat": [
+          4500,
+          6000
+        ],
+        "matchIds": [
+          "s420016_leg0",
+          "s420016_leg1"
+        ]
+      },
+      {
+        "seed": 420017,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          19,
+          13
+        ],
+        "winnerLpByHardSeat": [
+          1500,
+          4500
+        ],
+        "matchIds": [
+          "s420017_leg0",
+          "s420017_leg1"
+        ]
+      },
+      {
+        "seed": 420018,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          12,
+          12
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          4000
+        ],
+        "matchIds": [
+          "s420018_leg0",
+          "s420018_leg1"
+        ]
+      },
+      {
+        "seed": 420019,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          15,
+          19
+        ],
+        "winnerLpByHardSeat": [
+          5000,
+          2500
+        ],
+        "matchIds": [
+          "s420019_leg0",
+          "s420019_leg1"
+        ]
+      },
+      {
+        "seed": 420020,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          14,
+          14
+        ],
+        "winnerLpByHardSeat": [
+          4500,
+          5500
+        ],
+        "matchIds": [
+          "s420020_leg0",
+          "s420020_leg1"
+        ]
+      },
+      {
+        "seed": 420022,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          13,
+          13
+        ],
+        "winnerLpByHardSeat": [
+          5000,
+          4500
+        ],
+        "matchIds": [
+          "s420022_leg0",
+          "s420022_leg1"
+        ]
+      },
+      {
+        "seed": 420025,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          10,
+          12
+        ],
+        "winnerLpByHardSeat": [
+          5500,
+          6000
+        ],
+        "matchIds": [
+          "s420025_leg0",
+          "s420025_leg1"
+        ]
+      },
+      {
+        "seed": 420026,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          24,
+          12
+        ],
+        "winnerLpByHardSeat": [
+          3500,
+          6000
+        ],
+        "matchIds": [
+          "s420026_leg0",
+          "s420026_leg1"
+        ]
+      },
+      {
+        "seed": 420029,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          11,
+          9
+        ],
+        "winnerLpByHardSeat": [
+          5000,
+          5000
+        ],
+        "matchIds": [
+          "s420029_leg0",
+          "s420029_leg1"
+        ]
+      },
+      {
+        "seed": 420030,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          15,
+          13
+        ],
+        "winnerLpByHardSeat": [
+          4500,
+          5500
+        ],
+        "matchIds": [
+          "s420030_leg0",
+          "s420030_leg1"
+        ]
+      },
+      {
+        "seed": 420031,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          12,
+          8
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          6000
+        ],
+        "matchIds": [
+          "s420031_leg0",
+          "s420031_leg1"
+        ]
+      },
+      {
+        "seed": 420032,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          13,
+          17
+        ],
+        "winnerLpByHardSeat": [
+          4000,
+          3500
+        ],
+        "matchIds": [
+          "s420032_leg0",
+          "s420032_leg1"
+        ]
+      },
+      {
+        "seed": 420033,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          15,
+          11
+        ],
+        "winnerLpByHardSeat": [
+          5000,
+          5000
+        ],
+        "matchIds": [
+          "s420033_leg0",
+          "s420033_leg1"
+        ]
+      },
+      {
+        "seed": 420034,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          9,
+          9
+        ],
+        "winnerLpByHardSeat": [
+          5500,
+          5500
+        ],
+        "matchIds": [
+          "s420034_leg0",
+          "s420034_leg1"
+        ]
+      },
+      {
+        "seed": 420036,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          8,
+          14
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          4500
+        ],
+        "matchIds": [
+          "s420036_leg0",
+          "s420036_leg1"
+        ]
+      },
+      {
+        "seed": 420038,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          9,
+          9
+        ],
+        "winnerLpByHardSeat": [
+          5500,
+          5500
+        ],
+        "matchIds": [
+          "s420038_leg0",
+          "s420038_leg1"
+        ]
+      },
+      {
+        "seed": 420039,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          11,
+          11
+        ],
+        "winnerLpByHardSeat": [
+          4000,
+          4500
+        ],
+        "matchIds": [
+          "s420039_leg0",
+          "s420039_leg1"
+        ]
+      },
+      {
+        "seed": 420040,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          7,
+          9
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          6000
+        ],
+        "matchIds": [
+          "s420040_leg0",
+          "s420040_leg1"
+        ]
+      },
+      {
+        "seed": 420042,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          16,
+          12
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          6000
+        ],
+        "matchIds": [
+          "s420042_leg0",
+          "s420042_leg1"
+        ]
+      },
+      {
+        "seed": 420045,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          12,
+          22
+        ],
+        "winnerLpByHardSeat": [
+          4500,
+          2500
+        ],
+        "matchIds": [
+          "s420045_leg0",
+          "s420045_leg1"
+        ]
+      },
+      {
+        "seed": 420046,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          9,
+          9
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          6000
+        ],
+        "matchIds": [
+          "s420046_leg0",
+          "s420046_leg1"
+        ]
+      },
+      {
+        "seed": 420048,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          10,
+          12
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          4500
+        ],
+        "matchIds": [
+          "s420048_leg0",
+          "s420048_leg1"
+        ]
+      },
+      {
+        "seed": 420050,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          18,
+          18
+        ],
+        "winnerLpByHardSeat": [
+          1300,
+          4000
+        ],
+        "matchIds": [
+          "s420050_leg0",
+          "s420050_leg1"
+        ]
+      },
+      {
+        "seed": 420051,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          9,
+          9
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          6000
+        ],
+        "matchIds": [
+          "s420051_leg0",
+          "s420051_leg1"
+        ]
+      },
+      {
+        "seed": 420052,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          14,
+          12
+        ],
+        "winnerLpByHardSeat": [
+          5500,
+          5500
+        ],
+        "matchIds": [
+          "s420052_leg0",
+          "s420052_leg1"
+        ]
+      },
+      {
+        "seed": 420053,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          11,
+          11
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          5500
+        ],
+        "matchIds": [
+          "s420053_leg0",
+          "s420053_leg1"
+        ]
+      },
+      {
+        "seed": 420054,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          12,
+          16
+        ],
+        "winnerLpByHardSeat": [
+          5500,
+          4500
+        ],
+        "matchIds": [
+          "s420054_leg0",
+          "s420054_leg1"
+        ]
+      },
+      {
+        "seed": 420056,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          16,
+          8
+        ],
+        "winnerLpByHardSeat": [
+          4500,
+          6000
+        ],
+        "matchIds": [
+          "s420056_leg0",
+          "s420056_leg1"
+        ]
+      },
+      {
+        "seed": 420057,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          13,
+          13
+        ],
+        "winnerLpByHardSeat": [
+          5500,
+          6000
+        ],
+        "matchIds": [
+          "s420057_leg0",
+          "s420057_leg1"
+        ]
+      },
+      {
+        "seed": 420058,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          9,
+          9
+        ],
+        "winnerLpByHardSeat": [
+          5750,
+          5750
+        ],
+        "matchIds": [
+          "s420058_leg0",
+          "s420058_leg1"
+        ]
+      },
+      {
+        "seed": 420059,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          11,
+          9
+        ],
+        "winnerLpByHardSeat": [
+          5000,
+          5000
+        ],
+        "matchIds": [
+          "s420059_leg0",
+          "s420059_leg1"
+        ]
+      },
+      {
+        "seed": 420060,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          13,
+          11
+        ],
+        "winnerLpByHardSeat": [
+          5000,
+          5000
+        ],
+        "matchIds": [
+          "s420060_leg0",
+          "s420060_leg1"
+        ]
+      }
+    ]
+  },
+  "standoutCandidates": {
+    "both_wins": [
+      {
+        "seed": 420041,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          13,
+          12
+        ],
+        "winnerLpByHardSeat": [
+          5500,
+          5000
+        ],
+        "matchIds": [
+          "s420041_leg0",
+          "s420041_leg1"
+        ]
+      },
+      {
+        "seed": 420004,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          11,
+          16
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          4500
+        ],
+        "matchIds": [
+          "s420004_leg0",
+          "s420004_leg1"
+        ]
+      },
+      {
+        "seed": 420021,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "win",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          11,
+          12
+        ],
+        "winnerLpByHardSeat": [
+          4500,
+          5500
+        ],
+        "matchIds": [
+          "s420021_leg0",
+          "s420021_leg1"
+        ]
+      }
+    ],
+    "both_losses": [
+      {
+        "seed": 420049,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "loss",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          16,
+          11
+        ],
+        "winnerLpByHardSeat": [
+          4500,
+          5500
+        ],
+        "matchIds": [
+          "s420049_leg0",
+          "s420049_leg1"
+        ]
+      },
+      {
+        "seed": 420047,
+        "firstPlayer": 0,
+        "outcomesByHardSeat": [
+          "loss",
+          "loss"
+        ],
+        "turnsByHardSeat": [
+          16,
+          13
+        ],
+        "winnerLpByHardSeat": [
+          2500,
+          4000
+        ],
+        "matchIds": [
+          "s420047_leg0",
+          "s420047_leg1"
+        ]
+      }
+    ],
+    "split": [
+      {
+        "seed": 420040,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          7,
+          9
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          6000
+        ],
+        "matchIds": [
+          "s420040_leg0",
+          "s420040_leg1"
+        ]
+      },
+      {
+        "seed": 420046,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          9,
+          9
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          6000
+        ],
+        "matchIds": [
+          "s420046_leg0",
+          "s420046_leg1"
+        ]
+      },
+      {
+        "seed": 420051,
+        "firstPlayer": 1,
+        "outcomesByHardSeat": [
+          "loss",
+          "win"
+        ],
+        "turnsByHardSeat": [
+          9,
+          9
+        ],
+        "winnerLpByHardSeat": [
+          6000,
+          6000
+        ],
+        "matchIds": [
+          "s420051_leg0",
+          "s420051_leg1"
+        ]
+      }
+    ]
+  },
+  "finished": 120,
+  "errors": 0,
+  "truncated": 0,
+  "replayVerified": false,
+  "trainingEligible": false
+}

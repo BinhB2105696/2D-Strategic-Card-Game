@@ -61,6 +61,120 @@ public sealed class PlayerState
         spellTrapZones = new CardInstance[config.SpellTrapZoneCount];
     }
 
+    private PlayerState(PlayerState source, SearchCloneContext context)
+    {
+        PlayerIndex = source.PlayerIndex;
+        Health = source.Health;
+        MaxEnergy = source.MaxEnergy;
+        AvailableEnergy = source.AvailableEnergy;
+        LastFieldSpellActivationTurn = source.LastFieldSpellActivationTurn;
+        deck = new List<CardInstance>();
+        hand = new List<CardInstance>();
+        graveyard = new List<CardInstance>();
+        foreach (CardInstance card in source.deck) deck.Add(context.Card(card));
+        foreach (CardInstance card in source.hand) hand.Add(context.Card(card));
+        foreach (CardInstance card in source.graveyard) graveyard.Add(context.Card(card));
+        monsterZones = new CardInstance[source.monsterZones.Length];
+        spellTrapZones = new CardInstance[source.spellTrapZones.Length];
+        for (int i = 0; i < monsterZones.Length; i++) monsterZones[i] = context.Card(source.monsterZones[i]);
+        for (int i = 0; i < spellTrapZones.Length; i++) spellTrapZones[i] = context.Card(source.spellTrapZones[i]);
+        fieldSpell = context.Card(source.fieldSpell);
+        skippedDrawTurns.UnionWith(source.skippedDrawTurns);
+        skippedEnergyRefreshTurns.UnionWith(source.skippedEnergyRefreshTurns);
+        skippedStandbyTurns.UnionWith(source.skippedStandbyTurns);
+        skippedBattleTurns.UnionWith(source.skippedBattleTurns);
+    }
+
+    internal PlayerState CopyForSearch(SearchCloneContext context) => new PlayerState(this, context);
+
+    // Called only on a search fork. Unknown identities/order are rebuilt from a public prior.
+    internal void SampleHiddenForSearch(int observer, IReadOnlyDictionary<long, CardDefinition> known,
+        CardDefinition[] catalog, SeededGameRandom random, ref long syntheticId, IReadOnlyDictionary<string, int> ownRemainingDeck = null)
+    {
+        var counts = new Dictionary<string, int>(StringComparer.Ordinal);
+        var seen = new HashSet<long>();
+        Action<CardInstance> countKnown = card => {
+            if (card == null || !known.TryGetValue(card.InstanceId, out CardDefinition definition) || !seen.Add(card.InstanceId)) return;
+            counts.TryGetValue(definition.CardId, out int used); counts[definition.CardId] = used + 1;
+        };
+        foreach (CardInstance card in deck) countKnown(card);
+        foreach (CardInstance card in hand) countKnown(card);
+        foreach (CardInstance card in graveyard) countKnown(card);
+        foreach (CardInstance card in monsterZones) countKnown(card);
+        foreach (CardInstance card in spellTrapZones) countKnown(card);
+        countKnown(fieldSpell);
+        Func<CardDefinition, bool> canSample = definition => !counts.TryGetValue(definition.CardId, out int used) || used < definition.MaxCopiesPerDeck;
+        Func<Func<CardDefinition, bool>, CardDefinition> pick = filter => {
+            var choices = new List<CardDefinition>();
+            foreach (CardDefinition definition in catalog) if (canSample(definition) && filter(definition)) choices.Add(definition);
+            if (choices.Count == 0) throw new InvalidOperationException("Public search prior cannot fill the hidden card slots.");
+            CardDefinition selected = choices[random.NextInt(choices.Count)];
+            counts.TryGetValue(selected.CardId, out int used); counts[selected.CardId] = used + 1; return selected;
+        };
+        for (int slot = 0; slot < monsterZones.Length; slot++)
+            if (monsterZones[slot] != null && !known.ContainsKey(monsterZones[slot].InstanceId))
+                throw new InvalidOperationException("Face-down monster search requires an explicit public observation model.");
+        for (int slot = 0; slot < spellTrapZones.Length; slot++)
+        {
+            CardInstance previous = spellTrapZones[slot];
+            if (previous == null || known.ContainsKey(previous.InstanceId)) continue;
+            var replacement = new CardInstance(NextSynthetic(known, ref syntheticId), PlayerIndex,
+                pick(definition => definition.Category == CardCategory.Trap));
+            replacement.MoveToZone(CardZone.SpellTrapZone, true);
+            // Set age is public action history, not a hidden card identity.
+            replacement.SetFaceDownInSpellTrapZone(previous.SetTurnNumber);
+            spellTrapZones[slot] = replacement;
+        }
+        if (PlayerIndex != observer)
+        {
+            int count = hand.Count; hand.Clear();
+            for (int i = 0; i < count; i++)
+            {
+                var replacement = new CardInstance(NextSynthetic(known, ref syntheticId), PlayerIndex, pick(definition => true));
+                replacement.MoveToZone(CardZone.Hand, false); hand.Add(replacement);
+            }
+        }
+        var revealedDeck = new List<CardInstance>();
+        var revealedTypes = new HashSet<string>(StringComparer.Ordinal);
+        var revealedKinds = new HashSet<int>();
+        foreach (CardInstance card in deck)
+            if (known.TryGetValue(card.InstanceId, out CardDefinition definition))
+            { revealedDeck.Add(card); revealedTypes.Add(definition.CardId); revealedKinds.Add(SearchCardKind(definition)); }
+        revealedDeck.Sort((left, right) => {
+            int compare = StringComparer.Ordinal.Compare(left.Definition.CardId, right.Definition.CardId);
+            return compare != 0 ? compare : left.InstanceId.CompareTo(right.InstanceId);
+        });
+        int unknownCount = deck.Count - revealedDeck.Count;
+        deck.Clear(); deck.AddRange(revealedDeck);
+        var ownedBag = new List<CardDefinition>();
+        if (ownRemainingDeck != null)
+        {
+            var remaining = new Dictionary<string, int>(StringComparer.Ordinal);
+            foreach (var pair in ownRemainingDeck) remaining[pair.Key] = pair.Value;
+            foreach (CardInstance card in revealedDeck)
+            {
+                if (!remaining.TryGetValue(card.Definition.CardId, out int count) || count < 1)
+                    throw new InvalidOperationException("Revealed deck choices conflict with known own deck composition.");
+                remaining[card.Definition.CardId] = count - 1;
+            }
+            foreach (CardDefinition definition in catalog)
+                if (remaining.TryGetValue(definition.CardId, out int count))
+                    for (int copy = 0; copy < count; copy++) ownedBag.Add(definition);
+            if (ownedBag.Count != unknownCount) throw new InvalidOperationException("Known own deck size does not match observed deck count.");
+        }
+        for (int i = 0; i < unknownCount; i++)
+        {
+            CardDefinition definition = ownRemainingDeck != null ? ownedBag[i]
+                : pick(candidate => !revealedKinds.Contains(SearchCardKind(candidate)) || revealedTypes.Contains(candidate.CardId));
+            deck.Add(new CardInstance(NextSynthetic(known, ref syntheticId), PlayerIndex, definition));
+        }
+        random.Shuffle(deck);
+    }
+
+    private static int SearchCardKind(CardDefinition card) => !card.IsMonster ? 2 : card.MonsterRank == MonsterRank.Basic ? 0 : 1;
+    private static long NextSynthetic(IReadOnlyDictionary<long, CardDefinition> known, ref long next)
+    { while (known.ContainsKey(next)) next--; return next--; }
+
     public int DrawCards(int amount)
     {
         if (amount < 0)

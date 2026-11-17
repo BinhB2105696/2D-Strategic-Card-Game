@@ -12,6 +12,9 @@ public sealed class SimulationMatchResult
     public int scenario, deck0, deck1, leg, firstPlayer, winner = -2, turns, actions;
     public int[] decisions = new int[2], energySpent = new int[2], energyAllocated = new int[2], unusedAtTurnEnd = new int[2], finalLp = new int[2];
     public int slowDecisions;
+    public int[] hardSearchedDecisions = new int[2], hardFallbackDecisions = new int[2], hardIterations = new int[2], hardRuleApplications = new int[2];
+    public int[] hardChangedBaselineDecisions = new int[2];
+    public Dictionary<string, int> hardFallbackReasons = new Dictionary<string, int>();
     public double durationSeconds;
     public double[] meanDecisionMs = new double[2], medianDecisionMs = new double[2], p95DecisionMs = new double[2], maxDecisionMs = new double[2], preparationMs = new double[2], applyMs = new double[2];
     public Dictionary<string, long> eventCounts = new Dictionary<string, long>();
@@ -19,12 +22,13 @@ public sealed class SimulationMatchResult
 
 public static class SimulationEngine
 {
-    public static IBot Bot(string name)
+    public static IBot Bot(string name, IReadOnlyList<CardDefinition> publicCatalog = null, IReadOnlyList<CardDefinition> knownOwnStartingDeck = null)
     {
         switch (name)
         {
             case "Easy": return new EasyBot();
             case "Normal": return new NormalBot();
+            case "Hard": return new HardBot(publicCatalog, knownOwnStartingDeck: knownOwnStartingDeck);
             default: throw new ArgumentException("Unsupported bot: " + name);
         }
     }
@@ -33,12 +37,12 @@ public static class SimulationEngine
 
     public static SimulationMatchResult Run(SimulationConfig config, IReadOnlyList<CardDefinition> deck0,
         IReadOnlyList<CardDefinition> deck1, SimulationMatchResult result, string tracePath, bool detailed,
-        Action<SimulationMatchResult> heartbeat = null)
+        Action<SimulationMatchResult> heartbeat = null, IReadOnlyList<CardDefinition> publicCatalog = null)
     {
         GameSession session = GameSession.Create(GameConfig.CreateDefault(), result.seed, deck0, deck1);
         result.seed = session.Log.Header.Seed;
         result.firstPlayer = session.State.CurrentPlayerIndex;
-        IBot[] bots = { Bot(result.bot0), Bot(result.bot1) };
+        IBot[] bots = { Bot(result.bot0, publicCatalog, deck0), Bot(result.bot1, publicCatalog, deck1) };
         var times = new[] { new List<double>(), new List<double>() };
         var actionText = new StringBuilder();
         var watch = Stopwatch.StartNew(); double nextHeartbeat = 0;
@@ -48,6 +52,8 @@ public static class SimulationEngine
                 "schema", SimulationReplayFormat.TraceSchema, "stateHashSchema", SimulationStateHash.Schema,
                 "aiSchema", SimulationAiContract.Schema, "aiDescriptionHash", SimulationJson.Hash(SimulationJson.Encode(SimulationAiContract.Describe())),
                 "seed", result.seed, "bot0", result.bot0, "bot1", result.bot1, "detailed", detailed,
+                "botProfiles", bots.Select(bot => bot is HardBot hard ? (object)hard.Describe() : bot.DisplayName).ToArray(),
+                "publicSearchCatalogHash", bots.Any(bot => bot is HardBot) ? SimulationReplayFormat.DefinitionsHash(publicCatalog) : null,
                 "deck0", deck0.Select(card => card.CardId).ToArray(), "deck1", deck1.Select(card => card.CardId).ToArray(),
                 "rulesHash", SimulationReplayFormat.RulesHash(), "definitionsHash", SimulationReplayFormat.DefinitionsHash(deck0.Concat(deck1)),
                 "stateHash", SimulationStateHash.Capture(session.State))));
@@ -71,17 +77,34 @@ public static class SimulationEngine
                     IReadOnlyList<GameAction> legal = null;
                     string observation = null;
                     double preparation = 0, decision = 0;
+                    object hardSearch = null;
                     if (!automatic)
                     {
                         long start = Stopwatch.GetTimestamp();
                         legal = GameRules.GetLegalActions(state, player);
                         if (legal.Count == 0) { result.status = "NoLegalActions"; throw new InvalidOperationException("No legal action at turn " + turn + ", " + phase); }
                         BotGameStateView view = BotGameStateView.Create(state, player);
-                        if (bots[player] is NormalBot normal) normal.Observe(state, player);
+                        if (bots[player] is IStateObservingBot observing) observing.Observe(state, player);
                         preparation = Ms(start); result.preparationMs[player] += preparation;
                         if (detailed) observation = SimulationJson.Encode(SimulationObservation.Capture(state, player));
                         start = Stopwatch.GetTimestamp(); action = bots[player].ChooseAction(view, legal);
                         decision = Ms(start); times[player].Add(decision); result.decisions[player]++;
+                        if (bots[player] is HardBot hard)
+                        {
+                            result.hardIterations[player] += hard.LastIterations;
+                            result.hardRuleApplications[player] += hard.LastRuleApplications;
+                            if (hard.LastChangedBaseline) result.hardChangedBaselineDecisions[player]++;
+                            if (hard.LastIterations > 0 && hard.LastFallbackReason == null) result.hardSearchedDecisions[player]++;
+                            if (hard.LastFallbackReason != null)
+                            {
+                                result.hardFallbackDecisions[player]++;
+                                result.hardFallbackReasons.TryGetValue(hard.LastFallbackReason, out int count);
+                                result.hardFallbackReasons[hard.LastFallbackReason] = count + 1;
+                            }
+                            hardSearch = SimulationJson.Object("iterations", hard.LastIterations, "nodes", hard.LastNodes,
+                                "ruleApplications", hard.LastRuleApplications, "milliseconds", hard.LastSearchMilliseconds,
+                                "fallback", hard.LastFallbackReason, "changedBaseline", hard.LastChangedBaseline);
+                        }
                         if (decision > config.decisionWarningMs) result.slowDecisions++;
                         if (action == null || !legal.Any(candidate => ReferenceEquals(candidate, action)))
                         { result.status = "InvalidAction"; throw new InvalidOperationException("Bot must return an action from the supplied list."); }
@@ -96,7 +119,7 @@ public static class SimulationEngine
                         "stateHash", SimulationStateHash.Capture(state), "policyInputJson", policyInput,
                         "policyHash", policyInput == null ? null : SimulationJson.Hash(policyInput),
                         "selectedActionIndex", automatic ? -1 : SimulationAiContract.SelectedIndex(legal, action),
-                        "preparationMs", preparation, "decisionMs", decision)));
+                        "preparationMs", preparation, "decisionMs", decision, "hardSearch", hardSearch)));
                     int unused = state.Players[player].AvailableEnergy;
                     long applyStart = Stopwatch.GetTimestamp();
                     ActionResult applied = session.TryApply(action);

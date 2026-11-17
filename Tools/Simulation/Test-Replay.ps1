@@ -40,12 +40,17 @@ function Invoke-Replay([string]$Name,[string]$Run,[string]$Trace,[bool]$Verified
     if ($Export -and $Verified) {
         $data = @(Get-Content -LiteralPath $report.dataset | ForEach-Object { $_ | ConvertFrom-Json })
         $steps = @($data | Where-Object record -eq 'transition')
+        $contract = $data[0].contract
         $passed = $passed -and $steps.Count -eq $report.verifiedDecisions -and $data[-1].record -eq 'episode_end'
         foreach ($step in $steps) {
             $policy = $step.policyInputJson | ConvertFrom-Json
-            $passed = $passed -and $policy.globalFeatures.Count -eq 17 -and $step.selectedActionIndex -ge 0 -and $step.selectedActionIndex -lt $policy.legalActions.Count
+            $passed = $passed -and $policy.schema -eq $contract.schema -and $policy.globalFeatures.Count -eq $contract.globalFeatures.Count -and $step.selectedActionIndex -ge 0 -and $step.selectedActionIndex -lt $policy.legalActions.Count
             $passed = $passed -and @($policy.legalActionMask | Where-Object { $_ -ne 1 }).Count -eq 0
-            $passed = $passed -and @($policy.entities | Where-Object { $_.features.Count -ne 18 }).Count -eq 0
+            $passed = $passed -and @($policy.entities | Where-Object { $_.features.Count -ne $contract.entityFeatures.Count }).Count -eq 0
+            foreach ($mark in $policy.retaliationMarks) {
+                $passed = $passed -and $mark.source -ge 0 -and $mark.source -lt $policy.entities.Count -and $mark.target -ge 0 -and $mark.target -lt $policy.entities.Count
+                $passed = $passed -and $mark.features.Count -eq $contract.retaliationMarkFeatures.Count
+            }
             if ($step.terminated) {
                 $expected = if ($data[-1].winner -lt 0) {0} elseif ($data[-1].winner -eq $step.player) {1} else {-1}
                 $passed = $passed -and $step.reward -eq $expected

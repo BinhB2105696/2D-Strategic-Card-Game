@@ -1,0 +1,2863 @@
+{
+  "seed": 420048,
+  "hardSeat": 1,
+  "purpose": "selected historical action review; not a complete replay or ML input",
+  "versions": {
+    "H0": {
+      "result": {
+        "hardWon": true,
+        "winnerSeat": 1,
+        "firstPlayer": 1,
+        "turns": 15,
+        "finalLp": [
+          0,
+          5500
+        ],
+        "matchId": "s420048_leg1"
+      },
+      "observationNote": "first Main observation where available, otherwise first own-turn observation; opponent/automatic/routine pass/phase actions omitted",
+      "turns": [
+        {
+          "turn": 1,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [],
+          "hand": [
+            "thorn_bastion",
+            "battlefield_medicine",
+            "battle_herald",
+            "energy_wisp",
+            "sample_ambush"
+          ],
+          "actions": [
+            {
+              "sequence": 4,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "energy_wisp",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 5,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 6,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [
+                "energy_wisp"
+              ],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 7,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "thorn_bastion",
+              "hp": 1400,
+              "atk": 600,
+              "def": 600,
+              "energy": 0,
+              "position": "Attack"
+            },
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 350,
+              "def": 150,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_tide_sprite",
+              "hp": 600,
+              "atk": 450,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 200,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "sample_arcane_insight"
+          ],
+          "actions": [
+            {
+              "sequence": 28,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_arcane_insight",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 29,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 30,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "logistics_squire",
+              "targets": [
+                "battle_herald"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 31,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 32,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 34,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "battle_herald",
+              "targets": [
+                "arcane_archivist"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 36,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "thorn_bastion",
+              "targets": [
+                "sample_tide_sprite"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "lp": [
+            6000,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "energy": 0,
+              "position": "Defense"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1400,
+              "atk": 600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "battle_herald",
+              "hp": 550,
+              "atk": 550,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 200,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "dispel_magic",
+            "test_field_spell"
+          ],
+          "actions": [
+            {
+              "sequence": 61,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "test_field_spell",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 62,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "battlefield_medicine",
+              "targets": [
+                "battle_herald"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 63,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 64,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 66,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "battle_herald",
+              "targets": [
+                "arcane_archivist"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 68,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "logistics_squire",
+              "targets": [
+                "arcane_archivist"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 70,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "thorn_bastion",
+              "targets": [
+                "arcane_archivist"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 72,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 7,
+          "lp": [
+            6000,
+            5000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "logistics_squire",
+              "hp": 250,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1400,
+              "atk": 600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 550,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "dispel_magic",
+            "sample_quick_strike"
+          ],
+          "actions": [
+            {
+              "sequence": 87,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_quick_strike",
+              "targets": [
+                "battle_herald"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 90,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "logistics_squire",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 91,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "thorn_bastion",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 92,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 9,
+          "lp": [
+            6000,
+            3950
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "logistics_squire",
+              "hp": 250,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1400,
+              "atk": 600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 550,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "dispel_magic",
+            "stop_defense"
+          ],
+          "actions": [
+            {
+              "sequence": 107,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "thorn_bastion",
+              "targets": [
+                "logistics_squire"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 108,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 109,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 11,
+          "lp": [
+            5500,
+            2500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "thorn_bastion",
+              "hp": 1400,
+              "atk": 600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 550,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "dispel_magic",
+            "stop_defense",
+            "fire_dragon"
+          ],
+          "actions": [
+            {
+              "sequence": 124,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [
+                "battle_herald"
+              ],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 125,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 126,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 128,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 129,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 13,
+          "lp": [
+            5500,
+            1600
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "thorn_bastion",
+              "hp": 1200,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "bastion_keeper",
+              "hp": 850,
+              "atk": 200,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "dispel_magic",
+            "stop_defense",
+            "bastion_keeper"
+          ],
+          "actions": [
+            {
+              "sequence": 144,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bastion_keeper",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 145,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 146,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "bastion_keeper",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 148,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "bastion_keeper"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 149,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "bastion_keeper",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 150,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 15,
+          "lp": [
+            5500,
+            500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "bastion_keeper",
+              "hp": 850,
+              "atk": 200,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1200,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [],
+          "hand": [
+            "dispel_magic",
+            "stop_defense",
+            "dawnwing_fairy"
+          ],
+          "actions": [
+            {
+              "sequence": 164,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 165,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "dispel_magic",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 167,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        }
+      ]
+    },
+    "H1": {
+      "result": {
+        "hardWon": false,
+        "winnerSeat": 0,
+        "firstPlayer": 1,
+        "turns": 20,
+        "finalLp": [
+          4500,
+          0
+        ],
+        "matchId": "s420048_leg1"
+      },
+      "observationNote": "first Main observation where available, otherwise first own-turn observation; opponent/automatic/routine pass/phase actions omitted",
+      "turns": [
+        {
+          "turn": 1,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [],
+          "hand": [
+            "thorn_bastion",
+            "battlefield_medicine",
+            "battle_herald",
+            "energy_wisp",
+            "sample_ambush"
+          ],
+          "actions": [
+            {
+              "sequence": 4,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 5,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "energy_wisp",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 6,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 7,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [
+                "energy_wisp"
+              ],
+              "amount": 0,
+              "position": "Defense"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 350,
+              "def": 150,
+              "energy": 0,
+              "position": "Defense"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1400,
+              "atk": 600,
+              "def": 600,
+              "energy": 0,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_tide_sprite",
+              "hp": 600,
+              "atk": 450,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 200,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "sample_arcane_insight"
+          ],
+          "actions": [
+            {
+              "sequence": 28,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_arcane_insight",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 29,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 30,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "logistics_squire",
+              "targets": [
+                "battle_herald"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 31,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 32,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 34,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "thorn_bastion",
+              "targets": [
+                "sample_tide_sprite"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 36,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "battle_herald",
+              "targets": [
+                "arcane_archivist"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "energy": 0,
+              "position": "Defense"
+            },
+            {
+              "card": "battle_herald",
+              "hp": 100,
+              "atk": 550,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1400,
+              "atk": 600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_tide_sprite",
+              "hp": 600,
+              "atk": 450,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 450,
+              "atk": 200,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "dispel_magic",
+            "test_field_spell"
+          ],
+          "actions": [
+            {
+              "sequence": 62,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "test_field_spell",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 63,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 64,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 66,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "battle_herald",
+              "targets": [
+                "arcane_archivist"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 68,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "thorn_bastion",
+              "targets": [
+                "arcane_archivist"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 70,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "logistics_squire",
+              "targets": [
+                "sample_tide_sprite"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 72,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 7,
+          "lp": [
+            5500,
+            5000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "logistics_squire",
+              "hp": 200,
+              "atk": 400,
+              "def": 350,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1400,
+              "atk": 600,
+              "def": 800,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "dispel_magic",
+            "sample_quick_strike"
+          ],
+          "actions": [
+            {
+              "sequence": 91,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_quick_strike",
+              "targets": [
+                "thorn_bastion"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 93,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "logistics_squire",
+              "targets": [
+                "dawnwing_fairy"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 94,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "thorn_bastion",
+              "targets": [
+                "dawnwing_fairy"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 96,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 9,
+          "lp": [
+            5000,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "thorn_bastion",
+              "hp": 1400,
+              "atk": 600,
+              "def": 800,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "dispel_magic",
+            "stop_defense"
+          ],
+          "actions": [
+            {
+              "sequence": 112,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 115,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 11,
+          "lp": [
+            5000,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "thorn_bastion",
+              "hp": 100,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2250,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "dispel_magic",
+            "stop_defense",
+            "fire_dragon"
+          ],
+          "actions": [
+            {
+              "sequence": 133,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [
+                "thorn_bastion"
+              ],
+              "amount": 0,
+              "position": "Defense"
+            }
+          ]
+        },
+        {
+          "turn": 13,
+          "lp": [
+            5000,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "fire_dragon",
+              "hp": 300,
+              "atk": 1000,
+              "def": 300,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 250,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2250,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "dispel_magic",
+            "stop_defense",
+            "bastion_keeper"
+          ],
+          "actions": [
+            {
+              "sequence": 153,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bastion_keeper",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            }
+          ]
+        },
+        {
+          "turn": 15,
+          "lp": [
+            4000,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "bastion_keeper",
+              "hp": 550,
+              "atk": 200,
+              "def": 500,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2250,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "aegis_sentinel",
+              "hp": 2500,
+              "atk": 650,
+              "def": 700,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "dispel_magic",
+            "stop_defense",
+            "dawnwing_fairy"
+          ],
+          "actions": [
+            {
+              "sequence": 173,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 174,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 175,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 176,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "battlefield_medicine",
+              "targets": [
+                "bastion_keeper"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 17,
+          "lp": [
+            3000,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "bastion_keeper",
+              "hp": 700,
+              "atk": 200,
+              "def": 500,
+              "energy": 0,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2250,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "aegis_sentinel",
+              "hp": 2500,
+              "atk": 650,
+              "def": 700,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "dispel_magic",
+            "stop_defense",
+            "energy_reserve"
+          ],
+          "actions": []
+        },
+        {
+          "turn": 19,
+          "lp": [
+            1050,
+            4500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2250,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "aegis_sentinel",
+              "hp": 2500,
+              "atk": 650,
+              "def": 700,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "dispel_magic",
+            "stop_defense",
+            "energy_reserve",
+            "siegebreaker"
+          ],
+          "actions": []
+        }
+      ]
+    },
+    "H2": {
+      "result": {
+        "hardWon": false,
+        "winnerSeat": 0,
+        "firstPlayer": 1,
+        "turns": 14,
+        "finalLp": [
+          5000,
+          0
+        ],
+        "matchId": "s420048_leg1"
+      },
+      "observationNote": "first Main observation where available, otherwise first own-turn observation; opponent/automatic/routine pass/phase actions omitted",
+      "turns": [
+        {
+          "turn": 1,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [],
+          "hand": [
+            "thorn_bastion",
+            "battlefield_medicine",
+            "battle_herald",
+            "energy_wisp",
+            "sample_ambush"
+          ],
+          "actions": [
+            {
+              "sequence": 4,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 5,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "energy_wisp",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 6,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 7,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [
+                "energy_wisp"
+              ],
+              "amount": 0,
+              "position": "Defense"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 350,
+              "def": 150,
+              "energy": 0,
+              "position": "Defense"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1400,
+              "atk": 600,
+              "def": 600,
+              "energy": 0,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_tide_sprite",
+              "hp": 600,
+              "atk": 450,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 200,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "sample_arcane_insight"
+          ],
+          "actions": [
+            {
+              "sequence": 28,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 29,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_arcane_insight",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 30,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 31,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "logistics_squire",
+              "targets": [
+                "thorn_bastion"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 32,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 33,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 35,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "battle_herald",
+              "targets": [
+                "arcane_archivist"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 37,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "thorn_bastion",
+              "targets": [
+                "sample_tide_sprite"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "lp": [
+            6000,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "logistics_squire",
+              "hp": 400,
+              "atk": 400,
+              "def": 150,
+              "energy": 0,
+              "position": "Attack"
+            },
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 550,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1400,
+              "atk": 600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 200,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "dispel_magic",
+            "test_field_spell"
+          ],
+          "actions": [
+            {
+              "sequence": 62,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 63,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "test_field_spell",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 65,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "battle_herald",
+              "targets": [
+                "arcane_archivist"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 67,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "thorn_bastion",
+              "targets": [
+                "arcane_archivist"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 70,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 7,
+          "lp": [
+            5500,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "logistics_squire",
+              "hp": 400,
+              "atk": 400,
+              "def": 350,
+              "energy": 0,
+              "position": "Defense"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1400,
+              "atk": 600,
+              "def": 800,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "dispel_magic",
+            "sample_quick_strike"
+          ],
+          "actions": [
+            {
+              "sequence": 86,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 87,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 88,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 89,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_quick_strike",
+              "targets": [
+                "logistics_squire"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 91,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "logistics_squire",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 93,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 9,
+          "lp": [
+            5000,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "thorn_bastion",
+              "hp": 1400,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2100,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "dispel_magic",
+            "stop_defense"
+          ],
+          "actions": []
+        },
+        {
+          "turn": 11,
+          "lp": [
+            3600,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 800,
+              "atk": 850,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 1850,
+              "atk": 1800,
+              "def": 800,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 400,
+              "def": 350,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "dispel_magic",
+            "stop_defense",
+            "fire_dragon"
+          ],
+          "actions": [
+            {
+              "sequence": 131,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "dispel_magic",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 13,
+          "lp": [
+            300,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 800,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 1850,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "stop_defense",
+            "fire_dragon",
+            "bastion_keeper"
+          ],
+          "actions": [
+            {
+              "sequence": 150,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bastion_keeper",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 151,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [
+                "bastion_keeper"
+              ],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 152,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 153,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 155,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        }
+      ]
+    },
+    "H3-selected": {
+      "result": {
+        "hardWon": false,
+        "winnerSeat": 0,
+        "firstPlayer": 1,
+        "turns": 14,
+        "finalLp": [
+          5000,
+          0
+        ],
+        "matchId": "s420048_leg1"
+      },
+      "observationNote": "first Main observation where available, otherwise first own-turn observation; opponent/automatic/routine pass/phase actions omitted",
+      "turns": [
+        {
+          "turn": 1,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [],
+          "hand": [
+            "thorn_bastion",
+            "battlefield_medicine",
+            "battle_herald",
+            "energy_wisp",
+            "sample_ambush"
+          ],
+          "actions": [
+            {
+              "sequence": 4,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 5,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "energy_wisp",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 6,
+              "phase": "Main",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 7,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [
+                "energy_wisp"
+              ],
+              "amount": 0,
+              "position": "Defense"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "lp": [
+            6000,
+            6000
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 350,
+              "def": 150,
+              "energy": 0,
+              "position": "Defense"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1400,
+              "atk": 600,
+              "def": 600,
+              "energy": 0,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_tide_sprite",
+              "hp": 600,
+              "atk": 450,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 200,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "sample_arcane_insight"
+          ],
+          "actions": [
+            {
+              "sequence": 28,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 29,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_arcane_insight",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 30,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 31,
+              "phase": "Main",
+              "type": "ResolveTriggeredEffect",
+              "source": "logistics_squire",
+              "targets": [
+                "thorn_bastion"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 32,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 33,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 35,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "battle_herald",
+              "targets": [
+                "arcane_archivist"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 37,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "thorn_bastion",
+              "targets": [
+                "sample_tide_sprite"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "lp": [
+            6000,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "energy": 0,
+              "position": "Defense"
+            },
+            {
+              "card": "battle_herald",
+              "hp": 550,
+              "atk": 550,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1400,
+              "atk": 600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 200,
+              "def": 200,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "dispel_magic",
+            "test_field_spell"
+          ],
+          "actions": [
+            {
+              "sequence": 62,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 63,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 64,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "test_field_spell",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 65,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 67,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "logistics_squire",
+              "targets": [
+                "arcane_archivist"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 69,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "thorn_bastion",
+              "targets": [
+                "arcane_archivist"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 72,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 7,
+          "lp": [
+            5500,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "battle_herald",
+              "hp": 550,
+              "atk": 550,
+              "def": 350,
+              "energy": 1,
+              "position": "Defense"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1400,
+              "atk": 800,
+              "def": 800,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "dispel_magic",
+            "sample_quick_strike"
+          ],
+          "actions": [
+            {
+              "sequence": 88,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 89,
+              "phase": "Main",
+              "type": "ChangeBattlePosition",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 90,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "sample_quick_strike",
+              "targets": [
+                "battle_herald"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 92,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "battle_herald",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 94,
+              "phase": "End",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 9,
+          "lp": [
+            5000,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [
+            {
+              "card": "thorn_bastion",
+              "hp": 1400,
+              "atk": 400,
+              "def": 600,
+              "energy": 2,
+              "position": "Defense"
+            }
+          ],
+          "enemyBoard": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 1750,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "dispel_magic",
+            "stop_defense"
+          ],
+          "actions": []
+        },
+        {
+          "turn": 11,
+          "lp": [
+            3600,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 800,
+              "atk": 850,
+              "def": 300,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 1500,
+              "atk": 1800,
+              "def": 800,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 400,
+              "def": 350,
+              "energy": 1,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "dispel_magic",
+            "stop_defense",
+            "fire_dragon"
+          ],
+          "actions": [
+            {
+              "sequence": 132,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "dispel_magic",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 13,
+          "lp": [
+            300,
+            5500
+          ],
+          "availableEnergy": 5,
+          "hardBoard": [],
+          "enemyBoard": [
+            {
+              "card": "bloodfang_raider",
+              "hp": 800,
+              "atk": 650,
+              "def": 100,
+              "energy": 1,
+              "position": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 1500,
+              "atk": 1600,
+              "def": 600,
+              "energy": 3,
+              "position": "Attack"
+            },
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "energy": 2,
+              "position": "Attack"
+            }
+          ],
+          "hand": [
+            "battlefield_medicine",
+            "stop_defense",
+            "fire_dragon",
+            "bastion_keeper"
+          ],
+          "actions": [
+            {
+              "sequence": 151,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "bastion_keeper",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 152,
+              "phase": "Main",
+              "type": "SummonMonster",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [
+                "bastion_keeper"
+              ],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 153,
+              "phase": "Main",
+              "type": "AllocateEnergy",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 154,
+              "phase": "Main",
+              "type": "ActivateCard",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 156,
+              "phase": "Battle",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

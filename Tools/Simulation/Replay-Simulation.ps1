@@ -2,6 +2,7 @@ param(
     [Parameter(Mandatory=$true)][string]$RunDirectory,
     [Parameter(Mandatory=$true)][string]$TraceName,
     [switch]$ExportAi,
+    [string]$RunnerDirectory,
     [ValidateRange(1,86400)][int]$TimeoutSeconds = 120
 )
 $ErrorActionPreference = 'Stop'
@@ -13,7 +14,10 @@ if (!$run.StartsWith($rootPrefix, [StringComparison]::OrdinalIgnoreCase)) { thro
 if ([IO.Path]::GetFileName($TraceName) -ne $TraceName -or ! $TraceName.EndsWith('.jsonl')) { throw 'TraceName must be a filename under run/traces.' }
 $trace = Join-Path $run ('traces/' + $TraceName)
 if (!(Test-Path -LiteralPath $trace -PathType Leaf)) { throw 'Trace file not found.' }
-$executable = Join-Path $projectRoot 'Build/Simulation/CardGameSimulation.exe'
+if (!$RunnerDirectory) { $RunnerDirectory = Join-Path $projectRoot 'Build/Simulation' }
+$runner = [IO.Path]::GetFullPath($RunnerDirectory)
+if (!$runner.StartsWith($rootPrefix, [StringComparison]::OrdinalIgnoreCase)) { throw 'RunnerDirectory must be inside this project.' }
+$executable = Join-Path $runner 'CardGameSimulation.exe'
 if (!(Test-Path -LiteralPath $executable)) { throw 'Build the headless runner in Unity first.' }
 $id = [DateTime]::UtcNow.ToString('yyyyMMdd_HHmmss') + '_' + [Guid]::NewGuid().ToString('N').Substring(0,8)
 $output = Join-Path $run ('replay/' + $id)

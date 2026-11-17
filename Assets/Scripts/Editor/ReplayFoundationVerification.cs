@@ -75,7 +75,8 @@ public static class ReplayFoundationVerification
         try { SimulationAiContract.SelectedIndex(candidates, GameAction.AdvancePhase(player)); }
         catch (InvalidOperationException) { rejected = true; }
         Require(rejected, "reject an action outside the candidate list");
-#if UNITY_EDITOR
+        SimulationExpansionAiVerification.Verify();
+#if UNITY_EDITOR && !REPLAY_HEADLESS
         UnityEngine.Debug.Log("Replay foundation PASS: private state, RNG, ordering, culture, read-only capture and AI privacy/index contract.");
 #else
         Console.WriteLine("Replay foundation PASS: private state, RNG, ordering, culture, read-only capture and AI privacy/index contract.");

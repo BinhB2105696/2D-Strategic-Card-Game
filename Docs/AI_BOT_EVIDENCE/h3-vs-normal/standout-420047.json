@@ -1,0 +1,4534 @@
+{
+  "seed": 420047,
+  "purpose": "post-match review only; may contain both hands; not an ML policy input or verified replay",
+  "matches": [
+    {
+      "matchId": "s420047_leg0",
+      "hardSeat": 0,
+      "firstPlayer": 0,
+      "hardWon": false,
+      "result": {
+        "status": "Finished",
+        "winner": 1,
+        "turns": 16,
+        "actions": 188,
+        "finalLp": [
+          0,
+          2500
+        ]
+      },
+      "turns": [
+        {
+          "turn": 1,
+          "activeBot": "Hard",
+          "startLP": [
+            6000,
+            6000
+          ],
+          "endLP": [
+            6000,
+            6000
+          ],
+          "hardStart": [],
+          "normalStart": [],
+          "hardEnd": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 400,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "normalEnd": [],
+          "activeHand": [
+            "sample_arcane_insight",
+            "dispel_magic",
+            "stop_defense",
+            "sample_ambush",
+            "dawnwing_fairy"
+          ],
+          "actions": [
+            {
+              "sequence": 4,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "ActivateCard",
+              "source": "sample_arcane_insight",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 5,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "SummonMonster",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 6,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "ResolveTriggeredEffect",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 7,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 8,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "SummonMonster",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 9,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "activeBot": "Normal",
+          "startLP": [
+            6000,
+            6000
+          ],
+          "endLP": [
+            6000,
+            6000
+          ],
+          "hardStart": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 400,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "normalStart": [],
+          "hardEnd": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 400,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "activeHand": [
+            "sample_sky_sage",
+            "guardian_shift",
+            "thorn_bastion",
+            "bloodfang_raider",
+            "battle_herald"
+          ],
+          "actions": [
+            {
+              "sequence": 15,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 16,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 17,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "AllocateEnergy",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 18,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [
+                "battle_herald"
+              ],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 19,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [
+                "bloodfang_raider",
+                "thorn_bastion"
+              ],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 20,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SetTrap",
+              "source": "guardian_shift",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "activeBot": "Hard",
+          "startLP": [
+            6000,
+            6000
+          ],
+          "endLP": [
+            6000,
+            6000
+          ],
+          "hardStart": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 400,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 550,
+              "def": 600,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 600,
+              "def": 350,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 850,
+              "def": 300,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "activeHand": [
+            "dispel_magic",
+            "stop_defense",
+            "sample_tide_sprite",
+            "test_field_spell"
+          ],
+          "actions": [
+            {
+              "sequence": 27,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "ActivateCard",
+              "source": "test_field_spell",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 28,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "ChangeBattlePosition",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 29,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "ActivateCard",
+              "source": "stop_defense",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 30,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "AllocateEnergy",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 31,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "AllocateEnergy",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 32,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "ChangeBattlePosition",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 33,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "AllocateEnergy",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 34,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "ChangeBattlePosition",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 36,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 37,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "guardian_shift",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 39,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "activeBot": "Normal",
+          "startLP": [
+            6000,
+            6000
+          ],
+          "endLP": [
+            5500,
+            6000
+          ],
+          "hardStart": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 550,
+              "def": 600,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 600,
+              "def": 350,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 850,
+              "def": 300,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 550,
+              "def": 600,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 600,
+              "def": 350,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 3,
+              "pos": "Attack"
+            },
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "activeHand": [
+            "sample_arcane_insight"
+          ],
+          "actions": [
+            {
+              "sequence": 44,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "AllocateEnergy",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 45,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ChangeBattlePosition",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 46,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 47,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "sample_arcane_insight",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 48,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "energy_reserve",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 49,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 50,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ResolveTriggeredEffect",
+              "source": "logistics_squire",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 52,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "sample_sky_sage",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 53,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "ActivateCard",
+              "source": "sample_ambush",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "activeBot": "Hard",
+          "startLP": [
+            5500,
+            6000
+          ],
+          "endLP": [
+            5500,
+            5500
+          ],
+          "hardStart": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 550,
+              "def": 600,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 600,
+              "def": 350,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 3,
+              "pos": "Attack"
+            },
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 750,
+              "def": 600,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 800,
+              "def": 350,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 750,
+              "def": 350,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 950,
+              "atk": 1600,
+              "def": 600,
+              "en": 3,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "dispel_magic",
+            "sample_tide_sprite",
+            "battle_herald"
+          ],
+          "actions": [
+            {
+              "sequence": 59,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "SummonMonster",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 60,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "AllocateEnergy",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 62,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "Attack",
+              "source": "battle_herald",
+              "targets": [
+                "logistics_squire"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 63,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 64,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "Attack",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 66,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "activeBot": "Normal",
+          "startLP": [
+            5500,
+            5500
+          ],
+          "endLP": [
+            5000,
+            5500
+          ],
+          "hardStart": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 750,
+              "def": 600,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 800,
+              "def": 350,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 750,
+              "def": 350,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 950,
+              "atk": 1600,
+              "def": 600,
+              "en": 3,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 800,
+              "def": 350,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 750,
+              "def": 350,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 1250,
+              "atk": 1600,
+              "def": 600,
+              "en": 3,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "en": 0,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "fire_dragon",
+            "sample_arcane_insight",
+            "battlefield_medicine"
+          ],
+          "actions": [
+            {
+              "sequence": 71,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 72,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 73,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 74,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ResolveTriggeredEffect",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 75,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [
+                "dawnwing_fairy"
+              ],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 76,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "battlefield_medicine",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 78,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "sample_sky_sage",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 7,
+          "activeBot": "Hard",
+          "startLP": [
+            5000,
+            5500
+          ],
+          "endLP": [
+            5000,
+            3500
+          ],
+          "hardStart": [
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 800,
+              "def": 350,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 750,
+              "def": 350,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 1250,
+              "atk": 1600,
+              "def": 600,
+              "en": 3,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "en": 0,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "sample_tide_sprite",
+              "hp": 600,
+              "atk": 650,
+              "def": 200,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1250,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 550,
+              "def": 150,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "activeHand": [
+            "dispel_magic",
+            "sample_tide_sprite",
+            "siegebreaker"
+          ],
+          "actions": [
+            {
+              "sequence": 84,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "SummonMonster",
+              "source": "siegebreaker",
+              "targets": [],
+              "tributes": [
+                "dawnwing_fairy"
+              ],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 85,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "SummonMonster",
+              "source": "sample_tide_sprite",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 86,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "AllocateEnergy",
+              "source": "sample_tide_sprite",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 87,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "AllocateEnergy",
+              "source": "siegebreaker",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 89,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "Attack",
+              "source": "battle_herald",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 90,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "Attack",
+              "source": "siegebreaker",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 91,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "Attack",
+              "source": "sample_tide_sprite",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 8,
+          "activeBot": "Normal",
+          "startLP": [
+            5000,
+            3500
+          ],
+          "endLP": [
+            4000,
+            3500
+          ],
+          "hardStart": [
+            {
+              "card": "sample_tide_sprite",
+              "hp": 600,
+              "atk": 650,
+              "def": 200,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1250,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 550,
+              "def": 150,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "sample_arcane_insight",
+            "bloodfang_raider",
+            "sample_divine_reversal"
+          ],
+          "actions": [
+            {
+              "sequence": 97,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 98,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "AllocateEnergy",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 99,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "AllocateEnergy",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 100,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ChangeBattlePosition",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 101,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "sample_arcane_insight",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 102,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SetTrap",
+              "source": "sample_divine_reversal",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 104,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "bloodfang_raider",
+              "targets": [
+                "sample_tide_sprite"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 105,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "battle_herald"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 9,
+          "activeBot": "Hard",
+          "startLP": [
+            4000,
+            3500
+          ],
+          "endLP": [
+            4000,
+            3000
+          ],
+          "hardStart": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "dispel_magic",
+            "sample_sky_sage"
+          ],
+          "actions": [
+            {
+              "sequence": 112,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "Attack",
+              "source": "siegebreaker",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 10,
+          "activeBot": "Normal",
+          "startLP": [
+            4000,
+            3000
+          ],
+          "endLP": [
+            4000,
+            3000
+          ],
+          "hardStart": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "siegebreaker",
+              "hp": 400,
+              "atk": 1050,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_tide_sprite",
+              "hp": 600,
+              "atk": 450,
+              "def": 200,
+              "en": 0,
+              "pos": "Attack"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 200,
+              "def": 200,
+              "en": 0,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "arcane_archivist",
+            "sample_tide_sprite",
+            "sample_quick_strike"
+          ],
+          "actions": [
+            {
+              "sequence": 118,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "sample_tide_sprite",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 119,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "arcane_archivist",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 120,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "arcane_archivist",
+              "targets": [
+                "stop_defense"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 121,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "arcane_archivist",
+              "targets": [
+                "dispel_magic"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 122,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "arcane_archivist",
+              "targets": [
+                "elite_summons"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 123,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "sample_quick_strike",
+              "targets": [
+                "fire_dragon"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 125,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "siegebreaker"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 11,
+          "activeBot": "Hard",
+          "startLP": [
+            4000,
+            3000
+          ],
+          "endLP": [
+            4000,
+            2500
+          ],
+          "hardStart": [
+            {
+              "card": "siegebreaker",
+              "hp": 400,
+              "atk": 1050,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_tide_sprite",
+              "hp": 600,
+              "atk": 450,
+              "def": 200,
+              "en": 0,
+              "pos": "Attack"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 200,
+              "def": 200,
+              "en": 0,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "siegebreaker",
+              "hp": 400,
+              "atk": 1050,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 200,
+              "def": 200,
+              "en": 0,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "dispel_magic",
+            "sample_sky_sage",
+            "battlefield_medicine"
+          ],
+          "actions": [
+            {
+              "sequence": 132,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "Attack",
+              "source": "siegebreaker",
+              "targets": [
+                "sample_tide_sprite"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 12,
+          "activeBot": "Normal",
+          "startLP": [
+            4000,
+            2500
+          ],
+          "endLP": [
+            1500,
+            2500
+          ],
+          "hardStart": [
+            {
+              "card": "siegebreaker",
+              "hp": 400,
+              "atk": 1050,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 200,
+              "def": 200,
+              "en": 0,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [],
+          "normalEnd": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1200,
+              "def": 500,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 400,
+              "def": 400,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "stop_defense",
+            "dispel_magic",
+            "elite_summons",
+            "sample_ambush"
+          ],
+          "actions": [
+            {
+              "sequence": 138,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "elite_summons",
+              "targets": [
+                "aegis_sentinel"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 139,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "arcane_archivist",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 140,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "test_field_spell",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 141,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "AllocateEnergy",
+              "source": "arcane_archivist",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 142,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "arcane_archivist",
+              "targets": [
+                "sample_ambush"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 143,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 144,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 145,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 147,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "arcane_archivist",
+              "targets": [
+                "siegebreaker"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 148,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 150,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ResolveTriggeredEffect",
+              "source": "test_field_spell",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 13,
+          "activeBot": "Hard",
+          "startLP": [
+            1500,
+            2500
+          ],
+          "endLP": [
+            1500,
+            2500
+          ],
+          "hardStart": [],
+          "normalStart": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1200,
+              "def": 500,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 400,
+              "def": 400,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 250,
+              "def": 200,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 200,
+              "def": 200,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "dispel_magic",
+            "sample_sky_sage",
+            "battlefield_medicine",
+            "energy_wisp"
+          ],
+          "actions": [
+            {
+              "sequence": 155,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "SummonMonster",
+              "source": "energy_wisp",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 156,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "ActivateCard",
+              "source": "dispel_magic",
+              "targets": [
+                "test_field_spell"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 157,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "AllocateEnergy",
+              "source": "energy_wisp",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 159,
+              "actor": 0,
+              "bot": "Hard",
+              "type": "Attack",
+              "source": "energy_wisp",
+              "targets": [
+                "fire_dragon"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 160,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "sample_ambush",
+              "targets": [
+                "energy_wisp"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 14,
+          "activeBot": "Normal",
+          "startLP": [
+            1500,
+            2500
+          ],
+          "endLP": [
+            350,
+            2500
+          ],
+          "hardStart": [
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 250,
+              "def": 200,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "arcane_archivist",
+              "hp": 700,
+              "atk": 200,
+              "def": 200,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [],
+          "normalEnd": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "aegis_sentinel",
+              "hp": 2500,
+              "atk": 650,
+              "def": 700,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "stop_defense",
+            "dispel_magic",
+            "aegis_sentinel",
+            "sample_stone_guardian"
+          ],
+          "actions": [
+            {
+              "sequence": 166,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 167,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "aegis_sentinel",
+              "targets": [],
+              "tributes": [
+                "sample_stone_guardian",
+                "arcane_archivist"
+              ],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 168,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "AllocateEnergy",
+              "source": "aegis_sentinel",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 169,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 171,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "energy_wisp"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 172,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "aegis_sentinel",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 15,
+          "activeBot": "Hard",
+          "startLP": [
+            350,
+            2500
+          ],
+          "endLP": [
+            350,
+            2500
+          ],
+          "hardStart": [],
+          "normalStart": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "aegis_sentinel",
+              "hp": 2500,
+              "atk": 650,
+              "def": 700,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [],
+          "normalEnd": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "aegis_sentinel",
+              "hp": 2500,
+              "atk": 650,
+              "def": 700,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "sample_sky_sage",
+            "battlefield_medicine",
+            "sample_divine_reversal"
+          ],
+          "actions": []
+        },
+        {
+          "turn": 16,
+          "activeBot": "Normal",
+          "startLP": [
+            350,
+            2500
+          ],
+          "endLP": [
+            350,
+            2500
+          ],
+          "hardStart": [],
+          "normalStart": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "aegis_sentinel",
+              "hp": 2500,
+              "atk": 650,
+              "def": 700,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [],
+          "normalEnd": [
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1300,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "aegis_sentinel",
+              "hp": 2500,
+              "atk": 650,
+              "def": 700,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "stop_defense",
+            "dispel_magic",
+            "dawnwing_fairy"
+          ],
+          "actions": [
+            {
+              "sequence": 183,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 184,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ResolveTriggeredEffect",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "bastion_keeper"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 185,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "AllocateEnergy",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 186,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 188,
+              "actor": 1,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "matchId": "s420047_leg1",
+      "hardSeat": 1,
+      "firstPlayer": 0,
+      "hardWon": false,
+      "result": {
+        "status": "Finished",
+        "winner": 0,
+        "turns": 13,
+        "actions": 164,
+        "finalLp": [
+          4000,
+          0
+        ]
+      },
+      "turns": [
+        {
+          "turn": 1,
+          "activeBot": "Normal",
+          "startLP": [
+            6000,
+            6000
+          ],
+          "endLP": [
+            6000,
+            6000
+          ],
+          "hardStart": [],
+          "normalStart": [],
+          "hardEnd": [],
+          "normalEnd": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "activeHand": [
+            "sample_arcane_insight",
+            "dispel_magic",
+            "stop_defense",
+            "sample_ambush",
+            "dawnwing_fairy"
+          ],
+          "actions": [
+            {
+              "sequence": 4,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 5,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ResolveTriggeredEffect",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 6,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 7,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "sample_arcane_insight",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 8,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "bastion_keeper",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 9,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [
+                "bastion_keeper",
+                "dawnwing_fairy"
+              ],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 10,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 2,
+          "activeBot": "Hard",
+          "startLP": [
+            6000,
+            6000
+          ],
+          "endLP": [
+            6000,
+            5500
+          ],
+          "hardStart": [],
+          "normalStart": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "activeHand": [
+            "sample_sky_sage",
+            "guardian_shift",
+            "thorn_bastion",
+            "bloodfang_raider",
+            "battle_herald"
+          ],
+          "actions": [
+            {
+              "sequence": 16,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "SetTrap",
+              "source": "guardian_shift",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 17,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "SummonMonster",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 18,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 19,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "SummonMonster",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [
+                "battle_herald",
+                "bloodfang_raider"
+              ],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 20,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "AllocateEnergy",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 22,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "Attack",
+              "source": "sample_sky_sage",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 23,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "sample_ambush",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 3,
+          "activeBot": "Normal",
+          "startLP": [
+            6000,
+            5500
+          ],
+          "endLP": [
+            6000,
+            5500
+          ],
+          "hardStart": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 1800,
+              "atk": 1600,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 450,
+              "def": 200,
+              "en": 0,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1800,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 550,
+              "def": 150,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "dispel_magic",
+            "stop_defense",
+            "energy_reserve"
+          ],
+          "actions": [
+            {
+              "sequence": 29,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 30,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 31,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "energy_wisp",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 32,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "energy_reserve",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 33,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "AllocateEnergy",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 34,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ChangeBattlePosition",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 35,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "AllocateEnergy",
+              "source": "battle_herald",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 37,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "battle_herald",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 38,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "ActivateCard",
+              "source": "guardian_shift",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 39,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "sample_sky_sage",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 4,
+          "activeBot": "Hard",
+          "startLP": [
+            6000,
+            5500
+          ],
+          "endLP": [
+            6000,
+            5000
+          ],
+          "hardStart": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 1800,
+              "atk": 1600,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 450,
+              "def": 200,
+              "en": 0,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1800,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "battle_herald",
+              "hp": 750,
+              "atk": 550,
+              "def": 150,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 1800,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 250,
+              "def": 200,
+              "en": 0,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "thorn_bastion",
+            "sample_arcane_insight"
+          ],
+          "actions": [
+            {
+              "sequence": 45,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "ActivateCard",
+              "source": "sample_arcane_insight",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 46,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "AllocateEnergy",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 47,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "ActivateCard",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 48,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "AllocateEnergy",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 49,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "ChangeBattlePosition",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 51,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "Attack",
+              "source": "sample_sky_sage",
+              "targets": [
+                "battle_herald"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 5,
+          "activeBot": "Normal",
+          "startLP": [
+            6000,
+            5000
+          ],
+          "endLP": [
+            4500,
+            5000
+          ],
+          "hardStart": [
+            {
+              "card": "sample_sky_sage",
+              "hp": 1800,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "energy_wisp",
+              "hp": 750,
+              "atk": 250,
+              "def": 200,
+              "en": 0,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [],
+          "normalEnd": [
+            {
+              "card": "sample_tide_sprite",
+              "hp": 600,
+              "atk": 450,
+              "def": 200,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 0,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "dispel_magic",
+            "stop_defense",
+            "sample_ambush"
+          ],
+          "actions": [
+            {
+              "sequence": 57,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 58,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [
+                "energy_wisp"
+              ],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 59,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "sample_tide_sprite",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 60,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 61,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "AllocateEnergy",
+              "source": "sample_tide_sprite",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 63,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "sample_tide_sprite",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 64,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "sample_sky_sage",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 6,
+          "activeBot": "Hard",
+          "startLP": [
+            4500,
+            5000
+          ],
+          "endLP": [
+            4500,
+            5000
+          ],
+          "hardStart": [],
+          "normalStart": [
+            {
+              "card": "sample_tide_sprite",
+              "hp": 600,
+              "atk": 450,
+              "def": 200,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 0,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "sample_tide_sprite",
+              "hp": 600,
+              "atk": 450,
+              "def": 200,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 0,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "thorn_bastion",
+            "fire_dragon",
+            "energy_reserve",
+            "logistics_squire",
+            "sample_arcane_insight",
+            "battlefield_medicine"
+          ],
+          "actions": [
+            {
+              "sequence": 70,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "ActivateCard",
+              "source": "sample_arcane_insight",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 71,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "SummonMonster",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 72,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "ResolveTriggeredEffect",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 73,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "SummonMonster",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 74,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "AllocateEnergy",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 75,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "SummonMonster",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [
+                "dawnwing_fairy"
+              ],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 77,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "fire_dragon"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 78,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "sample_ambush",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 7,
+          "activeBot": "Normal",
+          "startLP": [
+            4500,
+            5000
+          ],
+          "endLP": [
+            4000,
+            5000
+          ],
+          "hardStart": [
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "sample_tide_sprite",
+              "hp": 600,
+              "atk": 450,
+              "def": 200,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2500,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 0,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "thorn_bastion",
+              "hp": 600,
+              "atk": 400,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2250,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "dispel_magic",
+            "stop_defense",
+            "aegis_sentinel"
+          ],
+          "actions": [
+            {
+              "sequence": 84,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "AllocateEnergy",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 85,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 86,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "siegebreaker",
+              "targets": [],
+              "tributes": [
+                "sample_tide_sprite"
+              ],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 88,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 89,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "sample_sky_sage",
+              "targets": [
+                "thorn_bastion"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 8,
+          "activeBot": "Hard",
+          "startLP": [
+            4000,
+            5000
+          ],
+          "endLP": [
+            4000,
+            4000
+          ],
+          "hardStart": [
+            {
+              "card": "thorn_bastion",
+              "hp": 600,
+              "atk": 400,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2250,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 1900,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "fire_dragon",
+            "energy_reserve",
+            "logistics_squire",
+            "battlefield_medicine",
+            "bloodfang_raider",
+            "sample_stone_guardian"
+          ],
+          "actions": [
+            {
+              "sequence": 95,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "SummonMonster",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [
+                "thorn_bastion"
+              ],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 96,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "SummonMonster",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 97,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "AllocateEnergy",
+              "source": "bloodfang_raider",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 98,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "ActivateCard",
+              "source": "energy_reserve",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 99,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "SummonMonster",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 100,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "AllocateEnergy",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 1,
+              "position": "None"
+            },
+            {
+              "sequence": 101,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "AllocateEnergy",
+              "source": "fire_dragon",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 103,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "Attack",
+              "source": "fire_dragon",
+              "targets": [
+                "fire_dragon"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 104,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "Attack",
+              "source": "bloodfang_raider",
+              "targets": [
+                "fire_dragon"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 105,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "Attack",
+              "source": "sample_stone_guardian",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 9,
+          "activeBot": "Normal",
+          "startLP": [
+            4000,
+            4000
+          ],
+          "endLP": [
+            2500,
+            4000
+          ],
+          "hardStart": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "en": 1,
+              "pos": "Attack"
+            },
+            {
+              "card": "fire_dragon",
+              "hp": 1600,
+              "atk": 1000,
+              "def": 300,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "bloodfang_raider",
+              "hp": 900,
+              "atk": 650,
+              "def": 100,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "en": 0,
+              "pos": "Defense"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 1900,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 1900,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "en": 0,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "dispel_magic",
+            "stop_defense",
+            "aegis_sentinel",
+            "arcane_archivist",
+            "dawnwing_fairy"
+          ],
+          "actions": [
+            {
+              "sequence": 111,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "AllocateEnergy",
+              "source": "siegebreaker",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 112,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ChangeBattlePosition",
+              "source": "siegebreaker",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 113,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "dawnwing_fairy",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 114,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ResolveTriggeredEffect",
+              "source": "dawnwing_fairy",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 115,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 116,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "SetTrap",
+              "source": "guardian_shift",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 118,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "siegebreaker",
+              "targets": [
+                "bloodfang_raider"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 119,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "sample_sky_sage",
+              "targets": [
+                "fire_dragon"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 10,
+          "activeBot": "Hard",
+          "startLP": [
+            2500,
+            4000
+          ],
+          "endLP": [
+            2500,
+            4000
+          ],
+          "hardStart": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 300,
+              "en": 1,
+              "pos": "Attack"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 1900,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "en": 0,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 400,
+              "en": 2,
+              "pos": "Defense"
+            },
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "normalEnd": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 1900,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "en": 0,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "logistics_squire",
+            "battlefield_medicine",
+            "sample_ambush"
+          ],
+          "actions": [
+            {
+              "sequence": 125,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "ChangeBattlePosition",
+              "source": "sample_stone_guardian",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 126,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "SummonMonster",
+              "source": "logistics_squire",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 127,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "ResolveTriggeredEffect",
+              "source": "logistics_squire",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 128,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "SetTrap",
+              "source": "sample_ambush",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 11,
+          "activeBot": "Normal",
+          "startLP": [
+            2500,
+            4000
+          ],
+          "endLP": [
+            1500,
+            4000
+          ],
+          "hardStart": [
+            {
+              "card": "sample_stone_guardian",
+              "hp": 1000,
+              "atk": 350,
+              "def": 400,
+              "en": 2,
+              "pos": "Defense"
+            },
+            {
+              "card": "logistics_squire",
+              "hp": 600,
+              "atk": 200,
+              "def": 150,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "normalStart": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 1900,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "dawnwing_fairy",
+              "hp": 700,
+              "atk": 400,
+              "def": 150,
+              "en": 0,
+              "pos": "Attack"
+            }
+          ],
+          "hardEnd": [],
+          "normalEnd": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 1900,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "activeHand": [
+            "dispel_magic",
+            "stop_defense",
+            "aegis_sentinel",
+            "arcane_archivist",
+            "bloodfang_raider",
+            "sample_arcane_insight",
+            "sample_divine_reversal"
+          ],
+          "actions": [
+            {
+              "sequence": 135,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 136,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "sample_arcane_insight",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 137,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "SummonMonster",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [
+                "dawnwing_fairy"
+              ],
+              "amount": 0,
+              "position": "Defense"
+            },
+            {
+              "sequence": 138,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "test_field_spell",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 139,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "sample_quick_strike",
+              "targets": [
+                "siegebreaker"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 140,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "stop_defense",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 141,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "SetTrap",
+              "source": "sample_divine_reversal",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 143,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "siegebreaker",
+              "targets": [
+                "logistics_squire"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 144,
+              "actor": 1,
+              "bot": "Hard",
+              "type": "ActivateCard",
+              "source": "sample_ambush",
+              "targets": [
+                "siegebreaker"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 145,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "sample_sky_sage",
+              "targets": [
+                "sample_stone_guardian"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        },
+        {
+          "turn": 12,
+          "activeBot": "Hard",
+          "startLP": [
+            1500,
+            4000
+          ],
+          "endLP": [
+            1500,
+            4000
+          ],
+          "hardStart": [],
+          "normalStart": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 1900,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "hardEnd": [],
+          "normalEnd": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 1900,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "activeHand": [
+            "battlefield_medicine",
+            "dispel_magic"
+          ],
+          "actions": []
+        },
+        {
+          "turn": 13,
+          "activeBot": "Normal",
+          "startLP": [
+            1500,
+            4000
+          ],
+          "endLP": [
+            50,
+            4000
+          ],
+          "hardStart": [],
+          "normalStart": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 1900,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "en": 0,
+              "pos": "Defense"
+            }
+          ],
+          "hardEnd": [],
+          "normalEnd": [
+            {
+              "card": "siegebreaker",
+              "hp": 1700,
+              "atk": 1050,
+              "def": 250,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "sample_sky_sage",
+              "hp": 2200,
+              "atk": 1600,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            },
+            {
+              "card": "thorn_bastion",
+              "hp": 1600,
+              "atk": 400,
+              "def": 600,
+              "en": 2,
+              "pos": "Attack"
+            }
+          ],
+          "activeHand": [
+            "dispel_magic",
+            "aegis_sentinel",
+            "arcane_archivist",
+            "bloodfang_raider",
+            "logistics_squire",
+            "sample_stone_guardian"
+          ],
+          "actions": [
+            {
+              "sequence": 157,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "AllocateEnergy",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [],
+              "amount": 2,
+              "position": "None"
+            },
+            {
+              "sequence": 158,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ChangeBattlePosition",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "Attack"
+            },
+            {
+              "sequence": 159,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 160,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "ActivateCard",
+              "source": "battlefield_medicine",
+              "targets": [
+                "sample_sky_sage"
+              ],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 162,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "thorn_bastion",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 163,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "siegebreaker",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            },
+            {
+              "sequence": 164,
+              "actor": 0,
+              "bot": "Normal",
+              "type": "Attack",
+              "source": "sample_sky_sage",
+              "targets": [],
+              "tributes": [],
+              "amount": 0,
+              "position": "None"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

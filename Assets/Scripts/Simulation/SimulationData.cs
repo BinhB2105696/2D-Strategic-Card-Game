@@ -127,6 +127,7 @@ public static class SimulationJson
         string root = Path.GetFullPath(projectRoot ?? "");
         if (!string.Equals(Path.GetPathRoot(root), @"D:\", StringComparison.OrdinalIgnoreCase) || !Directory.Exists(Path.Combine(root, "Assets")))
             throw new InvalidOperationException("projectRoot must identify this Unity project on drive D.");
-        return Path.Combine(root, "SimulationResults");
+        return Path.Combine(root, "SimulationResults", "Runs", "rules-v" + MatchHeader.CurrentRulesVersion,
+            "catalog-v" + MatchHeader.CurrentCardCatalogVersion, "ai-v" + SimulationAiContract.Schema);
     }
 }

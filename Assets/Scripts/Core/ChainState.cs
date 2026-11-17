@@ -92,6 +92,16 @@ public sealed class ChainState
         PendingAttack = pendingAttack;
     }
 
+    internal ChainState CopyForSearch(SearchCloneContext context)
+    {
+        var attack = PendingAttack == null ? null : new PendingAttack(PendingAttack.PlayerIndex,
+            PendingAttack.AttackerInstanceId, PendingAttack.TargetInstanceId);
+        var copy = new ChainState(WindowType, PriorityPlayerIndex, attack) {
+            ConsecutivePasses = ConsecutivePasses, ResolvingLinkIndex = ResolvingLinkIndex };
+        foreach (ChainLink link in links) copy.links.Add(context.Link(link));
+        return copy;
+    }
+
     public void AddLink(ChainLink link)
     {
         links.Add(link ?? throw new ArgumentNullException(nameof(link)));

@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "status": "proposed; PyTorch trainer not implemented or run yet",
+  "objective": "behavior cloning of Normal over legal candidates",
+  "encoder_version": 1,
+  "hidden_sizes": [64, 32],
+  "batch_size": 16,
+  "epochs": 3,
+  "learning_rate": 0.001,
+  "cpu_threads": 2,
+  "max_seconds": 300,
+  "max_samples": 5000,
+  "model_input": "encoded public policy only; metadata/group seeds are excluded",
+  "evaluation": "multi-choice imitation accuracy and loss; not a win-rate claim"
+}
