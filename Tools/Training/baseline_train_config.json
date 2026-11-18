@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "status": "rules-v4 baseline/pretraining only",
+  "objective": "behavior cloning of Hard-only, Normal-only and mixed teachers",
+  "encoder_version": 1,
+  "seed": 20261118,
+  "device": "cpu",
+  "hidden_sizes": [128, 64],
+  "batch_size": 128,
+  "epochs": 30,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "cpu_threads": 4,
+  "data_loader_workers": 0,
+  "deterministic": true,
+  "max_seconds": 1800,
+  "max_samples": null,
+  "early_stopping_patience": 4,
+  "early_stopping_min_delta": 0.0001,
+  "evaluate_test": false,
+  "model_input": "encoded public policy only; metadata/group seeds are excluded",
+  "evaluation": "validation imitation accuracy/loss for selection; independent test remains untouched"
+}

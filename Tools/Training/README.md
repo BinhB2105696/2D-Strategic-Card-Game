@@ -18,6 +18,14 @@ $python = 'SimulationResults\TrainingEnvironment\python312_cpu\Scripts\python.ex
 & $python Tools\Training\evaluate_checkpoint.py --dataset <dataset> --checkpoint <best.pt> --split validation
 ```
 
+Run the rules-v4 baseline ablations (Hard-only, Normal-only and mixed; three seeds each):
+
+```powershell
+.\Tools\Training\Run-BaselineAblations.ps1
+```
+
+The baseline config uses early stopping and deliberately leaves the independent test split untouched. Select one checkpoint per dataset from validation results before evaluating test once. These models are baseline/pretraining artifacts for accepted rules v5, not final gameplay models.
+
 This is pipeline validation, not the final LearnedBot. Next data collection needs new verified training seeds and an untouched test split; tuned seeds 420001-420120 must not become the final test set.
 
 Verified Hard-teacher pilot (no visible Unity Editor):

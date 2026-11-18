@@ -128,8 +128,9 @@ def verify_dataset(dataset_dir):
     return manifest, read_json(dataset_dir / "feature_spec.json")
 
 
-def save_checkpoint(path, model, optimizer, epoch, best_loss, config, spec):
+def save_checkpoint(path, model, optimizer, epoch, best_loss, config, spec, stale_epochs=0):
     torch.save({"schema": 1, "epoch": epoch, "best_validation_loss": best_loss,
+                "epochs_without_improvement": stale_epochs,
                 "model_state": model.state_dict(), "optimizer_state": optimizer.state_dict(),
                 "config": config, "feature_spec": spec}, path)
 
@@ -165,7 +166,7 @@ def train(args):
     model = ActionScorer(spec["context_size"], spec["action_size"], config["hidden_sizes"]).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=config["learning_rate"],
                                   weight_decay=config.get("weight_decay", 0.0))
-    start_epoch, best_loss = 1, float("inf")
+    start_epoch, best_loss, stale_epochs = 1, float("inf"), 0
     if args.resume:
         checkpoint = torch.load(args.resume, map_location=device, weights_only=False)
         if checkpoint["feature_spec"] != spec or checkpoint["config"]["hidden_sizes"] != config["hidden_sizes"]:
@@ -173,6 +174,7 @@ def train(args):
         model.load_state_dict(checkpoint["model_state"])
         optimizer.load_state_dict(checkpoint["optimizer_state"])
         start_epoch, best_loss = checkpoint["epoch"] + 1, checkpoint["best_validation_loss"]
+        stale_epochs = int(checkpoint.get("epochs_without_improvement", 0))
 
     run_manifest = {"schema": 1, "status": "running", "method": "supervised behavior cloning",
                     "model": "shared-candidate MLP action scorer", "device": str(device),
@@ -184,29 +186,41 @@ def train(args):
     metrics_path = output / "metrics.jsonl"
     started = time.monotonic()
     completed_epoch = start_epoch - 1
+    patience = int(config.get("early_stopping_patience", 0))
+    minimum_delta = float(config.get("early_stopping_min_delta", 0.0))
+    stopped_early = False
     for epoch in range(start_epoch, int(config["epochs"]) + 1):
         metrics = {"epoch": epoch, "train": run_epoch(model, loaders["train"], device, optimizer),
                    "validation": run_epoch(model, loaders["validation"], device)}
         with metrics_path.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(metrics, separators=(",", ":")) + "\n")
         completed_epoch = epoch
-        if metrics["validation"]["loss"] < best_loss:
+        if metrics["validation"]["loss"] < best_loss - minimum_delta:
             best_loss = metrics["validation"]["loss"]
-            save_checkpoint(output / "best.pt", model, optimizer, epoch, best_loss, config, spec)
-        save_checkpoint(output / "last.pt", model, optimizer, epoch, best_loss, config, spec)
+            stale_epochs = 0
+            save_checkpoint(output / "best.pt", model, optimizer, epoch, best_loss, config, spec, stale_epochs)
+        else:
+            stale_epochs += 1
+        save_checkpoint(output / "last.pt", model, optimizer, epoch, best_loss, config, spec, stale_epochs)
         print(json.dumps(metrics))
+        if patience > 0 and stale_epochs >= patience:
+            stopped_early = True
+            break
         if time.monotonic() - started >= config.get("max_seconds", float("inf")):
             break
 
-    final_metrics = {"best_validation_loss": best_loss, "completed_epoch": completed_epoch}
-    if "test" in loaders:
+    final_metrics = {"best_validation_loss": best_loss, "completed_epoch": completed_epoch,
+                     "stopped_early": stopped_early}
+    if "test" in loaders and config.get("evaluate_test", False):
         best = torch.load(output / "best.pt", map_location=device, weights_only=False)
         model.load_state_dict(best["model_state"])
         final_metrics["test"] = run_epoch(model, loaders["test"], device)
     run_manifest.update(status="completed", elapsed_seconds=time.monotonic() - started,
                         final_metrics=final_metrics,
-                        cautions=["Validation imitation accuracy is not game win rate.",
-                                  "This smoke dataset has no independent test split."] if "test" not in loaders else [])
+                        cautions=["Validation imitation accuracy is not game win rate."] +
+                                 (["This dataset has no independent test split."] if "test" not in loaders else
+                                  ([] if config.get("evaluate_test", False) else
+                                   ["The independent test split was intentionally not evaluated."])) )
     (output / "run_manifest.json").write_text(json.dumps(run_manifest, indent=2), encoding="utf-8")
     for loader in loaders.values():
         dataset = loader.dataset

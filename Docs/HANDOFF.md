@@ -25,9 +25,18 @@ Read root AGENTS.md first. Preserve pending work; do not rerun completed collect
 - Dataset: `SimulationResults/Datasets/hard_normal_main_v1/` (ignored by Git).
 - This v4 data is baseline/pretraining only; never silently merge it with v5 data.
 
+## Rules-v4 supervised baseline
+- Nine CPU runs completed: Hard-only, Normal-only and mixed, three initialization seeds each.
+- Selection used validation loss only; early stopping kept best checkpoints and test was not read during selection.
+- Selected validation results: Hard loss 1.3524/top-1 53.16%; Normal 0.7540/76.36%; mixed 1.1047/62.82%.
+- Test was evaluated once after selection: Hard loss 5.5746/top-1 51.55%; Normal 0.7174/top-1 78.49%; mixed 3.2664/top-1 63.40%.
+- Hard/mixed retain similar top-1 but have extreme test loss, indicating overconfident wrong predictions; diagnose calibration/label ambiguity before scaling.
+- Output: `SimulationResults/TrainingRuns/rules-v4-baseline_20261118_085137/` (ignored by Git).
+- The v4 test split is now consumed baseline evidence; do not tune against it or call it a final held-out test.
+
 ## Next
-- Rebuild the runner once after the checkpoint so `build-info.json` records the new source revision.
-- Train validation-only v4 behavior-cloning ablations: Hard-only, Normal-only and mixed, using three seeds each.
-- Select using validation metrics; evaluate the untouched test split only for selected checkpoints.
-- Treat these v4 models as baseline/pretraining evidence, then collect separate verified v5 data for fine-tuning/final models.
-- Do not start DAgger/self-play or change Hard until the supervised baseline is reviewed.
+- Add confidence/NLL diagnostics by teacher, deck and action family; verify whether Hard's hidden-state/search randomness creates ambiguous labels.
+- Compare small validation-only runs with label smoothing; condition mixed training on teacher identity or keep separate teachers.
+- Do not use the consumed v4 test for tuning. Final v5 evaluation needs a newly reserved seed range.
+- After the supervised design is chosen, collect a separate verified rules-v5 dataset for fine-tuning/final models.
+- Do not start DAgger/self-play or change Hard until this baseline diagnosis is reviewed.
