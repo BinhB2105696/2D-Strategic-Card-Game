@@ -57,6 +57,11 @@ public static class SimulationPilotTool
         RunConfig("ai-v2-collection-pilot.json");
     }
 
+    [MenuItem("Card Game/Simulation/Run AI Hard Teacher Pilot", true)]
+    private static bool CanRunHardTeacher() => CanRun();
+    [MenuItem("Card Game/Simulation/Run AI Hard Teacher Pilot")]
+    public static void RunHardTeacher() => RunConfig("ai-v2-hard-teacher-pilot.json");
+
     private static string CollectionRequestPath() => Path.Combine(Directory.GetParent(Application.dataPath).FullName,
         "Tools/Simulation/Control/ai-collection-request.txt");
 

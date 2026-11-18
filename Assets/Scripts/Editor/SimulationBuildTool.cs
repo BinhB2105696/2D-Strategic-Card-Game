@@ -57,8 +57,15 @@ public static class SimulationBuildTool
         Debug.Log("Latest build diagnostics exported to Tools/Simulation/Control/latest-build-report.json");
     }
 
-    public static void RebuildPreparedRunnerFromCommandLine()
+    public static void PrepareAndBuildRunnerFromCommandLine()
     {
+        CheckReady();
+        if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.StandaloneWindows64 &&
+            !EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64))
+            throw new InvalidOperationException("Cannot switch to the Windows build target.");
+        SimulationVerification.Verify();
+        ReplayFoundationVerification.Verify();
+        PrepareScene();
         Build();
         ExportLatestBuildDiagnostics();
     }
@@ -162,14 +169,20 @@ public static class SimulationBuildTool
         asset.catalogFingerprint = CatalogFingerprint(asset.cards);
         EditorUtility.SetDirty(asset); AssetDatabase.SaveAssetIfDirty(asset);
         Scene previous = SceneManager.GetActiveScene();
-        Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+        bool restorePrevious = previous.IsValid() && !string.IsNullOrEmpty(previous.path);
+        Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,
+            restorePrevious ? NewSceneMode.Additive : NewSceneMode.Single);
         try
         {
             var root = new GameObject("SimulationRunner"); SceneManager.MoveGameObjectToScene(root, scene);
             root.AddComponent<SimulationRunner>().catalog = asset;
             EditorSceneManager.SaveScene(scene, ScenePath);
         }
-        finally { EditorSceneManager.CloseScene(scene, true); if (previous.IsValid()) SceneManager.SetActiveScene(previous); }
+        finally
+        {
+            EditorSceneManager.CloseScene(scene, true);
+            if (restorePrevious) SceneManager.SetActiveScene(previous);
+        }
     }
 
     private static void Build()

@@ -8,7 +8,7 @@ if (!$batch.StartsWith($prefix,[StringComparison]::OrdinalIgnoreCase)) { throw '
 $output = Join-Path $batch ('validation/' + [DateTime]::UtcNow.ToString('yyyyMMdd_HHmmss') + '_' + [Guid]::NewGuid().ToString('N').Substring(0,8))
 New-Item -ItemType Directory -Path $output | Out-Null
 $reportPath = Join-Path $output 'report.json'
-$metrics = [ordered]@{schema=1;status='failed';sourceBatch=$batch;episodes=0;transitions=0;normalDecisions=0;easyDecisions=0;policiesChecked=0;checks=0;datasetBytes=0;errors=@()}
+$metrics = [ordered]@{schema=1;status='failed';sourceBatch=$batch;episodes=0;transitions=0;hardDecisions=0;normalDecisions=0;easyDecisions=0;policiesChecked=0;checks=0;datasetBytes=0;errors=@()}
 $episodes = [Collections.Generic.List[object]]::new()
 $seen = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $cards = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
@@ -97,8 +97,10 @@ try {
                         $terminal.Add(@{player=$player;reward=$record.reward})
                     } else { Check ($record.reward -eq 0 -and $nextPolicy.globalFeatures[16] -eq 0) 'Ongoing transition has terminal reward/state.' }
                     $bot=if($player -eq 0){$row.bot0}else{$row.bot1}
-                    Check ($bot -in @('Normal','Easy')) 'Unexpected teacher policy label.'
-                    if ($bot -eq 'Normal') { $metrics.normalDecisions++ } else { $metrics.easyDecisions++ }
+                    Check ($bot -in @('Hard','Normal','Easy')) 'Unexpected teacher policy label.'
+                    if ($bot -eq 'Hard') { $metrics.hardDecisions++ }
+                    elseif ($bot -eq 'Normal') { $metrics.normalDecisions++ }
+                    else { $metrics.easyDecisions++ }
                     $key=$bot+'/'+[string]$policy.legalActions[$record.selectedActionIndex].features[0]
                     if (!$actionCounts.ContainsKey($key)) {$actionCounts[$key]=0}; $actionCounts[$key]++
                     $count++; $perPlayer[$player]++; $metrics.transitions++
@@ -116,12 +118,12 @@ try {
         $metrics.datasetBytes+=(Get-Item -LiteralPath $path).Length; $metrics.episodes++
         $episodes.Add([ordered]@{matchId=$header.matchId;seed=[long]$row.seed;deck0=[int]$row.deck0;deck1=[int]$row.deck1;bot0=$row.bot0;bot1=$row.bot1;decisions=$count;dataset=$path;datasetSha256=(Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant();sourceTrace=$header.sourceTrace;sourceTraceSha256=(Get-FileHash -LiteralPath $header.sourceTrace -Algorithm SHA256).Hash.ToLowerInvariant()})
     }
-    Check ($metrics.episodes -eq 12 -and $metrics.normalDecisions+$metrics.easyDecisions -eq $metrics.transitions) 'Aggregate episode/teacher counts are inconsistent.'
+    Check ($metrics.episodes -eq 12 -and $metrics.hardDecisions+$metrics.normalDecisions+$metrics.easyDecisions -eq $metrics.transitions) 'Aggregate episode/teacher counts are inconsistent.'
     $metrics.status='passed'; $metrics.knownPublicCardIds=@($cards | Sort-Object); $metrics.selectedActionCountsByBotAndEnumValue=$actionCounts
-    $manifest=[ordered]@{schema=1;usage='pipeline smoke data; not held-out evaluation';rulesVersion=4;catalogVersion=4;aiSchema=2;sourceFingerprint=$metadata.sourceFingerprint;catalogFingerprint=$metadata.catalogFingerprint;teacherSelection='Filter each transition player using bot0/bot1 below; do not label Easy decisions as Normal.';splitPolicy='Keep whole matches and paired seeds together. Pilot is not a held-out test set.';coverageCaution='Observed public card IDs do not prove every card/effect was played or every interaction tested.';episodes=@($episodes.ToArray())}
+    $manifest=[ordered]@{schema=1;usage='verified behavior-cloning pilot; not held-out evaluation';rulesVersion=4;catalogVersion=4;aiSchema=2;sourceFingerprint=$metadata.sourceFingerprint;catalogFingerprint=$metadata.catalogFingerprint;teacherSelection='Filter each transition using its bot0/bot1 label; teacher allowlists are applied during preparation.';splitPolicy='Keep whole matches and paired seeds together. Pilot is not a held-out test set.';coverageCaution='Observed public card IDs do not prove every card/effect was played or every interaction tested.';episodes=@($episodes.ToArray())}
     [IO.File]::WriteAllText((Join-Path $output 'dataset-manifest.json'),($manifest | ConvertTo-Json -Depth 12),[Text.UTF8Encoding]::new($false))
 } catch { $metrics.errors=@($_.Exception.Message) }
 finally { [IO.File]::WriteAllText($reportPath,($metrics | ConvertTo-Json -Depth 10),[Text.UTF8Encoding]::new($false)) }
-Write-Output ('Dataset validation {0}: episodes={1}; transitions={2}; Normal={3}; Easy={4}; checks={5}' -f $metrics.status,$metrics.episodes,$metrics.transitions,$metrics.normalDecisions,$metrics.easyDecisions,$metrics.checks)
+Write-Output ('Dataset validation {0}: episodes={1}; transitions={2}; Hard={3}; Normal={4}; Easy={5}; checks={6}' -f $metrics.status,$metrics.episodes,$metrics.transitions,$metrics.hardDecisions,$metrics.normalDecisions,$metrics.easyDecisions,$metrics.checks)
 Write-Output ('Report: '+$reportPath)
 if ($metrics.status -ne 'passed') { throw ($metrics.errors -join '; ') }

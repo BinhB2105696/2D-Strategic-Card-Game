@@ -48,7 +48,10 @@ try {
         }
         if ($null -ne $state) {
             if ($state.runDirectory) { $runDirectory = $state.runDirectory }
-            if ($state.utc) { $lastHeartbeat = [DateTime]::Parse($state.utc).ToUniversalTime() }
+            if ($state.utc) {
+                $style = [Globalization.DateTimeStyles]::AssumeUniversal -bor [Globalization.DateTimeStyles]::AdjustToUniversal
+                $lastHeartbeat = [DateTime]::Parse([string]$state.utc,[Globalization.CultureInfo]::InvariantCulture,$style)
+            }
             $text = "$($state.state): $($state.completed)/$($state.expected)  $($state.activeMatch)  turn=$($state.turn)"
             if ($text -ne $lastText) { Write-Output $text; $lastText = $text }
         }

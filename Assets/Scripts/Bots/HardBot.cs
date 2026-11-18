@@ -8,7 +8,7 @@ using System.Text;
 // The catalog is public game content, never a catalog inferred from the two true decks.
 public sealed class HardBot : IBot, IStateObservingBot
 {
-    public const string AlgorithmVersion = "ismcts-H3-portfolio-v1";
+    public const string AlgorithmVersion = "ismcts-H5.4-primary-plan-sequential-fallback-v1";
     private readonly CardDefinition[] catalog;
     private readonly CardDefinition[] knownOwnStartingDeck;
     private readonly NormalBot fallback = new NormalBot();
@@ -39,7 +39,7 @@ public sealed class HardBot : IBot, IStateObservingBot
         { "ownDeckPrior", knownOwnStartingDeck == null ? "public-catalog" : "initial-deck-minus-observed-owned-cards" },
         { "pairedRootSampling", pairedRootSampling }, { "baselineImprovementMargin", 0.005 },
         { "turnHorizon", turnHorizon }, { "responseRoots", "Normal fallback" },
-        { "tactics", "prospective-passives-hand-board-upgrades-draw-v3" } };
+        { "tactics", "prospective-passives-hand-board-upgrades-draw-primary-plan-sequential-fallback-v10" } };
 
     private sealed class Node
     {
@@ -98,7 +98,10 @@ public sealed class HardBot : IBot, IStateObservingBot
         tactics.Commit(chosen);
         if (DecisionDiagnostics != null) DecisionDiagnostics(new Dictionary<string, object> {
             { "iterations", LastIterations }, { "maxTreeDepth", LastMaxTreeDepth }, { "rolloutActions", LastRolloutActions },
-            { "nodes", LastNodes }, { "changedBaseline", LastChangedBaseline }, { "fallback", LastFallbackReason } });
+            { "nodes", LastNodes }, { "changedBaseline", LastChangedBaseline }, { "fallback", LastFallbackReason },
+            { "cancelledCommitments", tactics.LastCancelledCommitments },
+            { "plannedAttackers", tactics.LastPlannedAttackers }, { "attackPlanScore", tactics.LastAttackPlanScore },
+            { "attackPlanFallback", tactics.LastAttackPlanFallback } });
         return chosen;
     }
 
