@@ -53,14 +53,15 @@ function Validate-Policy([System.Collections.IDictionary]$Policy) {
 }
 try {
     $batchReport = Read-Json (Join-Path $batch 'batch-report.json')
-    Check ($batchReport.status -eq 'completed' -and $batchReport.verifiedMatches -eq 12 -and @($batchReport.results).Count -eq 12) 'Expected a completed 12-match replay/export batch.'
+    $batchExpected=[int]$batchReport.verifiedMatches
+    Check ($batchReport.status -eq 'completed' -and $batchExpected -gt 0 -and @($batchReport.results).Count -eq $batchExpected) 'Expected a completed replay/export batch.'
     $run = [IO.Path]::GetFullPath($batchReport.sourceRun)
     Check ($run.StartsWith($prefix,[StringComparison]::OrdinalIgnoreCase)) 'Source run is outside SimulationResults.'
     $metadata = Read-Json (Join-Path $run 'run.json')
-    Check ($metadata.rulesVersion -eq 4 -and $metadata.catalogVersion -eq 4 -and $metadata.aiContract.schema -eq 2) 'Unexpected rules/catalog/AI versions.'
+    Check ($metadata.rulesVersion -in @(4,5) -and $metadata.catalogVersion -eq 4 -and $metadata.aiContract.schema -eq 2) 'Unsupported rules/catalog/AI versions.'
     Check (@($metadata.cardDefinitions).Count -eq 41 -and @($metadata.deckDefinitions).Count -ge 3) 'Expected 41 cards and at least the three playable presets.'
     $rows=@(Import-Csv -LiteralPath (Join-Path $run 'matches.csv'))
-    Check ($rows.Count -eq 12 -and @($rows | Where-Object status -ne 'Finished').Count -eq 0) 'Source pilot has unfinished/failed episodes.'
+    Check ($rows.Count -eq $batchExpected -and @($rows | Where-Object status -ne 'Finished').Count -eq 0) 'Source batch has unfinished/failed episodes.'
     foreach ($result in $batchReport.results) {
         $verified=Read-Json $result.report
         Check ($verified.verified -and $verified.completeMatch -and !$verified.truncated -and $verified.status -eq 'verified-match') 'An export is not a fully verified match.'
@@ -112,13 +113,13 @@ try {
         Check ($count -eq $verified.verifiedDecisions -and $count -eq $result.verifiedDecisions -and $perPlayer[0] -eq [int]$row.decisions0 -and $perPlayer[1] -eq [int]$row.decisions1) 'Dataset decision counts disagree with reports/CSV.'
         Check ($terminal.Count -eq 2 -and @($terminal.player | Sort-Object -Unique).Count -eq 2) 'Expected one final transition for each player.'
         foreach ($last in $terminal) {
-            $expected=if($ending.winner -lt 0){0}elseif($ending.winner -eq $last.player){1}else{-1}
-            Check ($last.reward -eq $expected) 'Terminal reward disagrees with the winner.'
+            $expectedReward=if($ending.winner -lt 0){0}elseif($ending.winner -eq $last.player){1}else{-1}
+            Check ($last.reward -eq $expectedReward) 'Terminal reward disagrees with the winner.'
         }
         $metrics.datasetBytes+=(Get-Item -LiteralPath $path).Length; $metrics.episodes++
         $episodes.Add([ordered]@{matchId=$header.matchId;seed=[long]$row.seed;deck0=[int]$row.deck0;deck1=[int]$row.deck1;bot0=$row.bot0;bot1=$row.bot1;decisions=$count;dataset=$path;datasetSha256=(Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant();sourceTrace=$header.sourceTrace;sourceTraceSha256=(Get-FileHash -LiteralPath $header.sourceTrace -Algorithm SHA256).Hash.ToLowerInvariant()})
     }
-    Check ($metrics.episodes -eq 12 -and $metrics.hardDecisions+$metrics.normalDecisions+$metrics.easyDecisions -eq $metrics.transitions) 'Aggregate episode/teacher counts are inconsistent.'
+    Check ($metrics.episodes -eq $batchExpected -and $metrics.hardDecisions+$metrics.normalDecisions+$metrics.easyDecisions -eq $metrics.transitions) 'Aggregate episode/teacher counts are inconsistent.'
     $metrics.status='passed'; $metrics.knownPublicCardIds=@($cards | Sort-Object); $metrics.selectedActionCountsByBotAndEnumValue=$actionCounts
     $manifest=[ordered]@{schema=1;usage='verified behavior-cloning pilot; not held-out evaluation';rulesVersion=4;catalogVersion=4;aiSchema=2;sourceFingerprint=$metadata.sourceFingerprint;catalogFingerprint=$metadata.catalogFingerprint;teacherSelection='Filter each transition using its bot0/bot1 label; teacher allowlists are applied during preparation.';splitPolicy='Keep whole matches and paired seeds together. Pilot is not a held-out test set.';coverageCaution='Observed public card IDs do not prove every card/effect was played or every interaction tested.';episodes=@($episodes.ToArray())}
     [IO.File]::WriteAllText((Join-Path $output 'dataset-manifest.json'),($manifest | ConvertTo-Json -Depth 12),[Text.UTF8Encoding]::new($false))

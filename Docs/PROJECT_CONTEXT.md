@@ -149,13 +149,13 @@ Higher-tier work must not destabilize a lower tier.
 - Player starting LP: 6000 **[TENTATIVE, trial approved 3 November]**.
 - Deck size: 30-40 cards **[TENTATIVE]**.
 - Starting hand: 4 cards **[TENTATIVE]**.
-- Normal draw: 1 card each turn **[TENTATIVE]**.
+- Normal draw: 1 card each turn, except the first player's first Draw step draws 0 **[CONFIRMED, rules v5 accepted 18 November after 200 matched games]**.
 - Monster Zones: 3 **[CONFIRMED]**.
 - Spell/Trap Zones: 3 **[CONFIRMED]**.
 - Primary win condition: reduce the opponent's HP to 0 **[CONFIRMED]**.
 - Drawing from an empty deck draws nothing; deck-out is not an automatic loss **[CONFIRMED]**.
 - Target match duration: 10-15 minutes **[TENTATIVE]**.
-- First player: random; the first player draws normally **[OPEN, default]**.
+- First player: random; their first Draw step still occurs but draws no card **[CONFIRMED, rules v5 accepted 18 November after 200 matched games]**.
 
 All configurable numbers must live in one `GameConfig`, not as scattered magic numbers.
 
@@ -628,7 +628,7 @@ Do not install networking packages until local core actions are deterministic an
 | Counter-damage against Attack Position | None |
 | Direct attack condition | Opponent has no monsters |
 | First-turn attack restriction | First player's first turn only |
-| First player and draw | Random; first player draws |
+| First player and draw | Random; first Draw step occurs but draws 0 (rules v5, accepted after 200 matched games) |
 | Mobile layout | Portrait, 1080x1920 reference, Match 0 (Width) |
 | Networking stack | Tentative UGS stack in section 13; decide after spike |
 

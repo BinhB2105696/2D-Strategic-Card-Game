@@ -81,6 +81,7 @@ Các ngưỡng dưới đây là đề xuất, chưa được công cụ tự á
 - Card mới dùng cơ chế cũ: kỳ vọng vẫn vận hành hợp lệ; sức mạnh cần đánh giá lại.
 - Cơ chế hoặc action mới: có thể cần sửa luật, adapter/observation, heuristic và model. Không hứa tự hiểu mọi cơ chế.
 - Thay luật: khả năng chạy đúng và khả năng chơi tốt là hai tiêu chí riêng; model có thể cần fine-tune/train lại.
+- Rules v5 được chấp nhận ngày 18-11-2026: người đi trước vẫn thực hiện đầy đủ Draw step/Recovery/Standby nhưng không rút ở turn 1; các lượt sau rút bình thường. Trên 200 trận ghép cặp cùng seed/deck/seat, tỷ lệ thắng người đi trước giảm 63,5% -> 53,0% (McNemar exact p≈0,0038), Hard ổn định 59,5% -> 61,0% và chênh lệch Hard đi trước/sau giảm 27 -> 6 điểm %. Dataset 280 trận rules v4 chỉ giữ làm baseline/pretrain và không được trộn âm thầm với dữ liệu v5.
 
 ## 6. Phương pháp: hướng ưu tiên và phần chưa chốt
 

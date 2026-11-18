@@ -21,6 +21,7 @@ public static class SimulationVerification
         Require(a.status == "Finished" && b.status == "Finished", "matches finish");
         Require(a.actionDigest == b.actionDigest && a.resultDigest == b.resultDigest, "same seed/decks/policies reproduce actions and outcomes");
         Require(File.ReadLines(Path.Combine(directory, "a.jsonl")).Last().Contains("\"trace\":\"a.jsonl\""), "trace end record names its retained file");
+        VerifyFirstTurnDrawRule(deck);
         bool storageFailureEscaped = false;
         try
         {
@@ -48,11 +49,38 @@ public static class SimulationVerification
         var selfPlay = new SimulationMatchResult { status = "Finished", pairId = "self", bot0 = "Easy", bot1 = "Easy", winner = 0 };
         string selfSummary = SimulationJson.Encode(SimulationSummary.Create(new List<SimulationMatchResult> { selfPlay }, config, false));
         Require(selfSummary.Contains("\"completeSeedPairs\":1") && selfSummary.Contains("\"pairedScore95Interval\":null"), "self-play pairs counted and interim confidence calculation skipped");
-        File.WriteAllText(Path.Combine(directory, "PASS.txt"), "PASS: reproducible actions/results, termination vs limits, hidden information, D-drive containment, paired aggregation, trace metadata and storage failure propagation.\n");
+        File.WriteAllText(Path.Combine(directory, "PASS.txt"), "PASS: reproducible actions/results, first-turn draw rule, termination vs limits, hidden information, D-drive containment, paired aggregation, trace metadata and storage failure propagation.\n");
         Debug.Log("Simulation verification PASS: " + directory);
     }
 
     private static SimulationMatchResult Match(string id) => new SimulationMatchResult { matchId = id, pairId = id, seed = 42, bot0 = "Normal", bot1 = "Easy" };
+    private static void VerifyFirstTurnDrawRule(IReadOnlyList<CardDefinition> deck)
+    {
+        GameSession session = GameSession.Create(GameConfig.CreateDefault(), 43, deck, deck);
+        int first = session.State.CurrentPlayerIndex, second = 1 - first;
+        Require(session.State.Players[first].Hand.Count == 4 && session.State.Players[second].Hand.Count == 4, "both players start with four cards");
+        Apply(session, GameAction.ResolveDrawStep(first));
+        Require(session.State.Players[first].Hand.Count == 4 && session.State.CurrentRecoveryStep == RecoveryStep.EnergyRefresh,
+            "first player's first Draw step advances without drawing");
+        Apply(session, GameAction.ResolveEnergyRefreshStep(first));
+        if (session.State.CurrentPhase == TurnPhase.Standby) Apply(session, GameAction.AdvancePhase(first));
+        Apply(session, GameAction.AdvancePhase(first));
+        Apply(session, GameAction.EndTurn(first));
+        Apply(session, GameAction.ResolveDrawStep(second));
+        Require(session.State.Players[second].Hand.Count == 5, "second player draws normally on turn two");
+        Apply(session, GameAction.ResolveEnergyRefreshStep(second));
+        if (session.State.CurrentPhase == TurnPhase.Standby) Apply(session, GameAction.AdvancePhase(second));
+        Apply(session, GameAction.AdvancePhase(second));
+        Apply(session, GameAction.AdvancePhase(second));
+        Apply(session, GameAction.EndTurn(second));
+        Apply(session, GameAction.ResolveDrawStep(first));
+        Require(session.State.Players[first].Hand.Count == 5, "first player draws normally on their next turn");
+    }
+    private static void Apply(GameSession session, GameAction action)
+    {
+        ActionResult result = session.TryApply(action);
+        Require(result.Succeeded, "draw-rule fixture action succeeds: " + result.ErrorMessage);
+    }
     private static List<CardDefinition> Deck(string prefix) => Enumerable.Range(0, 30).Select(i => new CardDefinition(
         prefix + i, prefix + i, CardCategory.Monster, "", MonsterAttribute.Wood, MonsterRank.Basic, MonsterType.Fairy,
         1000, 500 + i % 4 * 300, 300, 1, SpellType.Normal, TrapType.Normal, 0, CardSpeed.Speed1)).ToList();

@@ -101,7 +101,7 @@ public static class GameStateDiagnostics
             session.State.TurnNumber == 2 &&
             session.State.CurrentPlayerIndex == secondPlayer &&
             session.State.CurrentPhase == TurnPhase.Main &&
-            session.State.Players[firstPlayer].Hand.Count == 5 &&
+            session.State.Players[firstPlayer].Hand.Count == 4 &&
             session.State.Players[secondPlayer].Hand.Count == 5 &&
             session.Log.Actions.Count == 8;
 
@@ -122,7 +122,7 @@ public static class GameStateDiagnostics
             $"{session.State.Players[secondPlayer].Hand.Count}\n" +
             $"Logged actions: {session.Log.Actions.Count}\n" +
             "Out-of-turn action rejected and not logged: True\n" +
-            "Turn 1 flow: Recovery -> Standby -> Main -> End -> next turn");
+            "Turn 1 flow: Draw step without drawing -> Energy -> Standby -> Main -> End -> next turn");
     }
 
     [MenuItem("Card Game/Diagnostics/Run Recovery Skip Smoke Test")]

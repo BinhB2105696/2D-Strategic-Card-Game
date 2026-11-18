@@ -273,7 +273,8 @@ public static class GameRules
         PlayerState player = state.Players[state.CurrentPlayerIndex];
         List<GameEvent> events = new List<GameEvent>();
 
-        if (player.ConsumeDrawStepSkip(state.TurnNumber))
+        if (player.ConsumeDrawStepSkip(state.TurnNumber) ||
+            state.TurnNumber == 1)
         {
             events.Add(GameEvent.DrawStepSkipped(player.PlayerIndex));
         }

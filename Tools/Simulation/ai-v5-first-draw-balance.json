@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "projectRoot": "D:\\Unity\\Projects\\2D-Strategic-Card-Game",
+  "seedCount": 10,
+  "firstSeed": 510101,
+  "warmupMatches": 2,
+  "maxTurns": 200,
+  "maxActions": 10000,
+  "maxMatchSeconds": 180,
+  "decisionWarningMs": 1000,
+  "detailedMatches": 0,
+  "matchups": [
+    { "player0Bot": "Hard", "player1Bot": "Normal", "deck0": 0, "deck1": 0, "swapBots": true },
+    { "player0Bot": "Hard", "player1Bot": "Normal", "deck0": 1, "deck1": 1, "swapBots": true },
+    { "player0Bot": "Hard", "player1Bot": "Normal", "deck0": 2, "deck1": 2, "swapBots": true },
+    { "player0Bot": "Hard", "player1Bot": "Normal", "deck0": 3, "deck1": 3, "swapBots": true },
+    { "player0Bot": "Hard", "player1Bot": "Normal", "deck0": 4, "deck1": 4, "swapBots": true }
+  ]
+}

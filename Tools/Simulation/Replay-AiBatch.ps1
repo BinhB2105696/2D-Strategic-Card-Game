@@ -20,7 +20,8 @@ $runner = Join-Path $project 'Build/Simulation'
 $executable = Join-Path $runner 'CardGameSimulation.exe'
 if (!(Test-Path -LiteralPath $executable -PathType Leaf)) { throw 'Build the training runner first.' }
 $progress = Get-Content -LiteralPath (Join-Path $run 'progress.json') -Raw | ConvertFrom-Json
-if ($progress.state -ne 'completed' -or $progress.completed -ne 12 -or $progress.expected -ne 12) { throw 'Replay requires a completed 12-match pilot.' }
+$expected = [int]$progress.expected
+if ($progress.state -ne 'completed' -or $expected -lt 1 -or $progress.completed -ne $expected) { throw 'Replay requires a completed simulation batch.' }
 $recorded = Get-Content -LiteralPath (Join-Path $run 'run.json') -Raw | ConvertFrom-Json -AsHashtable
 $built = Get-Content -LiteralPath (Join-Path $runner 'build-info.json') -Raw | ConvertFrom-Json -AsHashtable
 if ($recorded['sourceFingerprint'] -ne $built['sourceFingerprint'] -or $recorded['rulesVersion'] -ne $built['rulesVersion'] -or
@@ -28,7 +29,7 @@ if ($recorded['sourceFingerprint'] -ne $built['sourceFingerprint'] -or $recorded
     throw 'Current training runner does not match the source pilot.'
 }
 $traces = @(Get-ChildItem -LiteralPath (Join-Path $run 'traces') -File -Filter '*.jsonl' | Sort-Object Name)
-if ($traces.Count -ne 12) { throw 'Expected exactly 12 traces.' }
+if ($traces.Count -ne $expected) { throw "Expected $expected traces." }
 $batch = Join-Path $run ('replay/' + [DateTime]::UtcNow.ToString('yyyyMMdd_HHmmss') + '_powershell_' + [Guid]::NewGuid().ToString('N').Substring(0,8))
 New-Item -ItemType Directory -Path $batch | Out-Null
 $results = [Collections.Generic.List[object]]::new()
@@ -58,13 +59,13 @@ try {
             if (!$verified.verified -or !$verified.completeMatch -or $verified.truncated -or $verified.status -ne 'verified-match' -or
                 [IO.Path]::GetFullPath($verified.dataset) -ne [IO.Path]::GetFullPath($dataset)) { throw "Replay verification failed for $($trace.Name): $($verified.component) $($verified.error)" }
             $results.Add([ordered]@{trace=$trace.Name;report=$reportPath;dataset=$dataset;verifiedActions=$verified.verifiedActions;verifiedDecisions=$verified.verifiedDecisions})
-            Write-Output "Verified $($results.Count)/12: $($trace.Name)"
+            Write-Output "Verified $($results.Count)/${expected}: $($trace.Name)"
         } finally {
             if (!$child.HasExited) { Stop-Process -Id $child.Id }
             $child.Dispose()
         }
     }
-    $status = 'completed'; $message = 'All 12 traces replay-verified and exported.'
+    $status = 'completed'; $message = "All $expected traces replay-verified and exported."
 } catch {
     $failure = $_; $message = $_.Exception.Message
 } finally {

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public sealed class MatchHeader
 {
     public const int CurrentSchemaVersion = 1;
-    public const int CurrentRulesVersion = 4;
+    public const int CurrentRulesVersion = 5;
     public const int CurrentCardCatalogVersion = 4;
 
     public int SchemaVersion { get; }
