@@ -19,6 +19,8 @@ public sealed class PlayerState
     public int Health { get; private set; }
     public int MaxEnergy { get; private set; }
     public int AvailableEnergy { get; private set; }
+    public int DeckExhaustionLevel { get; private set; }
+    public int PendingDeckExhaustionDamage { get; private set; }
     public IReadOnlyList<CardInstance> Deck => deck;
     public IReadOnlyList<CardInstance> Hand => hand;
     public IReadOnlyList<CardInstance> Graveyard => graveyard;
@@ -67,6 +69,8 @@ public sealed class PlayerState
         Health = source.Health;
         MaxEnergy = source.MaxEnergy;
         AvailableEnergy = source.AvailableEnergy;
+        DeckExhaustionLevel = source.DeckExhaustionLevel;
+        PendingDeckExhaustionDamage = source.PendingDeckExhaustionDamage;
         LastFieldSpellActivationTurn = source.LastFieldSpellActivationTurn;
         deck = new List<CardInstance>();
         hand = new List<CardInstance>();
@@ -195,6 +199,23 @@ public sealed class PlayerState
         }
 
         return drawnCount;
+    }
+
+    internal int ScheduleDeckExhaustionDamage(int damageStep)
+    {
+        if (damageStep <= 0) throw new ArgumentOutOfRangeException(nameof(damageStep));
+        if (PendingDeckExhaustionDamage != 0)
+            throw new InvalidOperationException("Deck exhaustion damage is already pending for this turn.");
+        DeckExhaustionLevel = checked(DeckExhaustionLevel + 1);
+        PendingDeckExhaustionDamage = checked(DeckExhaustionLevel * damageStep);
+        return PendingDeckExhaustionDamage;
+    }
+
+    internal int ConsumePendingDeckExhaustionDamage()
+    {
+        int damage = PendingDeckExhaustionDamage;
+        PendingDeckExhaustionDamage = 0;
+        return damage;
     }
 
     internal CardInstance MoveDeckCardToHand(long instanceId)

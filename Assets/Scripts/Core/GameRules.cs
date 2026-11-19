@@ -281,13 +281,21 @@ public static class GameRules
         else
         {
             int previousHandCount = player.Hand.Count;
-            player.DrawCards(state.Config.CardsDrawnPerTurn);
+            int drawnCount = player.DrawCards(state.Config.CardsDrawnPerTurn);
 
             for (int index = previousHandCount; index < player.Hand.Count; index++)
             {
                 events.Add(GameEvent.CardDrawn(
                     player.PlayerIndex,
                     player.Hand[index].InstanceId));
+            }
+            if (state.Config.CardsDrawnPerTurn > 0 && drawnCount == 0)
+            {
+                int pendingDamage = player.ScheduleDeckExhaustionDamage(
+                    state.Config.DeckExhaustionDamageStep);
+                events.Add(GameEvent.DeckExhaustionDamageScheduled(
+                    player.PlayerIndex,
+                    pendingDamage));
             }
         }
 
@@ -376,11 +384,23 @@ public static class GameRules
     private static ActionResult EndTurn(GameState state)
     {
         int completedTurn = state.TurnNumber;
+        PlayerState completedPlayer = state.Players[state.CurrentPlayerIndex];
         List<GameEvent> events = new List<GameEvent>();
         state.ExpireTemporaryModifiers(completedTurn, events);
         state.CleanRetaliationMarks(completedTurn);
         ResolveKnockouts(state, events);
         if (state.IsFinished) return ActionResult.Success(events);
+        int exhaustionDamage = completedPlayer.ConsumePendingDeckExhaustionDamage();
+        if (exhaustionDamage > 0)
+        {
+            completedPlayer.TakeDamage(exhaustionDamage);
+            events.Add(GameEvent.PlayerDamaged(
+                completedPlayer.PlayerIndex,
+                exhaustionDamage,
+                TurnPhase.End));
+            AddMatchEndIfNeeded(state, events);
+            if (state.IsFinished) return ActionResult.Success(events);
+        }
         state.StartNextTurn();
         events.Add(GameEvent.TurnStarted(
             state.CurrentPlayerIndex,

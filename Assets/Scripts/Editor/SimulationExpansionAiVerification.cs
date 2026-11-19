@@ -19,7 +19,7 @@ public static class SimulationExpansionAiVerification
         Call(state, "CaptureMainStart");
         var policy = Capture(state, actor);
         var global = (double[])policy["globalFeatures"];
-        Check(global.Length == 21 && global[17] == 0.2 && global[18] == 0.2, "start-of-Main monster counts");
+        Check(global.Length == 25 && global[17] == 0.2 && global[18] == 0.2, "start-of-Main monster counts");
         double startLp = global[19];
         state.Players[actor].TakeDamage(100);
         Place(state, actor, 1, 900003, cards["battle_herald"]);
@@ -61,7 +61,9 @@ public static class SimulationExpansionAiVerification
         policy = (Dictionary<string, object>)SimulationAiContract.Capture(state, actor, legal);
         entities = (List<object>)policy["entities"];
         Check(entities.Cast<Dictionary<string, object>>().Any(entity => (string)entity["cardId"] == "stop_defense"), "legal own-deck search choice is encoded");
-        Check(SimulationAiContract.Schema == 2, "expansion observations are explicitly versioned");
+        Check(SimulationAiContract.Schema == 3 &&
+            ((double[])Capture(state, actor)["globalFeatures"]).Length == 25,
+            "deck-exhaustion observations are explicitly versioned");
     }
 
     private static Dictionary<string, object> Capture(GameState state, int player)

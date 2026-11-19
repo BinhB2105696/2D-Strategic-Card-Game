@@ -44,7 +44,8 @@ public enum GameEventType
     MatchEnded,
     MonsterMaximumHealthModified,
     EnergyRestored,
-    CardRevealed
+    CardRevealed,
+    DeckExhaustionDamageScheduled
 }
 
 [Serializable]
@@ -54,6 +55,8 @@ public sealed class GameEvent
         => new GameEvent(GameEventType.EnergyRestored, player, 0, 0, amount, phase);
     public static GameEvent CardRevealed(int player, long card, TurnPhase phase)
         => new GameEvent(GameEventType.CardRevealed, player, card, 0, 0, phase);
+    public static GameEvent DeckExhaustionDamageScheduled(int player, int amount)
+        => new GameEvent(GameEventType.DeckExhaustionDamageScheduled, player, 0, 0, amount, TurnPhase.Recovery);
 
     public GameEventType Type { get; }
     public int PlayerIndex { get; }
@@ -366,6 +369,9 @@ public sealed class GameEvent
     }
 
     public static GameEvent PlayerDamaged(int playerIndex, int damage)
+        => PlayerDamaged(playerIndex, damage, TurnPhase.Battle);
+
+    public static GameEvent PlayerDamaged(int playerIndex, int damage, TurnPhase phase)
     {
         return new GameEvent(
             GameEventType.PlayerDamaged,
@@ -373,7 +379,7 @@ public sealed class GameEvent
             0,
             0,
             damage,
-            TurnPhase.Battle);
+            phase);
     }
 
     public static GameEvent EffectResolved(

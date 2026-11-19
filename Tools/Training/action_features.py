@@ -11,8 +11,10 @@ def mean(vectors, width):
 
 
 def encode(policy, spec):
-    if policy.get("schema") != 2 or len(policy["globalFeatures"]) != 21:
-        raise ValueError("Expected AI schema 2 and 21 global features")
+    expected_schema = int(spec.get("ai_schema", 2))
+    expected_globals = int(spec.get("global_feature_count", 21))
+    if policy.get("schema") != expected_schema or len(policy["globalFeatures"]) != expected_globals:
+        raise ValueError(f"Expected AI schema {expected_schema} and {expected_globals} global features")
     vocabulary = {card: index + 1 for index, card in enumerate(spec["card_ids"])}
     entity_width = 18 + len(vocabulary) + 1
     entities = []

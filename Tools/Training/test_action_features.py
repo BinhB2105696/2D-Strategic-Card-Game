@@ -50,6 +50,15 @@ class ActionFeaturesTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             encode(self.policy, self.spec)
 
+    def test_schema_three_accepts_deck_exhaustion_features(self):
+        spec = copy.deepcopy(self.spec)
+        spec.update(ai_schema=3, global_feature_count=25)
+        policy = copy.deepcopy(self.policy)
+        policy.update(schema=3, globalFeatures=policy["globalFeatures"] + [0.1, 0.2, 0.3, 0.4])
+        context, actions = encode(policy, spec)
+        self.assertEqual(len(encode(self.policy, self.spec)[0]) + 4, len(context))
+        self.assertEqual(len(actions), 2)
+
     def test_no_game_metadata_interface(self):
         expected = encode(self.policy, self.spec)
         self.policy["diagnostic_only"] = {"seed": 123, "deck": ["private"]}

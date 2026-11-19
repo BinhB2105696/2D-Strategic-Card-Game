@@ -4,13 +4,15 @@ using System.Linq;
 
 public static class SimulationAiContract
 {
-    public const int Schema = 2;
+    public const int Schema = 3;
     public static object Describe() => SimulationJson.Object("schema", Schema,
         "semantics", "per-player/next-decision transitions; terminal rewards include intervening opponent and automatic steps",
         "globalFeatures", new[] { "turn/100", "phase", "ownTurn", "ownPriority", "response", "trigger",
             "ownLP/1000", "enemyLP/1000", "ownEnergy/5", "enemyEnergy/5", "ownMaxEnergy/5", "enemyMaxEnergy/5",
             "ownDeck/40", "enemyDeck/40", "ownHand/10", "enemyHand/10", "finished",
-            "ownMonstersAtMainStart/5", "enemyMonstersAtMainStart/5", "ownLPAtMainStart/1000", "enemyLPAtMainStart/1000" },
+            "ownMonstersAtMainStart/5", "enemyMonstersAtMainStart/5", "ownLPAtMainStart/1000", "enemyLPAtMainStart/1000",
+            "ownDeckExhaustionLevel/10", "enemyDeckExhaustionLevel/10",
+            "ownPendingDeckExhaustionDamage/1000", "enemyPendingDeckExhaustionDamage/1000" },
         "entityFeatures", new[] { "relativeOwner", "zone", "slot", "known", "category", "rank", "position",
             "hp/1000", "maxHP/1000", "atk/1000", "def/1000", "energy/5", "attackEnergy/5", "tributes/3",
             "speed", "remainingAttacks", "changedPosition", "summonedThisTurn" },
@@ -110,7 +112,9 @@ public static class SimulationAiContract
             own.AvailableEnergy/5.0, enemy.AvailableEnergy/5.0, own.MaxEnergy/5.0, enemy.MaxEnergy/5.0,
             own.DeckCount/40.0, enemy.DeckCount/40.0, own.HandCount/10.0, enemy.HandCount/10.0, state.IsFinished ? 1 : 0,
             state.MonsterCountAtMainStart(player)/5.0, state.MonsterCountAtMainStart(1-player)/5.0,
-            state.HealthAtMainStart(player)/1000.0, state.HealthAtMainStart(1-player)/1000.0 },
+            state.HealthAtMainStart(player)/1000.0, state.HealthAtMainStart(1-player)/1000.0,
+            own.DeckExhaustionLevel/10.0, enemy.DeckExhaustionLevel/10.0,
+            own.PendingDeckExhaustionDamage/1000.0, enemy.PendingDeckExhaustionDamage/1000.0 },
             "entities", entities, "legalActions", candidates, "legalActionMask", Enumerable.Repeat(1, legal.Count).ToArray(),
             "retaliationMarks", marks);
     }

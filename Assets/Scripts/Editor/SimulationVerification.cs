@@ -22,6 +22,7 @@ public static class SimulationVerification
         Require(a.actionDigest == b.actionDigest && a.resultDigest == b.resultDigest, "same seed/decks/policies reproduce actions and outcomes");
         Require(File.ReadLines(Path.Combine(directory, "a.jsonl")).Last().Contains("\"trace\":\"a.jsonl\""), "trace end record names its retained file");
         VerifyFirstTurnDrawRule(deck);
+        VerifyDeckExhaustionEndTurnRule(deck);
         bool storageFailureEscaped = false;
         try
         {
@@ -49,7 +50,7 @@ public static class SimulationVerification
         var selfPlay = new SimulationMatchResult { status = "Finished", pairId = "self", bot0 = "Easy", bot1 = "Easy", winner = 0 };
         string selfSummary = SimulationJson.Encode(SimulationSummary.Create(new List<SimulationMatchResult> { selfPlay }, config, false));
         Require(selfSummary.Contains("\"completeSeedPairs\":1") && selfSummary.Contains("\"pairedScore95Interval\":null"), "self-play pairs counted and interim confidence calculation skipped");
-        File.WriteAllText(Path.Combine(directory, "PASS.txt"), "PASS: reproducible actions/results, first-turn draw rule, termination vs limits, hidden information, D-drive containment, paired aggregation, trace metadata and storage failure propagation.\n");
+        File.WriteAllText(Path.Combine(directory, "PASS.txt"), "PASS: reproducible actions/results, first-turn draw rule, escalating end-turn deck exhaustion, termination vs limits, hidden information, D-drive containment, paired aggregation, trace metadata and storage failure propagation.\n");
         Debug.Log("Simulation verification PASS: " + directory);
     }
 
@@ -76,10 +77,83 @@ public static class SimulationVerification
         Apply(session, GameAction.ResolveDrawStep(first));
         Require(session.State.Players[first].Hand.Count == 5, "first player draws normally on their next turn");
     }
-    private static void Apply(GameSession session, GameAction action)
+
+    private static void VerifyDeckExhaustionEndTurnRule(IReadOnlyList<CardDefinition> deck)
+    {
+        var config = new GameConfig(250, 30, 40, 30, 1, 5, 1, 3, 3, 500, 100);
+        GameSession session = GameSession.Create(config, 44, deck, deck);
+        int first = session.State.CurrentPlayerIndex, second = 1 - first;
+        ActionResult firstDraw = Apply(session, GameAction.ResolveDrawStep(first));
+        Require(session.State.Players[first].DeckExhaustionLevel == 0 &&
+            session.State.Players[first].PendingDeckExhaustionDamage == 0 &&
+            !firstDraw.Events.Any(item => item.Type == GameEventType.DeckExhaustionDamageScheduled),
+            "turn-one skipped draw does not schedule deck exhaustion");
+        Require(session.State.Players[first].DrawCards(2) == 0 &&
+            session.State.Players[first].DeckExhaustionLevel == 0,
+            "effect-style empty draw does not schedule Draw-step exhaustion");
+        AdvanceToEnd(session, first);
+        Apply(session, GameAction.EndTurn(first));
+
+        ActionResult scheduled = Apply(session, GameAction.ResolveDrawStep(second));
+        Require(session.State.Players[second].Health == 250 &&
+            session.State.Players[second].DeckExhaustionLevel == 1 &&
+            session.State.Players[second].PendingDeckExhaustionDamage == 100 &&
+            scheduled.Events.Any(item => item.Type == GameEventType.DeckExhaustionDamageScheduled && item.Amount == 100),
+            "first failed normal Draw step schedules 100 damage without applying it immediately");
+        AdvanceToEnd(session, second);
+        ActionResult firstPenalty = Apply(session, GameAction.EndTurn(second));
+        Require(session.State.Players[second].Health == 150 &&
+            session.State.Players[second].PendingDeckExhaustionDamage == 0 &&
+            firstPenalty.Events.Any(item => item.Type == GameEventType.PlayerDamaged &&
+                item.Amount == 100 && item.Phase == TurnPhase.End),
+            "scheduled deck exhaustion damage applies only at EndTurn");
+
+        Apply(session, GameAction.ResolveDrawStep(first));
+        AdvanceToEnd(session, first);
+        Apply(session, GameAction.EndTurn(first));
+        ActionResult secondFailure = Apply(session, GameAction.ResolveDrawStep(second));
+        Require(session.State.Players[second].Health == 150 &&
+            session.State.Players[second].DeckExhaustionLevel == 2 &&
+            session.State.Players[second].PendingDeckExhaustionDamage == 200 &&
+            secondFailure.Events.Any(item => item.Type == GameEventType.DeckExhaustionDamageScheduled && item.Amount == 200),
+            "second failed Draw step schedules level-times-100 damage");
+        AdvanceToEnd(session, second);
+        ActionResult lethal = Apply(session, GameAction.EndTurn(second));
+        Require(session.State.IsFinished && session.State.WinnerPlayerIndex == first &&
+            session.State.Players[second].Health == 0 &&
+            lethal.Events.Any(item => item.Type == GameEventType.MatchEnded) &&
+            !lethal.Events.Any(item => item.Type == GameEventType.TurnStarted),
+            "lethal exhaustion ends the match at EndTurn before the opponent's turn starts");
+
+        GameSession skipped = GameSession.Create(config, 45, deck, deck);
+        first = skipped.State.CurrentPlayerIndex; second = 1 - first;
+        Apply(skipped, GameAction.ResolveDrawStep(first));
+        AdvanceToEnd(skipped, first);
+        Apply(skipped, GameAction.EndTurn(first));
+        skipped.State.Players[second].ScheduleDrawStepSkip(skipped.State.TurnNumber);
+        ActionResult skippedDraw = Apply(skipped, GameAction.ResolveDrawStep(second));
+        Require(skipped.State.Players[second].DeckExhaustionLevel == 0 &&
+            skipped.State.Players[second].PendingDeckExhaustionDamage == 0 &&
+            !skippedDraw.Events.Any(item => item.Type == GameEventType.DeckExhaustionDamageScheduled),
+            "effect-skipped Draw step does not schedule deck exhaustion");
+    }
+
+    private static void AdvanceToEnd(GameSession session, int player)
+    {
+        if (session.State.CurrentPhase == TurnPhase.Recovery &&
+            session.State.CurrentRecoveryStep == RecoveryStep.EnergyRefresh)
+            Apply(session, GameAction.ResolveEnergyRefreshStep(player));
+        if (session.State.CurrentPhase == TurnPhase.Standby)
+            Apply(session, GameAction.AdvancePhase(player));
+        while (session.State.CurrentPhase != TurnPhase.End)
+            Apply(session, GameAction.AdvancePhase(player));
+    }
+
+    private static ActionResult Apply(GameSession session, GameAction action)
     {
         ActionResult result = session.TryApply(action);
         Require(result.Succeeded, "draw-rule fixture action succeeds: " + result.ErrorMessage);
+        return result;
     }
     private static List<CardDefinition> Deck(string prefix) => Enumerable.Range(0, 30).Select(i => new CardDefinition(
         prefix + i, prefix + i, CardCategory.Monster, "", MonsterAttribute.Wood, MonsterRank.Basic, MonsterType.Fairy,

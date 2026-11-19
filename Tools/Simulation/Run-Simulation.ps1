@@ -9,9 +9,10 @@ param(
 $ErrorActionPreference = 'Stop'
 $projectRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 if ([IO.Path]::GetPathRoot($projectRoot) -ne 'D:\') { throw 'The simulator must run from the project on drive D.' }
+$configPath = (Resolve-Path -LiteralPath $Config -ErrorAction Stop).Path
 $executable = Join-Path $projectRoot 'Build/Simulation/CardGameSimulation.exe'
 if (!(Test-Path -LiteralPath $executable)) { throw 'In Unity run Card Game > Simulation > Build Headless Windows Runner first.' }
-$settings = Get-Content -LiteralPath $Config -Raw | ConvertFrom-Json
+$settings = Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json
 if ([IO.Path]::GetFullPath($settings.projectRoot) -ne $projectRoot) { throw 'batch.json projectRoot does not match this project.' }
 $control = Join-Path $PSScriptRoot 'Control'
 New-Item -ItemType Directory -Path $control -Force | Out-Null
@@ -21,7 +22,7 @@ $log = Join-Path $control ($id + '.log')
 $resourcePath = Join-Path $control ($id + '.resources.json')
 $timer = [Diagnostics.Stopwatch]::StartNew()
 $peakWorkingSet = 0L; $resultBytes = 0L; $runDirectory = $null; $resourceStatus = 'failed'
-$arguments = @('-batchmode','-nographics','-logFile',('"' + $log + '"'), '--simulation-config',('"' + [IO.Path]::GetFullPath($Config) + '"'), '--simulation-progress',('"' + $progress + '"'))
+$arguments = @('-batchmode','-nographics','-logFile',('"' + $log + '"'), '--simulation-config',('"' + $configPath + '"'), '--simulation-progress',('"' + $progress + '"'))
 $ownedProcess = Start-Process -FilePath $executable -ArgumentList $arguments -WorkingDirectory $projectRoot -WindowStyle Hidden -PassThru
 $lastText = ''; $lastHeartbeat = [DateTime]::UtcNow
 
@@ -85,7 +86,7 @@ try {
     if (!$ownedProcess.HasExited) { Stop-Process -Id $ownedProcess.Id }
     $timer.Stop()
     [ordered]@{
-        schema=1; status=$resourceStatus; config=[IO.Path]::GetFullPath($Config); runDirectory=$runDirectory
+        schema=1; status=$resourceStatus; config=$configPath; runDirectory=$runDirectory
         wallSeconds=$timer.Elapsed.TotalSeconds; peakRunnerWorkingSetBytes=$peakWorkingSet; resultBytes=$resultBytes
         playerLog=$log; maxBatchSeconds=$MaxBatchSeconds; maxWorkingSetMiB=$MaxWorkingSetMiB; maxResultsMiB=$MaxResultsMiB
         sampling='One-second watchdog; output includes run files plus player log. RAM is this runner only, not whole-system availability.'

@@ -149,11 +149,11 @@ Higher-tier work must not destabilize a lower tier.
 - Player starting LP: 6000 **[TENTATIVE, trial approved 3 November]**.
 - Deck size: 30-40 cards **[TENTATIVE]**.
 - Starting hand: 4 cards **[TENTATIVE]**.
-- Normal draw: 1 card each turn, except the first player's first Draw step draws 0 **[CONFIRMED, rules v5 accepted 18 November after 200 matched games]**.
+- Normal draw: 1 card each turn, except the first player's first Draw step draws 0 **[CONFIRMED, rules v5 accepted 18 November after 200 matched games]**. Under rules v6, failing a normal unskipped Draw step because the deck is empty raises that player's exhaustion level and schedules `level * 100` LP damage for their End step **[CONFIRMED, accepted 19 November 2026]**.
 - Monster Zones: 3 **[CONFIRMED]**.
 - Spell/Trap Zones: 3 **[CONFIRMED]**.
 - Primary win condition: reduce the opponent's HP to 0 **[CONFIRMED]**.
-- Drawing from an empty deck draws nothing; deck-out is not an automatic loss **[CONFIRMED]**.
+- Drawing effects from an empty deck draw nothing without exhaustion. A failed normal unskipped Draw step schedules escalating End-step LP damage (`100, 200, 300, ...`); the player keeps the full turn to win before pressing End Turn **[CONFIRMED, rules v6 accepted 19 November 2026]**.
 - Target match duration: 10-15 minutes **[TENTATIVE]**.
 - First player: random; their first Draw step still occurs but draws no card **[CONFIRMED, rules v5 accepted 18 November after 200 matched games]**.
 
@@ -628,7 +628,7 @@ Do not install networking packages until local core actions are deterministic an
 | Counter-damage against Attack Position | None |
 | Direct attack condition | Opponent has no monsters |
 | First-turn attack restriction | First player's first turn only |
-| First player and draw | Random; first Draw step occurs but draws 0 (rules v5, accepted after 200 matched games) |
+| First player and draw | Random; first Draw step occurs but draws 0. Rules v6 adds escalating End-step LP damage after later failed normal draws from an empty deck; skipped/effect draws are exempt. |
 | Mobile layout | Portrait, 1080x1920 reference, Match 0 (Width) |
 | Networking stack | Tentative UGS stack in section 13; decide after spike |
 

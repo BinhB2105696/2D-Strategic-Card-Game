@@ -19,6 +19,8 @@ $log = Join-Path $project ('SimulationResults/TrainingBuildLogs/build_' + (Get-D
 New-Item -ItemType Directory -Path (Split-Path $log) -Force | Out-Null
 $arguments = @('-batchmode','-nographics','-quit','-projectPath',('"'+$project+'"'),
     '-executeMethod','SimulationBuildTool.PrepareAndBuildRunnerFromCommandLine','-logFile',('"'+$log+'"'))
-$process = Start-Process -FilePath $UnityPath -ArgumentList $arguments -WorkingDirectory $project -WindowStyle Hidden -PassThru -Wait
+$process = Start-Process -FilePath $UnityPath -ArgumentList $arguments -WorkingDirectory $project -WindowStyle Hidden -PassThru
+$process.WaitForExit()
+$process.Refresh()
 if ($process.ExitCode -ne 0) { throw "Unity build failed with exit code $($process.ExitCode). Log: $log" }
 Write-Output "Training runner built. Log: $log"

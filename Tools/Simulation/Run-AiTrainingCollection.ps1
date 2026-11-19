@@ -14,9 +14,9 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
     exit $LASTEXITCODE
 }
 $project=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
-if (!$CollectionRoot) {$CollectionRoot=Join-Path $project 'SimulationResults/TrainingCollections/hard_normal_main_v1_32b700a'}
-$root=[IO.Path]::GetFullPath($CollectionRoot); $plan=Get-Content (Join-Path $root 'plan.json') -Raw | ConvertFrom-Json
 $build=Get-Content (Join-Path $project 'Build/Simulation/build-info.json') -Raw | ConvertFrom-Json
+if (!$CollectionRoot) {$CollectionRoot=Join-Path $project ('SimulationResults/TrainingCollections/hard_normal_main_v2_'+$build.sourceRevision.Substring(0,7))}
+$root=[IO.Path]::GetFullPath($CollectionRoot); $plan=Get-Content (Join-Path $root 'plan.json') -Raw | ConvertFrom-Json
 if ($build.sourceRevision -ne $plan.sourceRevision -or $build.sourceFingerprint -ne $plan.sourceFingerprint) {throw 'Runner differs from the frozen collection plan.'}
 function Save-State($path,$state) {[IO.File]::WriteAllText($path,($state|ConvertTo-Json -Depth 6),[Text.UTF8Encoding]::new($false))}
 $completed=0

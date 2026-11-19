@@ -56,9 +56,9 @@
 - State hash schema 1 đọc toàn bộ trường instance (kể cả private) của đồ thị trạng thái thuần qua reflection chỉ đọc: RNG, thứ tự Deck, damage/stat adjustments, cooldown/effect uses, skip schedules, modifier lifetimes, chain và pending choices. Giữ thứ tự danh sách, chuẩn hóa dictionary/set, ghi quan hệ tham chiếu; bỏ chi tiết triển khai collection như capacity. Kiểu/comparer không hỗ trợ gây lỗi rõ thay vì âm thầm bỏ trạng thái. Chỉ kiểm chứng Windows/Mono; không phải API khôi phục snapshot hay triển khai Android/IL2CPP.
 - Hash nhất quán kiểm chứng tính tái lập trên cùng phiên bản; kiểm thử luật vẫn cần để xác nhận hành vi đúng luật. Thời gian hash/ghi dữ liệu nằm ngoài phép đo bot chọn nước, nhưng có trong wall time và có thể làm chạm giới hạn thời gian sớm hơn.
 
-Hợp đồng AI schema 1 nằm trong `run.json/aiContract` và `SimulationAiContract.Describe()`:
+Hợp đồng AI hiện tại schema 3 nằm trong `run.json/aiContract` và `SimulationAiContract.Describe()`:
 
-- Chỉ đưa `policyInputJson` cho model: 17 global features, danh sách entity với cardId công khai và 18 features/entity, danh sách hành động hợp lệ với source/target/tribute là chỉ số entity cục bộ. Mỗi action có 4 features; legal mask toàn 1 vì danh sách đã lọc hợp lệ.
+- Chỉ đưa `policyInputJson` cho model: 25 global features (gồm exhaustion level và pending End-step damage của hai bên), danh sách entity với cardId công khai và 18 features/entity, danh sách hành động hợp lệ với source/target/tribute là chỉ số entity cục bộ. Mỗi action có 4 features; legal mask toàn 1 vì danh sách đã lọc hợp lệ. Dữ liệu rules v4-v5 dùng schema 2 với 21 global features và phải giữ manifest riêng.
 - Numeric scales là hằng số định dạng, không clamp dữ liệu. Mô tả kèm ánh xạ tên/giá trị enum. cardId là nhãn categorical: dùng từ vựng catalog công khai cố định, không suy ra từ Deck riêng của từng trận.
 - Không có seed, thứ tự Deck, danh tính tay đối thủ hay raw instanceId trong policy input. Lựa chọn hợp lệ chưa có định nghĩa trong view được mã hóa opaque; bổ sung thông tin lựa chọn cần phiên bản hợp đồng rõ ràng.
 - `selectedActionIndex` trỏ đúng ứng viên tại thời điểm chọn. Episode transitions nối từ một quyết định đến quyết định tiếp theo của cùng người chơi, đi qua phản ứng đối thủ và bước tự động. Dòng xuất có thể xen kẽ thứ tự sequence giữa hai người; sequence dùng đối chiếu trace.

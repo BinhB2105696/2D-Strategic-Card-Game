@@ -13,6 +13,7 @@ public sealed class GameConfig
     public int MonsterZoneCount { get; }
     public int SpellTrapZoneCount { get; }
     public int KnockoutPenaltyPerRank { get; }
+    public int DeckExhaustionDamageStep { get; }
 
     public GameConfig(
         int startingPlayerHealth,
@@ -24,7 +25,8 @@ public sealed class GameConfig
         int normalSummonEnergyCost,
         int monsterZoneCount,
         int spellTrapZoneCount,
-        int knockoutPenaltyPerRank)
+        int knockoutPenaltyPerRank,
+        int deckExhaustionDamageStep = 100)
     {
         if (startingPlayerHealth <= 0)
         {
@@ -49,6 +51,8 @@ public sealed class GameConfig
                 "Game configuration values cannot be negative, and zone " +
                 "counts must be greater than zero.");
         }
+        if (deckExhaustionDamageStep <= 0)
+            throw new ArgumentOutOfRangeException(nameof(deckExhaustionDamageStep));
 
         StartingPlayerHealth = startingPlayerHealth;
         MinimumDeckSize = minimumDeckSize;
@@ -60,6 +64,7 @@ public sealed class GameConfig
         MonsterZoneCount = monsterZoneCount;
         SpellTrapZoneCount = spellTrapZoneCount;
         KnockoutPenaltyPerRank = knockoutPenaltyPerRank;
+        DeckExhaustionDamageStep = deckExhaustionDamageStep;
     }
 
     public int GetKnockoutPenalty(MonsterRank rank) =>
@@ -77,6 +82,7 @@ public sealed class GameConfig
             normalSummonEnergyCost: 1,
             monsterZoneCount: 3,
             spellTrapZoneCount: 3,
-            knockoutPenaltyPerRank: 500);
+            knockoutPenaltyPerRank: 500,
+            deckExhaustionDamageStep: 100);
     }
 }

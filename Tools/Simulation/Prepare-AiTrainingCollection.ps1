@@ -1,20 +1,20 @@
 param([string]$OutputRoot = '')
 $ErrorActionPreference = 'Stop'
 $project = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
-if (!$OutputRoot) { $OutputRoot = Join-Path $project 'SimulationResults/TrainingCollections/hard_normal_main_v1_32b700a' }
+$build = Get-Content (Join-Path $project 'Build/Simulation/build-info.json') -Raw | ConvertFrom-Json
+$revision = (git -C $project rev-parse HEAD).Trim()
+if ($LASTEXITCODE -ne 0 -or $build.sourceRevision -ne $revision -or $build.result -notlike 'Succeeded*') { throw 'Build a successful runner from the current commit first.' }
+if (!$OutputRoot) { $OutputRoot = Join-Path $project ('SimulationResults/TrainingCollections/hard_normal_main_v2_' + $revision.Substring(0,7)) }
 $root = [IO.Path]::GetFullPath($OutputRoot)
 $prefix = (Join-Path $project 'SimulationResults').TrimEnd('\') + '\'
 if (!$root.StartsWith($prefix,[StringComparison]::OrdinalIgnoreCase)) { throw 'Collection root must be inside SimulationResults.' }
 $planPath = Join-Path $root 'plan.json'
 if (Test-Path -LiteralPath $planPath) { Write-Output "Existing frozen plan: $planPath"; exit 0 }
-$build = Get-Content (Join-Path $project 'Build/Simulation/build-info.json') -Raw | ConvertFrom-Json
-$revision = (git -C $project rev-parse HEAD).Trim()
-if ($LASTEXITCODE -ne 0 -or $build.sourceRevision -ne $revision -or $build.result -notlike 'Succeeded*') { throw 'Build a successful runner from the current commit first.' }
 New-Item -ItemType Directory -Path (Join-Path $root 'configs') -Force | Out-Null
 $ranges = @(
-    [ordered]@{split='train';first=510101;last=510120},
-    [ordered]@{split='validation';first=520001;last=520004},
-    [ordered]@{split='test';first=530001;last=530004}
+    [ordered]@{split='train';first=610101;last=610120},
+    [ordered]@{split='validation';first=620001;last=620004},
+    [ordered]@{split='test';first=630001;last=630004}
 )
 $shards = [Collections.Generic.List[object]]::new()
 foreach ($range in $ranges) {
@@ -29,9 +29,9 @@ foreach ($range in $ranges) {
     }
 }
 $plannedMatches=($shards | ForEach-Object {[int]$_['matches']} | Measure-Object -Sum).Sum
-$plan=[ordered]@{schema=1;status='prepared';name='hard_normal_main_v1';sourceRevision=$revision;sourceFingerprint=$build.sourceFingerprint;
+$plan=[ordered]@{schema=1;status='prepared';name='hard_normal_main_v2';sourceRevision=$revision;sourceFingerprint=$build.sourceFingerprint;
     rulesVersion=$build.rulesVersion;catalogVersion=$build.catalogVersion;aiSchema=$build.aiSchema;decks=@(0,1,2,3,4);
     policy='Hard vs Normal, equal deck, both seats; sequential shards';plannedMatches=$plannedMatches;
-    splitSeeds=[ordered]@{train=@(510101..510120);validation=@(520001..520004);test=@(530001..530004)};shards=@($shards)}
+    splitSeeds=[ordered]@{train=@(610101..610120);validation=@(620001..620004);test=@(630001..630004)};shards=@($shards)}
 [IO.File]::WriteAllText($planPath,($plan | ConvertTo-Json -Depth 10),[Text.UTF8Encoding]::new($false))
 Write-Output "Prepared $($shards.Count) shards / $($plan.plannedMatches) matches: $planPath"

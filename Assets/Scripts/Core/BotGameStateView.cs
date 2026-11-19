@@ -73,6 +73,8 @@ public sealed class BotPlayerView
     public int MaxEnergy { get; }
     public int AvailableEnergy { get; }
     public int DeckCount { get; }
+    public int DeckExhaustionLevel { get; }
+    public int PendingDeckExhaustionDamage { get; }
     public int HandCount { get; }
     public int GraveyardCount { get; }
     public IReadOnlyList<BotCardView> Hand => hand;
@@ -91,6 +93,8 @@ public sealed class BotPlayerView
         MaxEnergy = player.MaxEnergy;
         AvailableEnergy = player.AvailableEnergy;
         DeckCount = player.Deck.Count;
+        DeckExhaustionLevel = player.DeckExhaustionLevel;
+        PendingDeckExhaustionDamage = player.PendingDeckExhaustionDamage;
         HandCount = player.Hand.Count;
         GraveyardCount = player.Graveyard.Count;
         hand = isViewingPlayer

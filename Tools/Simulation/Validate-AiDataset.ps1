@@ -13,13 +13,15 @@ $episodes = [Collections.Generic.List[object]]::new()
 $seen = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $cards = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $actionCounts = @{}
+$expectedAiSchema = 0
 function Read-Json([string]$Path) { Get-Content -LiteralPath $Path -Raw -Encoding UTF8 | ConvertFrom-Json -AsHashtable }
 function Check([bool]$Condition,[string]$Reason) {
     $metrics.checks++
     if (!$Condition) { throw $Reason }
 }
 function Validate-Policy([System.Collections.IDictionary]$Policy) {
-    Check ($Policy.schema -eq 2 -and @($Policy.globalFeatures).Count -eq 21) 'Invalid policy schema/global dimensions.'
+    $expectedGlobals=if($expectedAiSchema -eq 3){25}else{21}
+    Check ($Policy.schema -eq $expectedAiSchema -and @($Policy.globalFeatures).Count -eq $expectedGlobals) 'Invalid policy schema/global dimensions.'
     Check (@($Policy.Keys | Where-Object { $_ -match '^(seed|instanceId|sourceFingerprint|catalogFingerprint|deckDefinitions|cardDefinitions)$' }).Count -eq 0) 'Diagnostic metadata appeared as policy fields.'
     foreach ($number in $Policy.globalFeatures) {
         Check ($number -is [ValueType] -and ![double]::IsNaN([double]$number) -and ![double]::IsInfinity([double]$number)) 'Non-finite/non-numeric global feature.'
@@ -58,7 +60,10 @@ try {
     $run = [IO.Path]::GetFullPath($batchReport.sourceRun)
     Check ($run.StartsWith($prefix,[StringComparison]::OrdinalIgnoreCase)) 'Source run is outside SimulationResults.'
     $metadata = Read-Json (Join-Path $run 'run.json')
-    Check ($metadata.rulesVersion -in @(4,5) -and $metadata.catalogVersion -eq 4 -and $metadata.aiContract.schema -eq 2) 'Unsupported rules/catalog/AI versions.'
+    $expectedAiSchema=[int]$metadata.aiContract.schema
+    $supported=($metadata.rulesVersion -in @(4,5) -and $expectedAiSchema -eq 2) -or
+        ($metadata.rulesVersion -eq 6 -and $expectedAiSchema -eq 3)
+    Check ($supported -and $metadata.catalogVersion -eq 4) 'Unsupported rules/catalog/AI versions.'
     Check (@($metadata.cardDefinitions).Count -eq 41 -and @($metadata.deckDefinitions).Count -ge 3) 'Expected 41 cards and at least the three playable presets.'
     $rows=@(Import-Csv -LiteralPath (Join-Path $run 'matches.csv'))
     Check ($rows.Count -eq $batchExpected -and @($rows | Where-Object status -ne 'Finished').Count -eq 0) 'Source batch has unfinished/failed episodes.'
@@ -80,10 +85,10 @@ try {
                 if ($record.record -eq 'dataset_start') {
                     Check ($null -eq $header -and $count -eq 0) 'Duplicate/misplaced dataset header.'
                     $header=$record
-                    Check ($header.schema -eq 2 -and $header.matchId -eq $row.match_id -and $header.sourceFingerprint -eq $metadata.sourceFingerprint -and $header.catalogFingerprint -eq $metadata.catalogFingerprint) 'Dataset provenance/version mismatch.'
+                    Check ($header.schema -eq $expectedAiSchema -and $header.matchId -eq $row.match_id -and $header.sourceFingerprint -eq $metadata.sourceFingerprint -and $header.catalogFingerprint -eq $metadata.catalogFingerprint) 'Dataset provenance/version mismatch.'
                     Check ([IO.Path]::GetFullPath($header.sourceTrace) -eq [IO.Path]::GetFullPath((Join-Path $run ('traces/'+$row.trace)))) 'Dataset points to the wrong source trace.'
                 } elseif ($record.record -eq 'transition') {
-                    Check ($null -ne $header -and $record.schema -eq 2 -and $record.player -in @(0,1) -and !$record.truncated) 'Invalid/truncated transition.'
+                    Check ($null -ne $header -and $record.schema -eq $expectedAiSchema -and $record.player -in @(0,1) -and !$record.truncated) 'Invalid/truncated transition.'
                     $player=[int]$record.player
                     Check ($record.sequence -gt $lastSequence[$player]) 'Non-increasing sequence for the same player.'
                     $lastSequence[$player]=$record.sequence
@@ -121,7 +126,7 @@ try {
     }
     Check ($metrics.episodes -eq $batchExpected -and $metrics.hardDecisions+$metrics.normalDecisions+$metrics.easyDecisions -eq $metrics.transitions) 'Aggregate episode/teacher counts are inconsistent.'
     $metrics.status='passed'; $metrics.knownPublicCardIds=@($cards | Sort-Object); $metrics.selectedActionCountsByBotAndEnumValue=$actionCounts
-    $manifest=[ordered]@{schema=1;usage='verified behavior-cloning pilot; not held-out evaluation';rulesVersion=4;catalogVersion=4;aiSchema=2;sourceFingerprint=$metadata.sourceFingerprint;catalogFingerprint=$metadata.catalogFingerprint;teacherSelection='Filter each transition using its bot0/bot1 label; teacher allowlists are applied during preparation.';splitPolicy='Keep whole matches and paired seeds together. Pilot is not a held-out test set.';coverageCaution='Observed public card IDs do not prove every card/effect was played or every interaction tested.';episodes=@($episodes.ToArray())}
+    $manifest=[ordered]@{schema=1;usage='verified behavior-cloning pilot; not held-out evaluation';rulesVersion=[int]$metadata.rulesVersion;catalogVersion=[int]$metadata.catalogVersion;aiSchema=$expectedAiSchema;sourceFingerprint=$metadata.sourceFingerprint;catalogFingerprint=$metadata.catalogFingerprint;teacherSelection='Filter each transition using its bot0/bot1 label; teacher allowlists are applied during preparation.';splitPolicy='Keep whole matches and paired seeds together. Pilot is not a held-out test set.';coverageCaution='Observed public card IDs do not prove every card/effect was played or every interaction tested.';episodes=@($episodes.ToArray())}
     [IO.File]::WriteAllText((Join-Path $output 'dataset-manifest.json'),($manifest | ConvertTo-Json -Depth 12),[Text.UTF8Encoding]::new($false))
 } catch { $metrics.errors=@($_.Exception.Message) }
 finally { [IO.File]::WriteAllText($reportPath,($metrics | ConvertTo-Json -Depth 10),[Text.UTF8Encoding]::new($false)) }

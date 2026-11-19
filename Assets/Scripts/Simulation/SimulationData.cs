@@ -119,7 +119,19 @@ public static class SimulationJson
     {
         string pending = path + ".tmp";
         File.WriteAllText(pending, Encode(value), new UTF8Encoding(false));
-        if (File.Exists(path)) File.Replace(pending, path, null); else File.Move(pending, path);
+        for (int attempt = 0; ; attempt++)
+        {
+            try
+            {
+                if (File.Exists(path)) File.Replace(pending, path, null); else File.Move(pending, path);
+                return;
+            }
+            catch (Exception exception) when (
+                attempt < 4 && (exception is IOException || exception is UnauthorizedAccessException))
+            {
+                System.Threading.Thread.Sleep(20 * (attempt + 1));
+            }
+        }
     }
 
     public static string ResultsRoot(string projectRoot)

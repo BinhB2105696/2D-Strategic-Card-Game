@@ -1,42 +1,51 @@
-# HANDOFF - accepted rules v5 and AI training continuation
-Updated 2026-11-18. Project: D:\Unity\Projects\2D-Strategic-Card-Game.
+# HANDOFF - accepted rules v6 and AI collection v2
+Updated 2026-11-19. Project: D:\Unity\Projects\2D-Strategic-Card-Game.
 Read root AGENTS.md first. Preserve pending work; do not rerun completed collections or balance batches.
 
-## Current checkpoint
-- Rules v5 is accepted: the first player's turn-1 Draw step resolves but draws no card; all later draws are normal.
-- Rules/catalog/AI schema versions are 5/4/2. No action type or encoder dimension changed.
-- The current headless runner passed build, simulation verification and replay verification before checkpointing.
-- Current Hard is frozen. `HardBotVerification.cs` has a separate preserved local change and was not included in this checkpoint.
+## Current goal
+- Checkpoint accepted rules v6, rebuild from that commit, then freeze a clean rules-v6 AI collection plan.
+- A failed normal, unskipped Draw step from an empty deck increments that player's exhaustion level and schedules `level * 100` LP damage.
+- Apply the scheduled damage only when that player ends the turn. They keep the whole turn to win; if the opponent is already defeated, no exhaustion damage is applied.
+- Effect draws and skipped Draw steps never increment exhaustion.
 
-## Rules-v5 evidence
-- Two matched batches, seeds 510101-510120, five simulation decks and both seats: 200/200 Finished.
-- First-player win rate: rules v4 127/200=63.5%; rules v5 106/200=53.0%.
-- Paired flips removed first-player advantage 35 times and added it 14 times; exact McNemar p≈0.0038.
-- Hard win rate stayed stable: 59.5% -> 61.0%; paired gains/losses 26/23, p≈0.775.
-- Hard first/second rates changed 73%/46% -> 64%/58%; gap fell from 27 to 6 percentage points.
-- Mean turns 16.8 -> 17.0; mean Hard decision time 383.8 -> 334.3 ms; no timeout/error.
-- Deck 3-4 are simulation-only collection/coverage decks, not official balanced playable presets.
+## Implemented and verified
+- Core state/rules/events/config expose exhaustion level and pending damage and apply it at End step.
+- Search-state copies and public bot views include both values; state hashing sees the new fields automatically.
+- Rules/catalog/AI versions are 6/4/3. AI schema 3 has 25 global features; action types and entity/action dimensions are unchanged.
+- Simulation verification covers turn-1 skip, effect draws, first/second exhaustion levels, delayed damage, lethal End step and effect-scheduled skip.
+- Dataset validation and Python feature preparation accept both legacy schema 2/21 and schema 3/25 with explicit version checks.
+- Rules v6 was accepted on 19 November 2026. The rebuilt runner passed simulation verification; no rules-v6 training collection or bot heuristic change has been run yet.
 
-## Completed rules-v4 dataset
-- Plan `hard_normal_main_v1_32b700a`: 14/14 shards, 280/280 accepted matches, 43,297 transitions.
-- Meaningful mixed: 24,967 train / 4,605 validation / 5,282 test; forced choices excluded: 8,443.
-- Hard-only: 12,580 / 2,376 / 2,716. Normal-only: 12,387 / 2,229 / 2,566.
-- All 41 public card IDs were observed across three playable plus two simulation-only coverage decks.
-- Dataset: `SimulationResults/Datasets/hard_normal_main_v1/` (ignored by Git).
-- This v4 data is baseline/pretraining only; never silently merge it with v5 data.
+## First exact-seed result
+- Deck 2, seed 530003, Hard player 0 vs Normal player 1 finished at turn 24 with Hard winning at 2700 LP; the rules-v4 counterpart lasted 94 turns and ended with Hard at 550 LP.
+- End-turn exhaustion applied 100 then 200 to each player. Hard won by attack on turn 24 before its pending 300 damage, directly confirming the intended full-turn last chance.
+- This is not a clean v4-v6 causal estimate because rules v6 also includes the accepted first-player turn-1 draw skip.
+- The swapped-seat equivalent also finished: Hard was player 1/first and won on turn 13 at 5500 LP; no exhaustion occurred. Hard therefore won both seats for this seed.
 
-## Rules-v4 supervised baseline
-- Nine CPU runs completed: Hard-only, Normal-only and mixed, three initialization seeds each.
-- Selection used validation loss only; early stopping kept best checkpoints and test was not read during selection.
-- Selected validation results: Hard loss 1.3524/top-1 53.16%; Normal 0.7540/76.36%; mixed 1.1047/62.82%.
-- Test was evaluated once after selection: Hard loss 5.5746/top-1 51.55%; Normal 0.7174/top-1 78.49%; mixed 3.2664/top-1 63.40%.
-- Hard/mixed retain similar top-1 but have extreme test loss, indicating overconfident wrong predictions; diagnose calibration/label ambiguity before scaling.
-- Output: `SimulationResults/TrainingRuns/rules-v4-baseline_20261118_085137/` (ignored by Git).
-- The v4 test split is now consumed baseline evidence; do not tune against it or call it a final held-out test.
+## Acceptance batch
+- Deck 2, seeds 510101-510110, both seats: 20/20 finished under both rules v5 and v6.
+- Hard wins changed 14/20 -> 16/20; first-player wins stayed 10/20. Mean turns changed 19.5 -> 18.7 and maximum 45 -> 33.
+- Exhaustion appeared in 10/20 matches and ended 4; the user accepted this targeted pressure on long games.
 
-## Next
-- Add confidence/NLL diagnostics by teacher, deck and action family; verify whether Hard's hidden-state/search randomness creates ambiguous labels.
-- Compare small validation-only runs with label smoothing; condition mixed training on teacher identity or keep separate teachers.
-- Do not use the consumed v4 test for tuning. Final v5 evaluation needs a newly reserved seed range.
-- After the supervised design is chosen, collect a separate verified rules-v5 dataset for fine-tuning/final models.
-- Do not start DAgger/self-play or change Hard until this baseline diagnosis is reviewed.
+## Preserved existing evidence
+- Rules v5 reduced first-player wins from 63.5% to 53.0% across 200 paired matches while Hard stayed stable at 59.5% -> 61.0%.
+- The completed rules-v4 dataset has 280 matches/43,297 transitions and remains baseline/pretraining only.
+- The extreme baseline NLL came from one 94-turn match where Normal exhausted deck by turn 17 and Hard sustained a Field Medic lock before winning.
+- Old rules-v4/v5 data and models must not be silently mixed with rules v6.
+
+## Next step
+1. Run targeted checks, commit/push only the rules-v6 and pipeline files, preserving unrelated local work.
+2. Rebuild the runner from the committed checkpoint, then prepare frozen `hard_normal_main_v2_<commit>`.
+3. Run and inspect one v2 shard before scheduling the remaining 13 shards.
+4. After all shards validate, prepare separate mixed, Hard-only and Normal-only v2 datasets; never merge v1 silently.
+
+## Important working-tree notes
+- Preserve the separate local `Assets/Scripts/Editor/HardBotVerification.cs` change.
+- Preserve old untracked detailed handoff files and `Tools/Training/diagnose_checkpoint.py`.
+- The user explicitly requested the rules-v6 checkpoint and AI-training continuation on 19 November 2026.
+
+## Quick verification
+```powershell
+.\Tools\Simulation\Build-TrainingRunner.ps1
+SimulationResults\TrainingEnvironment\python312_cpu\Scripts\python.exe -m unittest Tools.Training.test_action_features Tools.Training.test_train_imitation
+```

@@ -4,8 +4,9 @@ param(
 )
 $ErrorActionPreference='Stop'
 $project=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
-if(!$CollectionRoot){$CollectionRoot=Join-Path $project 'SimulationResults/TrainingCollections/hard_normal_main_v1_32b700a'}
-if(!$OutputRoot){$OutputRoot=Join-Path $project 'SimulationResults/Datasets/hard_normal_main_v1'}
+$build=Get-Content (Join-Path $project 'Build/Simulation/build-info.json') -Raw|ConvertFrom-Json
+if(!$CollectionRoot){$CollectionRoot=Join-Path $project ('SimulationResults/TrainingCollections/hard_normal_main_v2_'+$build.sourceRevision.Substring(0,7))}
+if(!$OutputRoot){$OutputRoot=Join-Path $project 'SimulationResults/Datasets/hard_normal_main_v2'}
 $plan=Get-Content (Join-Path $CollectionRoot 'plan.json') -Raw|ConvertFrom-Json
 $manifests=@()
 foreach($shard in $plan.shards){$status=Get-Content (Join-Path $CollectionRoot ('shards/'+$shard.id+'/status.json')) -Raw|ConvertFrom-Json;$manifest=Join-Path $status.validation 'dataset-manifest.json';if(!(Test-Path $manifest)){throw "Missing validated manifest: $($shard.id)"};$manifests+=$manifest}

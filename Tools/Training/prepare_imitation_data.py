@@ -45,7 +45,8 @@ def prepare(manifest_paths, output, validation_seeds, test_seeds=None, teachers=
     card_ids = sorted(card["CardId"] for card in metadata["cardDefinitions"])
     if len(card_ids) != 41 or any(sorted(card["CardId"] for card in run["cardDefinitions"]) != card_ids for run in runs.values()):
         raise ValueError("Public card catalogs differ")
-    spec = {"encoder_version": ENCODER_VERSION, "ai_schema": 2, "card_ids": card_ids,
+    spec = {"encoder_version": ENCODER_VERSION, "ai_schema": version[2],
+            "global_feature_count": len(metadata["aiContract"]["globalFeatures"]), "card_ids": card_ids,
             "zone_values": sorted(item["value"] for item in metadata["aiContract"]["zones"]),
             "action_type_values": sorted(item["value"] for item in metadata["aiContract"]["actionTypes"]),
             "unknown_card_index": 0}
