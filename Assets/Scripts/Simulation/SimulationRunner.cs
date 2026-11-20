@@ -11,6 +11,7 @@ public sealed class SimulationRunner : MonoBehaviour
 {
     public SimulationCatalog catalog;
     private SimulationConfig config;
+    private LearnedPolicy learnedPolicy;
     private string runDirectory, progressPath;
     private int expected;
     private readonly List<SimulationMatchResult> completed = new List<SimulationMatchResult>();
@@ -29,6 +30,7 @@ public sealed class SimulationRunner : MonoBehaviour
         }
         if (!Initialize()) yield break;
         var jobs = Jobs().ToArray(); expected = jobs.Length;
+        var exploration = config.learnerExplorationSeed > 0 ? new SeededGameRandom((uint)config.learnerExplorationSeed) : null;
         try
         {
             Progress("warming-up", null);
@@ -42,7 +44,8 @@ public sealed class SimulationRunner : MonoBehaviour
                 var warmup = new SimulationMatchResult { matchId = "warmup_" + i, pairId = "warmup", seed = (uint)(config.firstSeed + i),
                     bot0 = template.bot0, bot1 = template.bot1, deck0 = template.deck0, deck1 = template.deck1 };
                 SimulationEngine.Run(config, Deck(warmup.deck0), Deck(warmup.deck1), warmup,
-                    Path.Combine(runDirectory, "traces", warmup.matchId + ".jsonl"), false, r => Progress("warming-up", r), definitions.Values.ToArray());
+                    Path.Combine(runDirectory, "traces", warmup.matchId + ".jsonl"), false,
+                    r => Progress("warming-up", r), definitions.Values.ToArray(), learnedPolicy);
                 if (warmup.status != "Finished" && !SimulationEngine.IsTruncated(warmup.status))
                     throw new InvalidOperationException("Warm-up failed: " + warmup.status + " " + warmup.error);
             }
@@ -71,7 +74,7 @@ public sealed class SimulationRunner : MonoBehaviour
                     SimulationMatchResult result = jobs[i];
                     SimulationEngine.Run(config, Deck(result.deck0), Deck(result.deck1), result,
                         Path.Combine(runDirectory, "traces", result.matchId + ".jsonl"), i < config.detailedMatches,
-                        r => Progress("running", r), definitions.Values.ToArray());
+                        r => Progress("running", r), definitions.Values.ToArray(), learnedPolicy, exploration?.NextUInt() ?? 0);
                     jsonl.WriteLine(SimulationJson.Encode(result));
                     csv.WriteLine(Csv(result)); completed.Add(result);
                     if (completed.Count % 10 == 0 || completed.Count == expected)
@@ -128,6 +131,7 @@ public sealed class SimulationRunner : MonoBehaviour
                 "deckDefinitions", catalog.presets, "cardDefinitions", definitions.Values.OrderBy(c => c.CardId).ToArray(),
                 "traceSchema", SimulationReplayFormat.TraceSchema, "stateHashSchema", SimulationStateHash.Schema,
                 "aiContract", SimulationAiContract.Describe(),
+                "learnedPolicySha256", learnedPolicy?.Sha256,
                 "digestScope", "actionDigest/resultDigest keep their legacy scope. finalStateHash and trace stateHash cover the pure private state graph; replay verification is a separate command and report.",
                 "observationSchema", "Shared bot view plus owned/public Normal context. Diagnostic run metadata/seed/deck lists are not policy input."));
             return true;
@@ -143,13 +147,44 @@ public sealed class SimulationRunner : MonoBehaviour
             config.maxTurns < 1 || config.maxActions < 1 || config.maxMatchSeconds <= 0 || config.decisionWarningMs <= 0 ||
             config.warmupMatches < 0 || config.warmupMatches > 20 || config.detailedMatches < 0 || config.matchups == null || config.matchups.Length == 0)
             throw new InvalidOperationException("Invalid batch limits/seeds/matchups.");
+        if (config.compareLearnedTeachers && config.detailedMatches == 0)
+            throw new InvalidOperationException("Learned teacher comparison requires detailed traces.");
+        if (config.collectPairedRolloutScores && (config.detailedMatches == 0 ||
+            !config.matchups.Any(matchup => matchup.player0Bot == "HardLow" || matchup.player1Bot == "HardLow")))
+            throw new InvalidOperationException("Paired rollout collection requires detailed HardLow matches.");
+        if (config.compareLearnedRollouts && (config.detailedMatches == 0 ||
+            !config.matchups.Any(matchup => matchup.player0Bot == "Learned" || matchup.player1Bot == "Learned")))
+            throw new InvalidOperationException("Learner rollout comparison requires detailed Learned matches.");
+        if (config.compareRolloutHorizons && !config.compareLearnedRollouts)
+            throw new InvalidOperationException("Rollout horizon comparison requires learner rollout comparison.");
+        if (config.focusTerminalRollouts && !config.compareLearnedRollouts)
+            throw new InvalidOperationException("Terminal-focused rollouts require learner rollout comparison.");
+        var learnerTraining = config.matchups.Where(matchup => matchup.player0Bot == "LearnedTrain" || matchup.player1Bot == "LearnedTrain").ToArray();
+        if (config.lowerLearnerExploration && learnerTraining.Length == 0)
+            throw new InvalidOperationException("Lower exploration applies only to the sampling learner.");
+        if (learnerTraining.Length > 0 && (config.learnerExplorationSeed <= 0 || config.warmupMatches != 0 ||
+            config.detailedMatches < (long)config.seedCount * config.matchups.Sum(matchup => matchup.swapBots ? 2 : 1) ||
+            learnerTraining.Any(matchup => matchup.player0Bot == "LearnedTrain" && matchup.player1Bot == "LearnedTrain")))
+            throw new InvalidOperationException("Learner training requires a separate exploration seed, one sampling bot per match and complete detailed traces.");
+        if (config.matchups.Any(matchup => UsesLearnedPolicy(matchup.player0Bot) || UsesLearnedPolicy(matchup.player1Bot)))
+        {
+            if (string.IsNullOrWhiteSpace(config.learnedPolicyPath))
+                throw new InvalidOperationException("Learned requires learnedPolicyPath in the simulation config.");
+            string policyPath = Path.Combine(config.projectRoot, config.learnedPolicyPath);
+            learnedPolicy = LearnedPolicy.Load(policyPath, MatchHeader.CurrentRulesVersion,
+                MatchHeader.CurrentCardCatalogVersion, SimulationAiContract.Schema);
+        }
+        var publicCatalog = definitions.Values.ToArray();
         foreach (SimulationMatchup matchup in config.matchups)
         {
-            SimulationEngine.Bot(matchup.player0Bot, definitions.Values.ToArray()); SimulationEngine.Bot(matchup.player1Bot, definitions.Values.ToArray());
+            SimulationEngine.Bot(matchup.player0Bot, publicCatalog, learnedPolicy: learnedPolicy);
+            SimulationEngine.Bot(matchup.player1Bot, publicCatalog, learnedPolicy: learnedPolicy);
             if (matchup.deck0 < 0 || matchup.deck1 < 0 || matchup.deck0 >= catalog.presets.Length || matchup.deck1 >= catalog.presets.Length)
                 throw new InvalidOperationException("Deck index is outside the packaged preset catalog.");
         }
     }
+
+    private static bool UsesLearnedPolicy(string bot) => bot == "Learned" || bot == "LearnedSearch" || bot == "LearnedTrain";
 
     private List<CardDefinition> Deck(int index)
     {

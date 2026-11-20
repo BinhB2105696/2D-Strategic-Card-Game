@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "projectRoot": "D:\\Unity\\Projects\\2D-Strategic-Card-Game",
+  "learnedPolicyPath": "SimulationResults/TrainingRuns/rules-v6-imitation_20261119_083127/learned-policy-v1/learned-policy-v1.bin",
+  "compareLearnedTeachers": true,
+  "firstSeed": 2026111921,
+  "seedCount": 3,
+  "warmupMatches": 0,
+  "maxTurns": 200,
+  "maxActions": 10000,
+  "maxMatchSeconds": 180,
+  "decisionWarningMs": 1000,
+  "detailedMatches": 6,
+  "matchups": [
+    { "player0Bot": "Learned", "player1Bot": "Easy", "deck0": 0, "deck1": 0, "swapBots": true }
+  ]
+}

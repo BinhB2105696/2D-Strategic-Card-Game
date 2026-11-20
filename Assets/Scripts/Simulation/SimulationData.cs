@@ -13,6 +13,15 @@ public sealed class SimulationConfig
 {
     public int schemaVersion = 1;
     public string projectRoot;
+    public string learnedPolicyPath;
+    public bool compareLearnedTeachers;
+    public bool recordDecisionTimes;
+    public bool collectPairedRolloutScores;
+    public bool compareLearnedRollouts;
+    public bool compareRolloutHorizons;
+    public bool focusTerminalRollouts;
+    public int learnerExplorationSeed;
+    public bool lowerLearnerExploration;
     public int seedCount = 5;
     public int firstSeed = 1;
     public int warmupMatches = 2;

@@ -36,7 +36,7 @@ public static class SimulationAiContract
         throw new InvalidOperationException("Selected action must belong to the supplied legal list.");
     }
 
-    public static object Capture(GameState state, int player, IReadOnlyList<GameAction> legal)
+    public static Dictionary<string, object> Capture(GameState state, int player, IReadOnlyList<GameAction> legal)
     {
         if (player < 0 || player > 1) throw new ArgumentOutOfRangeException(nameof(player));
         if (legal == null) throw new ArgumentNullException(nameof(legal));

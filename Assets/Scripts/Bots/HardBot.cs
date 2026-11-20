@@ -19,9 +19,22 @@ public sealed class HardBot : IBot, IStateObservingBot
     private readonly uint policySeed;
     private readonly bool pairedRootSampling;
     private readonly int turnHorizon;
+    private const int LimitedRootBudget = 24;
+    private const int LimitedRootCandidates = 8;
+    private readonly bool limitedRoot;
+    private readonly Func<GameState, int, IReadOnlyList<GameAction>, float[]> learnedRootScores;
     private uint decision;
     private GameState source;
+    private GameAction lastTacticalAction;
     private int observer;
+    private int lastScoredMainTurn = -1, lastScoredBattleTurn = -1;
+    private const int LabelWorldCount = 8;
+    private const int LabelLongHorizon = 8;
+    private const int LabelLongSteps = 192;
+    private const int TerminalLabelHorizon = 20;
+    private const int TerminalLabelSteps = 384;
+    private readonly Dictionary<int, int> terminalAttemptsByPhase = new Dictionary<int, int>();
+    private int terminalAttempts, terminalDisagreements;
     public string DisplayName => "Hard Bot";
     public int LastIterations { get; private set; }
     public int LastNodes { get; private set; }
@@ -31,10 +44,16 @@ public sealed class HardBot : IBot, IStateObservingBot
     public bool LastChangedBaseline { get; private set; }
     public int LastMaxTreeDepth { get; private set; }
     public int LastRolloutActions { get; private set; }
+    internal bool LastUsedLearnedRanking { get; private set; }
+    internal bool CollectPairedRolloutScores { get; set; }
+    internal GameAction[] LastRolloutCandidates { get; private set; }
+    internal double[][] LastPairedRolloutScores { get; private set; }
     public static event Action<IReadOnlyDictionary<string, object>> DecisionDiagnostics;
     public IReadOnlyDictionary<string, object> Describe() => new Dictionary<string, object> {
         { "algorithm", AlgorithmVersion }, { "iterations", iterations }, { "treeDepth", treeDepth },
-        { "rolloutSteps", rolloutSteps }, { "policySeed", policySeed }, { "rootHeuristicCandidates", 12 },
+        { "rolloutSteps", rolloutSteps }, { "policySeed", policySeed }, { "rootHeuristicCandidates", limitedRoot ? 3 : 12 },
+        { "rootCandidateLimit", limitedRoot ? (int?)LimitedRootCandidates : null },
+        { "learnedRootRanking", learnedRootScores != null },
         { "hiddenPrior", "uniform-public-catalog-with-copy-limits" },
         { "ownDeckPrior", knownOwnStartingDeck == null ? "public-catalog" : "initial-deck-minus-observed-owned-cards" },
         { "pairedRootSampling", pairedRootSampling }, { "baselineImprovementMargin", 0.005 },
@@ -59,6 +78,14 @@ public sealed class HardBot : IBot, IStateObservingBot
         public GameAction Action;
         public Edge Edge;
         public readonly List<GameAction> Members = new List<GameAction>();
+    }
+
+    internal HardBot(IReadOnlyList<CardDefinition> publicCatalog, IReadOnlyList<CardDefinition> ownDeck,
+        Func<GameState, int, IReadOnlyList<GameAction>, float[]> learnedRootScores)
+        : this(publicCatalog, iterations: LimitedRootBudget, knownOwnStartingDeck: ownDeck)
+    {
+        limitedRoot = true;
+        this.learnedRootScores = learnedRootScores;
     }
 
     public HardBot(IReadOnlyList<CardDefinition> publicCatalog, int iterations = 96,
@@ -105,12 +132,73 @@ public sealed class HardBot : IBot, IStateObservingBot
         return chosen;
     }
 
+    internal (GameAction Tactical, GameAction Searched, GameAction[] Candidates, double[][] Scores,
+        double[][] LongScores, int?[][] TerminalRewards, string Status)?
+        CompareLearnerAction(GameState state, BotGameStateView view, IReadOnlyList<GameAction> legal, GameAction played,
+            bool compareHorizons, bool terminalFocus)
+    {
+        Observe(state, view.ViewingPlayerIndex);
+        try
+        {
+            if (legal.Count < 2 || view.HasOpenResponseWindow || view.HasPendingTriggeredEffect ||
+                !(terminalFocus ? ClaimTerminalAttempt(view) : ClaimScoredPhase(view)))
+            {
+                decision++;
+                return null;
+            }
+
+            GameAction searched = SearchAction(view, legal, fallback.ChooseAction(view, legal));
+            GameAction tactical = lastTacticalAction;
+            var candidates = (terminalFocus ? new[] { played, searched } : new[] { played, tactical, searched }).Distinct().ToArray();
+            if (LastFallbackReason != null)
+                return (tactical, searched, candidates, null, null, null, "search-fallback");
+            if (candidates.Length == 1)
+                return (tactical, searched, candidates, null, null, null, "agree");
+
+            if (terminalFocus)
+            {
+                terminalDisagreements++;
+                terminalAttemptsByPhase[TerminalPhaseKey(view)] = 2;
+            }
+            uint seed = unchecked(policySeed + 0x9E3779B9u * decision);
+            double[][] scores = ScoreExactRollouts(state, candidates, seed, compareHorizons, terminalFocus,
+                out double[][] longScores, out int?[][] terminalRewards);
+            if (scores == null) return (tactical, searched, candidates, null, null, null, "unsupported-sampled-action");
+            return (tactical, searched, candidates, scores, longScores, terminalRewards, "scored");
+        }
+        finally
+        {
+            tactics.Commit(played);
+            source = null;
+        }
+    }
+
+    private int TerminalPhaseKey(BotGameStateView view) => 2 * view.TurnNumber + (view.CurrentPhase == TurnPhase.Battle ? 1 : 0);
+
+    private bool ClaimTerminalAttempt(BotGameStateView view)
+    {
+        if (terminalAttempts >= 12 || terminalDisagreements >= 6 || source.CurrentPlayerIndex != observer ||
+            (view.CurrentPhase != TurnPhase.Main && view.CurrentPhase != TurnPhase.Battle) ||
+            (source.TurnNumber < 9 && view.Players.All(player => player.Health > 1500)))
+            return false;
+
+        int key = TerminalPhaseKey(view);
+        terminalAttemptsByPhase.TryGetValue(key, out int attempts);
+        if (attempts >= 2) return false;
+        terminalAttemptsByPhase[key] = attempts + 1;
+        terminalAttempts++;
+        return true;
+    }
+
     private GameAction SearchAction(BotGameStateView view, IReadOnlyList<GameAction> legalActions, GameAction baseline)
     {
         if (view == null || legalActions == null || legalActions.Count == 0) throw new ArgumentException("Hard requires legal choices.");
         LastIterations = LastNodes = LastRuleApplications = 0; LastFallbackReason = null;
         LastChangedBaseline = false;
+        LastUsedLearnedRanking = false;
         LastMaxTreeDepth = LastRolloutActions = 0;
+        LastRolloutCandidates = null;
+        LastPairedRolloutScores = null;
         var watch = Stopwatch.StartNew();
         try
         {
@@ -119,16 +207,21 @@ public sealed class HardBot : IBot, IStateObservingBot
             if (legalActions.Count == 1) return baseline;
             if (view.HasOpenResponseWindow || view.HasPendingTriggeredEffect)
             { LastFallbackReason = "response-or-trigger-root"; return baseline; }
+            var fullLegal = legalActions;
+            GameAction normalChoice = baseline;
             legalActions = tactics.Filter(view, legalActions, fallback);
             baseline = tactics.Choose(view, legalActions, fallback);
+            lastTacticalAction = baseline;
             var random = new SeededGameRandom(seed);
             var root = new Node(); LastNodes = 1;
             var original = Group(view, legalActions, root);
             string baselineKey = ActionKey(view, baseline);
-            // Bound root branching without changing legal moves: best heuristic options plus action-type diversity.
             var ranked = original.OrderByDescending(choice => tactics.Score(view, choice.Action, fallback)).ToList();
-            var candidates = new HashSet<string>(ranked.Take(12).Select(choice => choice.Key), StringComparer.Ordinal) { baselineKey };
-            foreach (var group in ranked.GroupBy(choice => choice.Action.Type)) candidates.Add(group.First().Key);
+            var candidates = limitedRoot
+                ? LimitedCandidates(view, fullLegal, ranked, baselineKey, normalChoice)
+                : new HashSet<string>(ranked.Take(12).Select(choice => choice.Key), StringComparer.Ordinal) { baselineKey };
+            if (!limitedRoot)
+                foreach (var group in ranked.GroupBy(choice => choice.Action.Type)) candidates.Add(group.First().Key);
             if (pairedRootSampling)
             {
                 // Compare each candidate against the baseline in the same sampled worlds. This reduces
@@ -153,8 +246,11 @@ public sealed class HardBot : IBot, IStateObservingBot
                         evidence[choice.Key].Add(value - baselineValue);
                     }
                 }
-                Choice improved = paired.Where(choice => choice.Key != baselineKey)
-                    .OrderByDescending(choice => ImprovementBound(evidence[choice.Key])).FirstOrDefault();
+                var alternatives = paired.Where(choice => choice.Key != baselineKey)
+                    .OrderByDescending(choice => ImprovementBound(evidence[choice.Key]));
+                Choice improved = alternatives.FirstOrDefault();
+                if (CollectPairedRolloutScores && paired.Length > 1)
+                    CollectRolloutEvidence(view, paired[0], alternatives, seed);
                 if (improved != null && ImprovementBound(evidence[improved.Key]) > 0.005)
                 { LastChangedBaseline = true; return improved.Action; }
                 return baseline;
@@ -176,6 +272,134 @@ public sealed class HardBot : IBot, IStateObservingBot
             return best == null ? baseline : best.Action; // Always an object from the original supplied legal list.
         }
         finally { source = null; LastSearchMilliseconds = watch.Elapsed.TotalMilliseconds; }
+    }
+
+    private bool ClaimScoredPhase(BotGameStateView view)
+    {
+        int turn = source.TurnNumber;
+        if (turn > 8 || source.CurrentPlayerIndex != observer) return false;
+        if (view.CurrentPhase == TurnPhase.Main && lastScoredMainTurn != turn) lastScoredMainTurn = turn;
+        else if (view.CurrentPhase == TurnPhase.Battle && lastScoredBattleTurn != turn) lastScoredBattleTurn = turn;
+        else return false;
+        return true;
+    }
+
+    private void CollectRolloutEvidence(BotGameStateView view, Choice baseline, IEnumerable<Choice> alternatives, uint seed)
+    {
+        if (!ClaimScoredPhase(view)) return;
+        var choices = new[] { baseline }.Concat(alternatives.Take(3)).ToArray();
+        var keys = new HashSet<string>(choices.Select(choice => choice.Key), StringComparer.Ordinal);
+        var scores = choices.Select(choice => new double[LabelWorldCount]).ToArray();
+        var random = new SeededGameRandom(seed ^ 0xD091C3E7u);
+        int nodes = LastNodes, applications = LastRuleApplications;
+        int maxDepth = LastMaxTreeDepth, rolloutActions = LastRolloutActions;
+        try
+        {
+            // A fresh tree per action gives a fixed rollout continuation for each paired world.
+            // These samples are separate from the search that chose the played action.
+            for (int round = 0; round < LabelWorldCount; round++)
+            {
+                uint worldSeed = random.NextUInt();
+                double baselineScore = 0;
+                for (int i = 0; i < choices.Length; i++)
+                {
+                    GameState world;
+                    try { world = source.CreateInformationSetFork(observer, catalog, worldSeed, knownOwnStartingDeck); }
+                    catch (InvalidOperationException) { return; }
+                    double score = Visit(world, new Node(), observer, new SeededGameRandom(worldSeed), keys, baseline.Key, choices[i].Key);
+                    if (i == 0) baselineScore = score;
+                    scores[i][round] = score - baselineScore;
+                }
+            }
+            LastRolloutCandidates = choices.Select(choice => choice.Action).ToArray();
+            LastPairedRolloutScores = scores;
+        }
+        finally
+        {
+            LastNodes = nodes;
+            LastRuleApplications = applications;
+            LastMaxTreeDepth = maxDepth;
+            LastRolloutActions = rolloutActions;
+        }
+    }
+
+    private double[][] ScoreExactRollouts(GameState state, GameAction[] candidates, uint seed, bool compareHorizons, bool terminalFocus,
+        out double[][] longScores, out int?[][] terminalRewards)
+    {
+        var scores = candidates.Select(candidate => new double[LabelWorldCount]).ToArray();
+        longScores = compareHorizons ? candidates.Select(candidate => new double[LabelWorldCount]).ToArray() : null;
+        terminalRewards = compareHorizons ? candidates.Select(candidate => new int?[LabelWorldCount]).ToArray() : null;
+        var random = new SeededGameRandom(seed ^ 0xD091C3E7u);
+        int horizonTurn = state.TurnNumber + turnHorizon;
+        int longHorizonTurn = state.TurnNumber + (terminalFocus ? TerminalLabelHorizon : LabelLongHorizon);
+        int longSteps = terminalFocus ? TerminalLabelSteps : LabelLongSteps;
+        for (int round = 0; round < LabelWorldCount; round++)
+        {
+            uint worldSeed = random.NextUInt();
+            double baseline = 0, longBaseline = 0;
+            for (int i = 0; i < candidates.Length; i++)
+            {
+                GameState world;
+                try { world = state.CreateInformationSetFork(observer, catalog, worldSeed, knownOwnStartingDeck); }
+                catch (InvalidOperationException) { return null; }
+                GameAction action = GameRules.GetLegalActions(world, observer)
+                    .FirstOrDefault(choice => IsSameAction(choice, candidates[i]));
+                if (action == null) return null;
+
+                searchTactics[observer].BeginSimulationFrom(tactics);
+                searchTactics[observer].Observe(world, observer);
+                searchTactics[observer].Commit(action);
+                Apply(world, action);
+                AdvanceAutomatic(world);
+                double score = Rollout(world, observer, horizonTurn);
+                if (i == 0) baseline = score;
+                scores[i][round] = score - baseline;
+                if (compareHorizons)
+                {
+                    // Continue the same fork from the short checkpoint, with the same rollout commitments.
+                    double longScore = world.IsFinished ? score : Rollout(world, observer, longHorizonTurn, longSteps);
+                    if (i == 0) longBaseline = longScore;
+                    longScores[i][round] = longScore - longBaseline;
+                    if (world.IsFinished)
+                        terminalRewards[i][round] = world.WinnerPlayerIndex < 0 ? 0 : world.WinnerPlayerIndex == observer ? 1 : -1;
+                }
+            }
+        }
+        return scores;
+    }
+
+    private static bool IsSameAction(GameAction a, GameAction b) =>
+        a.Type == b.Type && a.PlayerIndex == b.PlayerIndex && a.SourceInstanceId == b.SourceInstanceId &&
+        a.ZoneIndex == b.ZoneIndex && a.Amount == b.Amount && a.BattlePosition == b.BattlePosition &&
+        a.TargetInstanceIds.SequenceEqual(b.TargetInstanceIds) && a.TributeInstanceIds.SequenceEqual(b.TributeInstanceIds);
+
+    private HashSet<string> LimitedCandidates(BotGameStateView view, IReadOnlyList<GameAction> fullLegal,
+        List<Choice> ranked, string baselineKey, GameAction normalChoice)
+    {
+        var candidates = new HashSet<string>(StringComparer.Ordinal) { baselineKey };
+        if (normalChoice != null)
+        {
+            string normalKey = ActionKey(view, normalChoice);
+            if (ranked.Any(choice => choice.Key == normalKey)) candidates.Add(normalKey);
+        }
+        foreach (Choice choice in ranked)
+        {
+            if (candidates.Count >= 3) break;
+            candidates.Add(choice.Key);
+        }
+
+        IEnumerable<Choice> remaining = ranked.Where(choice => !candidates.Contains(choice.Key));
+        if (learnedRootScores != null && ranked.Count > LimitedRootCandidates && source.TurnNumber <= 8 &&
+            (view.CurrentPhase == TurnPhase.Main || view.CurrentPhase == TurnPhase.Battle))
+        {
+            float[] scores = learnedRootScores(source, observer, fullLegal);
+            var index = new Dictionary<GameAction, int>();
+            for (int i = 0; i < fullLegal.Count; i++) index.Add(fullLegal[i], i);
+            remaining = remaining.OrderByDescending(choice => scores[index[choice.Action]]);
+            LastUsedLearnedRanking = true;
+        }
+        candidates.UnionWith(remaining.Take(LimitedRootCandidates - candidates.Count).Select(choice => choice.Key));
+        return candidates;
     }
 
     private static double ImprovementBound(List<double> differences)
@@ -251,7 +475,16 @@ public sealed class HardBot : IBot, IStateObservingBot
             nodes.Add(next); node = next;
             if (expanded) break;
         }
-        for (int step = 0; step < rolloutSteps && !world.IsFinished; step++)
+        double reward = Rollout(world, rootPlayer, horizonTurn);
+        foreach (Node visited in nodes) { visited.Visits++; visited.Value += reward; }
+        foreach (Edge visited in edges) { visited.Visits++; visited.Value += reward; }
+        return reward;
+    }
+
+    private double Rollout(GameState world, int rootPlayer, int horizonTurn, int? stepLimit = null)
+    {
+        int maxSteps = stepLimit ?? rolloutSteps;
+        for (int step = 0; step < maxSteps && !world.IsFinished; step++)
         {
             AdvanceAutomatic(world);
             if (world.IsFinished || world.TurnNumber >= horizonTurn) break;
@@ -272,10 +505,7 @@ public sealed class HardBot : IBot, IStateObservingBot
             LastRolloutActions++;
         }
         AdvanceAutomatic(world);
-        double reward = Evaluate(world, rootPlayer);
-        foreach (Node visited in nodes) { visited.Visits++; visited.Value += reward; }
-        foreach (Edge visited in edges) { visited.Visits++; visited.Value += reward; }
-        return reward;
+        return Evaluate(world, rootPlayer);
     }
 
     private void Apply(GameState world, GameAction action)

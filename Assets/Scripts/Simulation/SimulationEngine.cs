@@ -14,6 +14,12 @@ public sealed class SimulationMatchResult
     public int slowDecisions;
     public int[] hardSearchedDecisions = new int[2], hardFallbackDecisions = new int[2], hardIterations = new int[2], hardRuleApplications = new int[2];
     public int[] hardChangedBaselineDecisions = new int[2];
+    public int[] hardGuidedRootDecisions = new int[2];
+    public int pairedRolloutDecisions;
+    public int learnerRolloutComparisons;
+    public int rolloutHorizonComparisons;
+    public int behaviorSamples;
+    public double[][] decisionTimesMs;
     public Dictionary<string, int> hardFallbackReasons = new Dictionary<string, int>();
     public double durationSeconds;
     public double[] meanDecisionMs = new double[2], medianDecisionMs = new double[2], p95DecisionMs = new double[2], maxDecisionMs = new double[2], preparationMs = new double[2], applyMs = new double[2];
@@ -22,13 +28,22 @@ public sealed class SimulationMatchResult
 
 public static class SimulationEngine
 {
-    public static IBot Bot(string name, IReadOnlyList<CardDefinition> publicCatalog = null, IReadOnlyList<CardDefinition> knownOwnStartingDeck = null)
+    public static IBot Bot(string name, IReadOnlyList<CardDefinition> publicCatalog = null,
+        IReadOnlyList<CardDefinition> knownOwnStartingDeck = null, LearnedPolicy learnedPolicy = null,
+        uint explorationSeed = 0, bool lowerExploration = false)
     {
         switch (name)
         {
             case "Easy": return new EasyBot();
             case "Normal": return new NormalBot();
             case "Hard": return new HardBot(publicCatalog, knownOwnStartingDeck: knownOwnStartingDeck);
+            case "HardLow": return new HardBot(publicCatalog, knownOwnStartingDeck, null);
+            case "LearnedSearch":
+                if (learnedPolicy == null) throw new ArgumentNullException(nameof(learnedPolicy));
+                return new HardBot(publicCatalog, knownOwnStartingDeck,
+                    (state, player, legal) => learnedPolicy.Score(SimulationAiContract.Capture(state, player, legal)));
+            case "Learned": return new LearnedBot(learnedPolicy);
+            case "LearnedTrain": return new LearnedBot(learnedPolicy, new SeededGameRandom(explorationSeed), lowerExploration);
             default: throw new ArgumentException("Unsupported bot: " + name);
         }
     }
@@ -37,12 +52,31 @@ public static class SimulationEngine
 
     public static SimulationMatchResult Run(SimulationConfig config, IReadOnlyList<CardDefinition> deck0,
         IReadOnlyList<CardDefinition> deck1, SimulationMatchResult result, string tracePath, bool detailed,
-        Action<SimulationMatchResult> heartbeat = null, IReadOnlyList<CardDefinition> publicCatalog = null)
+        Action<SimulationMatchResult> heartbeat = null, IReadOnlyList<CardDefinition> publicCatalog = null,
+        LearnedPolicy learnedPolicy = null, uint explorationSeed = 0)
     {
         GameSession session = GameSession.Create(GameConfig.CreateDefault(), result.seed, deck0, deck1);
         result.seed = session.Log.Header.Seed;
         result.firstPlayer = session.State.CurrentPlayerIndex;
-        IBot[] bots = { Bot(result.bot0, publicCatalog, deck0), Bot(result.bot1, publicCatalog, deck1) };
+        IBot[] bots = { Bot(result.bot0, publicCatalog, deck0, learnedPolicy, explorationSeed, config.lowerLearnerExploration),
+            Bot(result.bot1, publicCatalog, deck1, learnedPolicy, explorationSeed, config.lowerLearnerExploration) };
+        if (detailed && config.collectPairedRolloutScores)
+        {
+            if (result.bot0 == "HardLow" && bots[0] is HardBot left) left.CollectPairedRolloutScores = true;
+            if (result.bot1 == "HardLow" && bots[1] is HardBot right) right.CollectPairedRolloutScores = true;
+        }
+        var comparisons = new LearnedTeacherComparison[2];
+        var rolloutComparisons = new HardBot[2];
+        if (detailed && config.compareLearnedTeachers)
+        {
+            if (bots[0] is LearnedBot) comparisons[0] = new LearnedTeacherComparison(publicCatalog, deck0);
+            if (bots[1] is LearnedBot) comparisons[1] = new LearnedTeacherComparison(publicCatalog, deck1);
+        }
+        if (detailed && config.compareLearnedRollouts)
+        {
+            if (bots[0] is LearnedBot) rolloutComparisons[0] = new HardBot(publicCatalog, deck0, null);
+            if (bots[1] is LearnedBot) rolloutComparisons[1] = new HardBot(publicCatalog, deck1, null);
+        }
         var times = new[] { new List<double>(), new List<double>() };
         var actionText = new StringBuilder();
         var watch = Stopwatch.StartNew(); double nextHeartbeat = 0;
@@ -52,7 +86,8 @@ public static class SimulationEngine
                 "schema", SimulationReplayFormat.TraceSchema, "stateHashSchema", SimulationStateHash.Schema,
                 "aiSchema", SimulationAiContract.Schema, "aiDescriptionHash", SimulationJson.Hash(SimulationJson.Encode(SimulationAiContract.Describe())),
                 "seed", result.seed, "bot0", result.bot0, "bot1", result.bot1, "detailed", detailed,
-                "botProfiles", bots.Select(bot => bot is HardBot hard ? (object)hard.Describe() : bot.DisplayName).ToArray(),
+                "botProfiles", bots.Select(bot => bot is HardBot hard ? (object)hard.Describe()
+                    : bot is LearnedBot learned ? learned.Describe() : bot.DisplayName).ToArray(),
                 "publicSearchCatalogHash", bots.Any(bot => bot is HardBot) ? SimulationReplayFormat.DefinitionsHash(publicCatalog) : null,
                 "deck0", deck0.Select(card => card.CardId).ToArray(), "deck1", deck1.Select(card => card.CardId).ToArray(),
                 "rulesHash", SimulationReplayFormat.RulesHash(), "definitionsHash", SimulationReplayFormat.DefinitionsHash(deck0.Concat(deck1)),
@@ -78,6 +113,9 @@ public static class SimulationEngine
                     string observation = null;
                     double preparation = 0, decision = 0;
                     object hardSearch = null;
+                    object teacherComparison = null;
+                    object pairedRollout = null;
+                    object learnerRollout = null;
                     if (!automatic)
                     {
                         long start = Stopwatch.GetTimestamp();
@@ -94,6 +132,14 @@ public static class SimulationEngine
                             result.hardIterations[player] += hard.LastIterations;
                             result.hardRuleApplications[player] += hard.LastRuleApplications;
                             if (hard.LastChangedBaseline) result.hardChangedBaselineDecisions[player]++;
+                            if (hard.LastUsedLearnedRanking) result.hardGuidedRootDecisions[player]++;
+                            if (hard.LastRolloutCandidates != null)
+                            {
+                                int[] indices = hard.LastRolloutCandidates.Select(candidate =>
+                                    SimulationAiContract.SelectedIndex(legal, candidate)).ToArray();
+                                pairedRollout = SimulationJson.Object("legalIndices", indices, "relativeScores", hard.LastPairedRolloutScores);
+                                result.pairedRolloutDecisions++;
+                            }
                             if (hard.LastIterations > 0 && hard.LastFallbackReason == null) result.hardSearchedDecisions[player]++;
                             if (hard.LastFallbackReason != null)
                             {
@@ -108,18 +154,48 @@ public static class SimulationEngine
                         if (decision > config.decisionWarningMs) result.slowDecisions++;
                         if (action == null || !legal.Any(candidate => ReferenceEquals(candidate, action)))
                         { result.status = "InvalidAction"; throw new InvalidOperationException("Bot must return an action from the supplied list."); }
+                        teacherComparison = comparisons[player]?.Compare(state, view, legal);
+                        var compared = rolloutComparisons[player]?.CompareLearnerAction(state, view, legal, action,
+                            config.compareRolloutHorizons, config.focusTerminalRollouts);
+                        if (compared.HasValue)
+                        {
+                            var sample = compared.Value;
+                            int[] indices = sample.Candidates.Select(candidate => SimulationAiContract.SelectedIndex(legal, candidate)).ToArray();
+                            var comparison = SimulationJson.Object("status", sample.Status, "tacticalIndex",
+                                SimulationAiContract.SelectedIndex(legal, sample.Tactical), "hardLowIndex",
+                                SimulationAiContract.SelectedIndex(legal, sample.Searched), "legalIndices", indices,
+                                "relativeScores", sample.Scores);
+                            if (sample.LongScores != null)
+                            {
+                                comparison.Add("longRelativeScores", sample.LongScores);
+                                comparison.Add("longTerminalRewards", sample.TerminalRewards);
+                                result.rolloutHorizonComparisons++;
+                            }
+                            learnerRollout = comparison;
+                            result.learnerRolloutComparisons++;
+                            if (sample.Scores != null) result.pairedRolloutDecisions++;
+                        }
                     }
                     string encodedAction = SimulationJson.Encode(SimulationJson.Action(action));
                     string policyInput = detailed && !automatic
                         ? SimulationJson.Encode(SimulationAiContract.Capture(state, player, legal)) : null;
                     // Attempt is flushed before applying; crashes/rejections retain the proposal.
-                    trace.WriteLine(SimulationJson.Encode(SimulationJson.Object("record", "attempt", "sequence", result.actions + 1,
+                    var attempt = SimulationJson.Object("record", "attempt", "sequence", result.actions + 1,
                         "turn", turn, "phase", phase, "automatic", automatic, "action", SimulationJson.Action(action),
                         "observationJson", observation, "legalActions", detailed && legal != null ? legal.Select(SimulationJson.Action).ToArray() : null,
                         "stateHash", SimulationStateHash.Capture(state), "policyInputJson", policyInput,
                         "policyHash", policyInput == null ? null : SimulationJson.Hash(policyInput),
                         "selectedActionIndex", automatic ? -1 : SimulationAiContract.SelectedIndex(legal, action),
-                        "preparationMs", preparation, "decisionMs", decision, "hardSearch", hardSearch)));
+                        "preparationMs", preparation, "decisionMs", decision, "hardSearch", hardSearch);
+                    if (teacherComparison != null) attempt.Add("teacherComparison", teacherComparison);
+                    if (pairedRollout != null) attempt.Add("pairedRollout", pairedRollout);
+                    if (learnerRollout != null) attempt.Add("learnerRolloutComparison", learnerRollout);
+                    if (!automatic && bots[player] is LearnedBot learner && learner.LastBehaviorLogProbability.HasValue)
+                    {
+                        attempt.Add("behaviorLogProbability", learner.LastBehaviorLogProbability.Value);
+                        result.behaviorSamples++;
+                    }
+                    trace.WriteLine(SimulationJson.Encode(attempt));
                     int unused = state.Players[player].AvailableEnergy;
                     long applyStart = Stopwatch.GetTimestamp();
                     ActionResult applied = session.TryApply(action);
@@ -169,6 +245,7 @@ public static class SimulationEngine
                 result.p95DecisionMs[player] = Percentile(times[player], 0.95);
                 result.maxDecisionMs[player] = times[player][times[player].Count - 1];
             }
+            if (config.recordDecisionTimes) result.decisionTimesMs = times.Select(values => values.ToArray()).ToArray();
             if (detailed || result.status != "Finished") result.trace = Path.GetFileName(tracePath);
             trace.WriteLine(SimulationJson.Encode(SimulationJson.Object("record", "end", "result", result,
                 "stateHash", result.finalStateHash,

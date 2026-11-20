@@ -24,7 +24,9 @@ $timer = [Diagnostics.Stopwatch]::StartNew()
 $peakWorkingSet = 0L; $resultBytes = 0L; $runDirectory = $null; $resourceStatus = 'failed'
 $arguments = @('-batchmode','-nographics','-logFile',('"' + $log + '"'), '--simulation-config',('"' + $configPath + '"'), '--simulation-progress',('"' + $progress + '"'))
 $ownedProcess = Start-Process -FilePath $executable -ArgumentList $arguments -WorkingDirectory $projectRoot -WindowStyle Hidden -PassThru
-$lastText = ''; $lastHeartbeat = [DateTime]::UtcNow
+$lastText = ''
+$lastHeartbeat = $null
+$lastHeartbeatAt = $timer.Elapsed.TotalSeconds
 
 function Read-SimulationProgress([string]$Path) {
     $share = [IO.FileShare]::ReadWrite -bor [IO.FileShare]::Delete
@@ -40,18 +42,17 @@ try {
     while (!$ownedProcess.HasExited) {
         Start-Sleep -Seconds 1
         $ownedProcess.Refresh()
-        if (!$ownedProcess.HasExited) {
-            $peakWorkingSet = [Math]::Max($peakWorkingSet, $ownedProcess.PeakWorkingSet64)
-        }
+        if ($ownedProcess.HasExited) { break }
+        $peakWorkingSet = [Math]::Max($peakWorkingSet, $ownedProcess.PeakWorkingSet64)
         $state = $null
         if (Test-Path -LiteralPath $progress) {
             try { $state = Read-SimulationProgress $progress } catch { $state = $null }
         }
         if ($null -ne $state) {
             if ($state.runDirectory) { $runDirectory = $state.runDirectory }
-            if ($state.utc) {
-                $style = [Globalization.DateTimeStyles]::AssumeUniversal -bor [Globalization.DateTimeStyles]::AdjustToUniversal
-                $lastHeartbeat = [DateTime]::Parse([string]$state.utc,[Globalization.CultureInfo]::InvariantCulture,$style)
+            if ($state.utc -and $state.utc -ne $lastHeartbeat) {
+                $lastHeartbeat = $state.utc
+                $lastHeartbeatAt = $timer.Elapsed.TotalSeconds
             }
             $text = "$($state.state): $($state.completed)/$($state.expected)  $($state.activeMatch)  turn=$($state.turn)"
             if ($text -ne $lastText) { Write-Output $text; $lastText = $text }
@@ -61,6 +62,8 @@ try {
         }
         $outputBytes = $resultBytes
         if (Test-Path -LiteralPath $log -PathType Leaf) { $outputBytes += (Get-Item -LiteralPath $log).Length }
+        $ownedProcess.Refresh()
+        if ($ownedProcess.HasExited) { break }
         $limit = if ($MaxBatchSeconds -gt 0 -and $timer.Elapsed.TotalSeconds -gt $MaxBatchSeconds) {'batch time'}
             elseif ($MaxWorkingSetMiB -gt 0 -and $peakWorkingSet -gt $MaxWorkingSetMiB * 1MB) {'runner RAM'}
             elseif ($MaxResultsMiB -gt 0 -and $outputBytes -gt $MaxResultsMiB * 1MB) {'output size'} else {$null}
@@ -69,8 +72,17 @@ try {
             if (!$ownedProcess.HasExited) { Stop-Process -Id $ownedProcess.Id }
             throw "Stopped the owned runner at the $limit limit. Partial results remain for diagnosis; this is not a game loss."
         }
-        if (([DateTime]::UtcNow - $lastHeartbeat).TotalSeconds -gt $HeartbeatTimeoutSeconds) {
-            if (!$ownedProcess.HasExited) { Stop-Process -Id $ownedProcess.Id }
+        if ($timer.Elapsed.TotalSeconds - $lastHeartbeatAt -gt $HeartbeatTimeoutSeconds) {
+            $latest = $null
+            try { $latest = Read-SimulationProgress $progress } catch { $latest = $null }
+            if ($latest.utc -and $latest.utc -ne $lastHeartbeat) {
+                $lastHeartbeat = $latest.utc
+                $lastHeartbeatAt = $timer.Elapsed.TotalSeconds
+                continue
+            }
+            $ownedProcess.Refresh()
+            if ($ownedProcess.HasExited) { break }
+            Stop-Process -Id $ownedProcess.Id
             throw "Simulator heartbeat timed out. Only this launched process was stopped. Keep $progress and $log for diagnosis. Partial completed results remain on D."
         }
     }

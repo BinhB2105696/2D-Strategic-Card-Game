@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "projectRoot": "D:\\Unity\\Projects\\2D-Strategic-Card-Game",
+  "learnedPolicyPath": "SimulationResults/TrainingRuns/rules-v6-imitation_20261119_083127/learned-policy-v1/learned-policy-v1.bin",
+  "firstSeed": 2026111901,
+  "seedCount": 5,
+  "warmupMatches": 0,
+  "maxTurns": 200,
+  "maxActions": 10000,
+  "maxMatchSeconds": 60,
+  "decisionWarningMs": 1000,
+  "detailedMatches": 0,
+  "matchups": [
+    { "player0Bot": "Learned", "player1Bot": "Easy", "deck0": 0, "deck1": 0, "swapBots": true },
+    { "player0Bot": "Learned", "player1Bot": "Easy", "deck0": 1, "deck1": 1, "swapBots": true },
+    { "player0Bot": "Learned", "player1Bot": "Easy", "deck0": 0, "deck1": 1, "swapBots": true },
+    { "player0Bot": "Learned", "player1Bot": "Normal", "deck0": 0, "deck1": 0, "swapBots": true },
+    { "player0Bot": "Learned", "player1Bot": "Normal", "deck0": 1, "deck1": 1, "swapBots": true },
+    { "player0Bot": "Learned", "player1Bot": "Normal", "deck0": 0, "deck1": 1, "swapBots": true },
+    { "player0Bot": "Learned", "player1Bot": "Hard", "deck0": 0, "deck1": 0, "swapBots": true },
+    { "player0Bot": "Learned", "player1Bot": "Hard", "deck0": 1, "deck1": 1, "swapBots": true },
+    { "player0Bot": "Learned", "player1Bot": "Hard", "deck0": 0, "deck1": 1, "swapBots": true }
+  ]
+}
