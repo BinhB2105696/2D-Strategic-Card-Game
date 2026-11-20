@@ -147,9 +147,28 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
             easyBotController = GetComponent<DuelEasyBotController>();
             if (easyBotController == null)
                 easyBotController = gameObject.AddComponent<DuelEasyBotController>();
-            IBot selectedBot = appMatch != null && appMatch.difficulty == DuelBotDifficulty.Normal
-                ? (IBot)new NormalBot() : new EasyBot();
-            easyBotController.Initialize(this, selectedBot);
+            IBot selectedBot;
+            IBot autoPlayerBot = null;
+            switch (appMatch?.difficulty ?? DuelBotDifficulty.Easy)
+            {
+                case DuelBotDifficulty.Hard:
+                    var publicCatalog = new List<CardDefinition>(appMatch.catalog.Count);
+                    foreach (CardData card in appMatch.catalog.Values)
+                        publicCatalog.Add(CardDataConverter.ToDefinition(card));
+                    var publicIds = new HashSet<string>(appMatch.catalog.Keys, StringComparer.Ordinal);
+                    foreach (CardDefinition card in deck)
+                        if (publicIds.Add(card.CardId)) publicCatalog.Add(card);
+                    selectedBot = new HardBot(publicCatalog, knownOwnStartingDeck: deck);
+                    autoPlayerBot = new HardBot(publicCatalog, knownOwnStartingDeck: playerDeck);
+                    break;
+                case DuelBotDifficulty.Normal:
+                    selectedBot = new NormalBot();
+                    break;
+                default:
+                    selectedBot = new EasyBot();
+                    break;
+            }
+            easyBotController.Initialize(this, selectedBot, autoPlayerBot: autoPlayerBot);
 
             DuelHudPrototypeController hudController =
                 GetComponentInChildren<DuelHudPrototypeController>(true);
@@ -432,7 +451,7 @@ public sealed class DuelBoardReadOnlyDemo : MonoBehaviour
             if (label != null)
             {
                 label.richText = false;
-                label.text = player.PlayerIndex == 0 ? appMatch.profile.guestName : "Easy Bot";
+                label.text = player.PlayerIndex == 0 ? appMatch.profile.guestName : appMatch.OpponentName;
             }
         }
         RenderDeckAndGraveyard(player, board, side);

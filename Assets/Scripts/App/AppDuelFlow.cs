@@ -62,8 +62,7 @@ public sealed class AppDuelFlow : MonoBehaviour
             panel.SetActive(true); cancel.gameObject.SetActive(false);
             title.text = outcome == "Draw" ? "DRAW" : outcome == "Win" ? "VICTORY" : "DEFEAT";
             description.text = request.deck.name + "\nTurns: " + board.Session.State.TurnNumber +
-                (usedAuto ? "\nAuto / practice match" : "\nPvE vs " +
-                    (request.difficulty == DuelBotDifficulty.Normal ? "Normal Bot" : "Easy Bot"));
+                (usedAuto ? "\nAuto / practice match" : "\nPvE vs " + request.OpponentName);
             SaveResult();
         }
         else if (pendingExit && !resultShown && !panel.activeSelf)

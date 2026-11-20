@@ -44,7 +44,7 @@ public static class LocalMatchArchive
             matchId = request.matchId, finishedUtc = DateTime.UtcNow.ToString("u"),
             deckId = request.deck.deckId, deckName = request.deck.name,
             outcome = outcome, usedAuto = usedAuto, seed = request.seed, turns = session.State.TurnNumber,
-            opponent = request.difficulty == DuelBotDifficulty.Normal ? "Normal Bot" : "Easy Bot"
+            opponent = request.OpponentName
         };
         var archive = new ArchivedMatch
         {

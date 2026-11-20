@@ -29,9 +29,13 @@ public sealed class LearnedPolicy
             stream.Position = 0;
             if (Encoding.ASCII.GetString(reader.ReadBytes(4)) != "LCBP" || reader.ReadInt32() != 1 ||
                 reader.ReadInt32() != rulesVersion || reader.ReadInt32() != catalogVersion ||
-                reader.ReadInt32() != aiSchema || reader.ReadInt32() != LearnedPolicyEncoder.Version)
+                reader.ReadInt32() != aiSchema)
                 throw new InvalidDataException("Incompatible learned policy artifact.");
 
+            int encoderVersion = reader.ReadInt32();
+            if (encoderVersion != LearnedPolicyEncoder.Version &&
+                (encoderVersion != LearnedPolicyEncoder.FundamentalsVersion || aiSchema != 3))
+                throw new InvalidDataException("Incompatible learned policy encoder.");
             int globals = ReadSize(reader, 128);
             var cardIds = new string[ReadSize(reader, 512)];
             for (int i = 0; i < cardIds.Length; i++)
@@ -41,7 +45,7 @@ public sealed class LearnedPolicy
                 if (bytes.Length != size) throw new EndOfStreamException();
                 cardIds[i] = Encoding.UTF8.GetString(bytes);
             }
-            var encoder = new LearnedPolicyEncoder(aiSchema, globals, cardIds, ReadCategories(reader), ReadCategories(reader));
+            var encoder = new LearnedPolicyEncoder(aiSchema, globals, cardIds, ReadCategories(reader), ReadCategories(reader), encoderVersion);
             var layers = new Layer[ReadSize(reader, 8)];
             int input = encoder.ContextSize + encoder.ActionSize;
             for (int i = 0; i < layers.Length; i++)

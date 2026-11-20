@@ -37,6 +37,7 @@ public static class SimulationEngine
             case "Easy": return new EasyBot();
             case "Normal": return new NormalBot();
             case "Hard": return new HardBot(publicCatalog, knownOwnStartingDeck: knownOwnStartingDeck);
+            case "SearchTeacher": return new HardBot(publicCatalog, iterations: 192, knownOwnStartingDeck: knownOwnStartingDeck);
             case "HardLow": return new HardBot(publicCatalog, knownOwnStartingDeck, null);
             case "LearnedSearch":
                 if (learnedPolicy == null) throw new ArgumentNullException(nameof(learnedPolicy));

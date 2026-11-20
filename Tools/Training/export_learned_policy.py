@@ -123,7 +123,7 @@ def write_policy_artifact(model, spec, versions, output):
     def integers(*values):
         artifact.extend(struct.pack(f"<{len(values)}i", *values))
 
-    integers(1, *versions, ENCODER_VERSION, spec["global_feature_count"])
+    integers(1, *versions, spec.get("encoder_version", ENCODER_VERSION), spec["global_feature_count"])
     integers(len(spec["card_ids"]))
     for card_id in spec["card_ids"]:
         encoded_id = card_id.encode("utf-8")

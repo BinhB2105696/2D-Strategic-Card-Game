@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum DuelBotDifficulty { Easy, Normal }
+public enum DuelBotDifficulty { Easy, Normal, Hard }
 
 public sealed class AppMatchRequest
 {
@@ -16,6 +16,7 @@ public sealed class AppMatchRequest
     public Sprite avatar;
     public GameObject overlayPrefab;
     public DuelBotDifficulty difficulty;
+    public string OpponentName => difficulty + " Bot";
 }
 
 // One-use scene handoff; direct Play of SampleScene keeps its original demo.

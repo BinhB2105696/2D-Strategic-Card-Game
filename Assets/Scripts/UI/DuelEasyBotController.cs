@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
-// Runtime driver for Human (Player 1/index 0) versus Easy Bot
-// (Player 2/index 1). It never edits the saved scene.
+// Runtime driver for PvE and local auto-play.
 public sealed class DuelEasyBotController : MonoBehaviour
 {
     private const int DefaultBotPlayerIndex = 1;
@@ -10,9 +10,21 @@ public sealed class DuelEasyBotController : MonoBehaviour
 
     private DuelBoardReadOnlyDemo board;
     private IBot bot;
+    private IBot autoPlayerBot;
+    private PendingHardDecision pendingHardDecision;
     private float nextDecisionTime;
     private bool wasWaitingForBot;
     private int waitingPlayerIndex = -1;
+
+    private sealed class PendingHardDecision
+    {
+        public GameSession Session;
+        public int ActionCount;
+        public int PlayerIndex;
+        public BotGameStateView View;
+        public IReadOnlyList<GameAction> LegalActions;
+        public Task<GameAction> Choice;
+    }
 
     public bool IsEnabled { get; private set; }
     public bool IsAutoPlayerEnabled { get; private set; }
@@ -23,10 +35,12 @@ public sealed class DuelEasyBotController : MonoBehaviour
     public void Initialize(
         DuelBoardReadOnlyDemo duelBoard,
         IBot controlledBot,
-        int botPlayerIndex = DefaultBotPlayerIndex)
+        int botPlayerIndex = DefaultBotPlayerIndex,
+        IBot autoPlayerBot = null)
     {
         board = duelBoard;
         bot = controlledBot;
+        this.autoPlayerBot = autoPlayerBot;
         BotPlayerIndex = botPlayerIndex;
         IsEnabled = false;
         IsAutoPlayerEnabled = false;
@@ -94,6 +108,12 @@ public sealed class DuelEasyBotController : MonoBehaviour
             return;
         }
 
+        if (pendingHardDecision != null)
+        {
+            FinishHardDecision();
+            return;
+        }
+
         GameState state = board.Session.State;
         int controlledPlayerIndex = state.InteractionPlayerIndex;
         if (state.IsFinished || !ControlsPlayer(controlledPlayerIndex))
@@ -140,9 +160,59 @@ public sealed class DuelEasyBotController : MonoBehaviour
         BotGameStateView view = BotGameStateView.Create(
             state,
             playerIndex);
-        if (bot is NormalBot normalBot)
-            normalBot.Observe(state, playerIndex);
-        GameAction action = bot.ChooseAction(view, legalActions);
+        IBot decisionBot = playerIndex == BotPlayerIndex ? bot : autoPlayerBot ?? bot;
+        if (decisionBot is HardBot hardBot)
+        {
+            // Capture on the Unity thread; the worker operates only on the isolated rules state.
+            GameState snapshot = state.CreateSearchFork();
+            pendingHardDecision = new PendingHardDecision
+            {
+                Session = board.Session,
+                ActionCount = board.Session.Log.Actions.Count,
+                PlayerIndex = playerIndex,
+                View = view,
+                LegalActions = legalActions,
+                Choice = Task.Run(() =>
+                {
+                    hardBot.Observe(snapshot, playerIndex);
+                    return hardBot.ChooseAction(view, legalActions);
+                })
+            };
+            return;
+        }
+        if (decisionBot is IStateObservingBot observingBot)
+            observingBot.Observe(state, playerIndex);
+        ApplyDecision(playerIndex, view, legalActions, decisionBot.ChooseAction(view, legalActions));
+    }
+
+    private void FinishHardDecision()
+    {
+        PendingHardDecision decision = pendingHardDecision;
+        if (!decision.Choice.IsCompleted)
+            return;
+        pendingHardDecision = null;
+
+        var error = decision.Choice.Exception;
+        if (!ReferenceEquals(board.Session, decision.Session) ||
+            board.Session.Log.Actions.Count != decision.ActionCount || board.Session.State.IsFinished ||
+            board.Session.State.InteractionPlayerIndex != decision.PlayerIndex || !ControlsPlayer(decision.PlayerIndex))
+            return;
+
+        if (decision.Choice.Status != TaskStatus.RanToCompletion)
+        {
+            Debug.LogError("Hard Bot could not finish its decision: " + error?.GetBaseException().Message, this);
+            DisableAllAutomation();
+            board.RefreshBoard();
+            return;
+        }
+
+        ApplyDecision(decision.PlayerIndex, decision.View, decision.LegalActions, decision.Choice.Result);
+        nextDecisionTime = Time.unscaledTime + DecisionDelaySeconds;
+    }
+
+    private void ApplyDecision(int playerIndex, BotGameStateView view,
+        IReadOnlyList<GameAction> legalActions, GameAction action)
+    {
         if (action == null ||
             !ContainsReference(legalActions, action))
         {

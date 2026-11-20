@@ -494,11 +494,13 @@ public sealed partial class DeckBuilderAppController
             RectTransform panel = Panel(modalLayer.transform, "DuelModePanel", Navy, 70, 520, 940, 850).rectTransform;
             duelModePanel = panel.gameObject;
             Label(panel, "Title", "DUEL MODE", 48, Gold, 35, 45, 870, 90);
-            ButtonAt(panel, "Easy", "EASY BOT", 40, 70, 205, 800, 130, Blue,
+            ButtonAt(panel, "Easy", "EASY BOT", 40, 70, 175, 800, 130, Blue,
                 () => StartPve(DuelBotDifficulty.Easy));
-            ButtonAt(panel, "Normal", "NORMAL BOT", 40, 70, 395, 800, 130, Blue,
+            ButtonAt(panel, "Normal", "NORMAL BOT", 40, 70, 335, 800, 130, Blue,
                 () => StartPve(DuelBotDifficulty.Normal));
-            ButtonAt(panel, "Back", "BACK", 34, 190, 640, 560, 100, Navy, CloseModal);
+            ButtonAt(panel, "Hard", "HARD BOT", 40, 70, 495, 800, 130, Blue,
+                () => StartPve(DuelBotDifficulty.Hard));
+            ButtonAt(panel, "Back", "BACK", 34, 190, 680, 560, 100, Navy, CloseModal);
         }
         OpenModalPanel(duelModePanel);
     }

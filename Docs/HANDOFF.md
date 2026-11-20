@@ -1,12 +1,28 @@
-# HANDOFF - choose the next rules-v6 LearnedBot training target
-Updated 2026-11-20. Project: `D:\Unity\Projects\2D-Strategic-Card-Game`.
+# HANDOFF - target a concrete rules-v6 LearnedBot skill
+Updated 2026-11-21. Project: `D:\Unity\Projects\2D-Strategic-Card-Game`.
 Read root `AGENTS.md`, then this file only. Preserve pending work and do not rerun completed collection/training/test.
 
-## Current result and next decision
+## AI/ML training priority
+
+**When training the AI bot, prioritize the fastest, most direct way to improve gameplay. Avoid following a routine for its own sake or repeating poorly defined experiments while the model still struggles with basic skills.**
+
+## Current result and next proposal
+- PvE Hard is wired through AppShell Duel Mode, the match controller, result screen and local history. It uses the existing full-strength HardBot and evaluates each move on an isolated state in a worker task. C# syntax checks passed and Unity Play Mode logs show accepted Hard actions for both seats. Visual responsiveness and result/history display still need a manual check.
+- Fundamentals Hard screen finished 96/96. Reward v1 18/48 vs candidate 19/48, +2.08 pp (paired seed-block 95% −6.25 to +10.42). Decks 8/24 -> 8/24 and 10/24 -> 11/24. Keep Reward v1. Preserve the encoder-2 artifact, [scorecard](AI_ACTION_SCORECARD.md) and receipts in `SimulationResults/LearnedFundamentals/v1/`.
+- Targeted attack-readiness candidate passed the offline gate on equal-cost legal allocations: 3/13 -> 9/13 on separated reward collection seeds and 16/31 -> 27/31 on independent Normal replays. Trained on 22 pairs, modified only three allocation-feature columns, Python/C# parity 27/27. Artifacts: `SimulationResults/LearnedFundamentals/attack-readiness-v1/`.
+- Attack-readiness Hard screen finished 48/48 new games against the saved matched control. Reward v1 18/48 -> candidate 20/48, paired +4.17 pp (95% 0.00 to +10.42). Decks 8/24 -> 10/24 and 10/24 -> 10/24. Keep Reward v1 active. Two retained detailed pairs show allocation displacing a position change and a summon. Proposed next diagnostic: collect detailed traces for the four outcome flips, then decide whether to adjust cross-action priorities or confirm the candidate on independent seeds.
+- Direct coaching example on a recorded paired turn: Reward v1 funded Fire Dragon for a KO and 500 LP damage; the readiness candidate funded Bloodfang Raider early, later entered Battle with weaker attacks and ended the turn without attacking. Both lost. Compare plans across a whole turn before labeling individual actions; live external coach input is not yet implemented in the runner.
+
+## Current teacher result
+- Smoke finished 8/8 with profiles verified at 192/96. Development finished 96/96. Recovered the missing stage receipt from verified completed simulator output. Results: `SimulationResults/LearnedSearchTeacher/v1/Development.result.json`.
+- SearchTeacher 50/96 (52.08%), decks 23/48 and 27/48, seed-block 95% interval 45.83%–57.29%. Missed the 55% overall and 50% per-deck development gate. Pause this teacher profile before Confirmation or distillation. Use CMD commands for the user's next local run.
+
+## Current model result
 - Critic evaluation finished 288/288 on 12 fresh seeds. V1 -> critic wins: Easy 29/48 -> 30/48, Normal 19/48 -> 16/48, Hard 17/48 -> 17/48. Paired Hard change 0 pp (95% −8.33 to +8.33). Overall −1.39 pp (95% −5.56 to +2.78). Keep reward v1 as the active training baseline and pause this reward/GAE route. Receipts: `SimulationResults/LearnedCheckpointComparison/reward-v3-critic-development/`.
 - The ridge critic improved held-out outcome MSE from 0.8675 to 0.5522, but its GAE update did not yield stronger play. Preserve its artifact at `SimulationResults/LearnedReward/v3/critic-candidate/` and negative results. Reward v3 also showed no gain; see the experiment log.
 - Tactical diagnostic complete on 192 verified games sampled from reward v1. Across 45 certified one-action win states, greedy v1 skipped 13 chances in 12 games. All 12 were ultimately won. Against Hard, both skipped chances occurred in wins and no prior-turn removal of the eventual lethal attacker was identified by the narrow check. Skip fine-tuning on these labels.
-- Against Hard, 36 of 45 collection losses ended by direct attack; in 32/36, the learner was already without a monster by its previous Main. Of those 36, 25 exited that Main empty with no legal summon. Investigate earlier loss of board presence and resources before choosing another supervised target. No collection, training, or gameplay pending.
+- Lost-board diagnostic complete on 36 direct-attack losses to full-strength Hard. Hard removed the last monster in 35. Greedy v1 skipped two legal summons and one Defense switch with a same-hit survival margin at the preceding Main exit. All were on the second deck. The 25 empty-board Main exits without a legal summon split into 14 hands of tribute-only monsters and 11 hands with no monsters. The cases do not support targeted fine-tuning across decks.
+- Reward v1 is the model baseline. First check basic decisions on existing replay states and concrete rule-derived examples, starting with energy requirements and attack readiness. Use player-visible inputs and verify the effect of a focused change on win rates against the original bots.
 
 ## Current priority and fairness
 - Improve the learned model itself. Goal: high win rates against fixed Easy/Normal and a real edge above 50% against original full-strength Hard, on independent swapped-side seeds across decks. HardLow is a diagnostic benchmark.
@@ -14,6 +30,7 @@ Read root `AGENTS.md`, then this file only. Preserve pending work and do not rer
 
 ## Current checkpoint
 - Rules-v6/pipeline checkpoint `41057b2` is pushed to `origin/main`; rules/catalog/AI are `6/4/3`.
+- LearnedBot inference, training experiments and results through the tactical diagnostic were pushed in `8fdb490`. Follow-up work includes the fundamentals experiments and PvE Hard integration.
 - Rules v6: first player skips only the first draw; a later failed normal Draw step schedules escalating `n*100` LP damage at that player's End step. Effect/skip draws are exempt.
 - `Docs/AI_EXPERIMENT_LOG.md` is the append-only evidence log; update it before checkpoints and preserve negative results/corrections.
 
@@ -65,13 +82,13 @@ Read root `AGENTS.md`, then this file only. Preserve pending work and do not rer
 - Reward v2 evaluation complete 288/288. Reward v1 -> v2: Easy 30/48 -> 28/48, Normal 20/48 -> 16/48, Hard 13/48 -> 12/48. Aggregate −4.86 pp (95% −8.33 to −1.39). Keep reward v1; opponent strengths and fingerprints verified.
 
 ## Working tree / preservation
-- Learned inference source, exporter, parity harness, holdout config and current documentation updates are uncommitted.
+- Commit `8fdb490` contains the initial LearnedBot code, exporter, parity harness, holdout config and earlier experiment documentation.
 - Preserve and exclude the separate local `Assets/Scripts/Editor/HardBotVerification.cs` change.
 - Preserve old untracked `Docs/HANDOFF_2026-11-02.md`, `Docs/HANDOFF_DETAILED_2026-11-17.md`, and `Tools/Training/diagnose_checkpoint.py`.
 - Do not commit ignored `SimulationResults`; paths above are local evidence.
 
 ## Quick checks
 ```powershell
-Get-ChildItem .\SimulationResults\LearnedCheckpointComparison\reward-v3-critic-development\*.result.json
+Get-ChildItem .\SimulationResults\LearnedSearchTeacher\v1\*.result.json
 git diff --check -- Docs
 ```
